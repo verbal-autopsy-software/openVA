@@ -9,13 +9,13 @@
 #' @param causes.train character vector of causes, or the column name of cause in the training data
 #' @param symps.train N.train by S matrix, formatted as InSilicoVA input
 #' @param symps.test N.test by S matrix, formatted as InSilicoVA input
+#' @param causes.table list of causes in the data, if different from the InterVA4 and InSilico cause list.
 #' @param use.rank logical indicator for whether using ranks instead of scores
 #' @param nboot.rank number of re-sampling for baseline rank comparison
 #' @param use.sig logical indicator for whether using significant Tariff only
 #' @param nboot.sig  number of re-sampling for testing significance.
 #' @param use.top logical indicator for whether the tariff matrix should be cleaned to have only top symptoms
 #' @param ntop number of top tariff kept for each cause
-#' @param causes.table list of causes in the data, if different from the InterVA4 and InSilico cause list.
 #' 
 #' @return \item{score}{matrix of score for each cause within each death}
 #' \item{causes.train}{vector of most likely causes in training data} 
@@ -34,26 +34,44 @@
 #' @keywords Tariff
 #' @examples
 #'
-#' data("TariffInput")
-#' test <- TariffInput[1:100, ]
-#' train <- TariffInput[101:200, ]
-#' # note this is a fake dataset, so accuracy does not represent true accuracy of the algorithm!
-#' fit <- Tariff(causes.train = "cause", symps.train = train, symps.test = test)
-#' correct <- which(fit$causes.test == test$cause)
+#' data("RandomVA3")
+#' test <- RandomVA3$test 
+#' train <- RandomVA3$train 
+#' allcauses <- unique(train$cause)
+#' fit <- Tariff(causes.train = "cause", symps.train = train, symps.test = test, causes.table = allcauses)
+#' correct <- which(fit$causes.test[,2] == test$cause)
 #' accuracy <- length(correct) / dim(test)[1]
 
-Tariff <- function(causes.train, symps.train, symps.test, use.rank = TRUE, nboot.rank = 1, use.sig = TRUE, nboot.sig = 100, use.top = FALSE, ntop = 40, causes.table = NULL){
+Tariff <- function(causes.train, symps.train, symps.test, causes.table = NULL,  use.rank = TRUE, nboot.rank = 1, use.sig = TRUE, nboot.sig = 100, use.top = FALSE, ntop = 40){
 	
-	if(is.null(causes.table)){
-		data("causetext", envir = environment())
-		causetext <- get("causetext", envir  = environment())
-		causes.table <- causetext[4:63, 2]
-	}
+	
 	# if input cause is the column name
 	if(class(causes.train) == "character" && length(causes.train) == 1){
 		colindex <- match(causes.train, colnames(symps.train))
+		colindex2 <- match(causes.train, colnames(symps.test))
+
 		causes.train <- symps.train[, colindex]
+		if(is.null(causes.table)){
+			causes.table <- unique(symps.train[, colindex])
+		}
+		symps.train <- symps.train[, -colindex]
+
+		# also remove this from testing data if it is provided
+		if(!is.na(colindex2)){
+			causes.test <- symps.test[, colindex2]
+			symps.test <- symps.test[, -colindex2]		
+		}
 	}
+
+	id.train <- symps.train[, 1]
+	symps.train <- symps.train[, -1]
+	id.test <- symps.test[, 1]
+	symps.test <- symps.test[, -1]
+	# make sure train and test has the same columns
+	joint <- intersect(colnames(symps.train), colnames(symps.test))
+	symps.test <- symps.test[, joint]
+	symps.train <- symps.train[, joint]
+
 	# function to convert InterVA input back to numeric
 	# @para
 	#	mat     : matrix containing "Y", "" and "."
@@ -166,8 +184,11 @@ Tariff <- function(causes.train, symps.train, symps.test, use.rank = TRUE, nboot
 	
 	# remove causes not in the training data
 	nonexist <- which(causes.table %in% unique(causes.train) == FALSE)
-	causes.table2 <- causes.table[-nonexist]
-
+	if(length(nonexist) > 0){
+		causes.table2 <- causes.table[-nonexist]
+	}else{
+		causes.table2 <- causes.table
+	}
 	S <- dim(symps.train)[2]
 	C <- length(causes.table2)
 	N.train <- dim(symps.train)[1]
@@ -280,10 +301,13 @@ Tariff <- function(causes.train, symps.train, symps.test, use.rank = TRUE, nboot
 
 
 	# might need to include a way to transform from causes.table2 back to causes.table here
-
+	causes.train.out <- data.frame(ID = id.train)
+	causes.train.out$cause <- as.character(causes.train)
+	causes.test.out <- data.frame(ID = id.test)
+	causes.test.out$cause <- as.character(causes.test)
 	return(list(score = score.num,
-				causes.train = as.character(causes.train),
-				causes.test = as.character(causes.test),
+				causes.train = causes.train.out,
+				causes.test = causes.test.out,
 				csmf = CSMF, 
 				causes.table = causes.table2))
 }
