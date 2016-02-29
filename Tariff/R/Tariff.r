@@ -16,6 +16,7 @@
 #' @param nboot.sig  number of re-sampling for testing significance.
 #' @param use.top logical indicator for whether the tariff matrix should be cleaned to have only top symptoms
 #' @param ntop number of top tariff kept for each cause
+#' @param ... not used
 #' 
 #' @return \item{score}{matrix of score for each cause within each death}
 #' \item{causes.train}{vector of most likely causes in training data} 
@@ -25,24 +26,26 @@
 #' @author Zehang Li, Tyler McCormick, Sam Clark
 #' 
 #' Maintainer: Zehang Li <lizehang@@uw.edu>
-#' @seealso \code{\link{Tariff.csmf}}
 #' @references Tyler H. McCormick, Zehang R. Li, Clara Calvert, Amelia C.
 #' Crampin, Kathleen Kahn and Samuel J. Clark(2014) \emph{Probabilistic
 #' cause-of-death assignment using verbal autopsies},
 #' \url{http://arxiv.org/abs/1411.3042} \cr \emph{Working paper no. 147, Center
 #' for Statistics and the Social Sciences, University of Washington}
+#' @references James, S. L., Flaxman, A. D., Murray, C. J., & Population Health Metrics Research Consortium. (2011). \emph{Performance of the Tariff Method: validation of a simple additive algorithm for analysis of verbal autopsies.} \cr \emph{Population Health Metrics, 9(1), 1-16.}
 #' @keywords Tariff
 #' @examples
-#'
+#'\donttest{
 #' data("RandomVA3")
 #' test <- RandomVA3$test 
 #' train <- RandomVA3$train 
 #' allcauses <- unique(train$cause)
-#' fit <- Tariff(causes.train = "cause", symps.train = train, symps.test = test, causes.table = allcauses)
+#' fit <- tariff(causes.train = "cause", symps.train = train, 
+#' 				symps.test = test, causes.table = allcauses)
 #' correct <- which(fit$causes.test[,2] == test$cause)
 #' accuracy <- length(correct) / dim(test)[1]
+#' }
 
-Tariff <- function(causes.train, symps.train, symps.test, causes.table = NULL,  use.rank = TRUE, nboot.rank = 1, use.sig = TRUE, nboot.sig = 100, use.top = FALSE, ntop = 40){
+tariff <- function(causes.train, symps.train, symps.test, causes.table = NULL,  use.rank = TRUE, nboot.rank = 1, use.sig = TRUE, nboot.sig = 500, use.top = FALSE, ntop = 40, ...){
 	
 	
 	# if input cause is the column name
@@ -291,6 +294,8 @@ Tariff <- function(causes.train, symps.train, symps.test, causes.table = NULL,  
 	}else{
 		score <- score.num
 	}
+	colnames(score) <- id.test
+	rownames(score) <- causes.table2
 
 	# find CSMF for testing set
 	CSMF <- (table(c(causes.test, causes.table2)) - 1) / length(causes.test)
@@ -305,11 +310,14 @@ Tariff <- function(causes.train, symps.train, symps.test, causes.table = NULL,  
 	causes.train.out$cause <- as.character(causes.train)
 	causes.test.out <- data.frame(ID = id.test)
 	causes.test.out$cause <- as.character(causes.test)
-	return(list(score = score.num,
+
+	fit <- list(score = t(score),
 				causes.train = causes.train.out,
 				causes.test = causes.test.out,
 				csmf = CSMF, 
-				causes.table = causes.table2))
+				causes.table = causes.table2)
+	class(fit) <- "tariff"
+	return(fit)
 }
 
 

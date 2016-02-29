@@ -2,3 +2,8 @@ exportPattern("^[[:alpha:]]+")
 importFrom("grDevices", "dev.new", "grey.colors")
 importFrom("graphics", "barplot", "par", "pie")
 importFrom("utils", "data", "write.table")
+
+S3method("summary", "tariff")
+S3method("plot","tariff")
+S3method("print","tariff_summary")
+

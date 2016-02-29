@@ -6,7 +6,7 @@
 \title{400 records of Sample Input}
 \format{400 arbitrary input records.}
 \description{
-This is a dataset consisting of 400 randomly sampled input deaths from the PHMRC gold standard dataset.
+This is a dataset consisting of 400 arbitrary sample input deaths randomly sampled from cleaned PHMRC data.
 }
 \examples{
 data(RandomVA3)

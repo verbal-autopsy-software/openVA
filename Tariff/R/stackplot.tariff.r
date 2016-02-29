@@ -20,7 +20,7 @@
 #' plot(fit, min.prob = 0.05, main = "Ppulation COD distribution (at least 5%)")
 #' }
 
-plot.tariff<- function(x, top = NULL, min.prob = 0, ...){
+stackplot.tariff<- function(x, top = NULL, min.prob = 0, ...){
 	
 	sx <- summary(x)
 	dist.cod <- sx$csmf 
