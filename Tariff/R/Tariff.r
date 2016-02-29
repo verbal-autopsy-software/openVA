@@ -29,9 +29,9 @@
 #' @references Tyler H. McCormick, Zehang R. Li, Clara Calvert, Amelia C.
 #' Crampin, Kathleen Kahn and Samuel J. Clark(2014) \emph{Probabilistic
 #' cause-of-death assignment using verbal autopsies},
-#' \url{http://arxiv.org/abs/1411.3042} \cr \emph{Working paper no. 147, Center
+#' \url{http://arxiv.org/abs/1411.3042} \emph{Working paper no. 147, Center
 #' for Statistics and the Social Sciences, University of Washington}
-#' @references James, S. L., Flaxman, A. D., Murray, C. J., & Population Health Metrics Research Consortium. (2011). \emph{Performance of the Tariff Method: validation of a simple additive algorithm for analysis of verbal autopsies.} \cr \emph{Population Health Metrics, 9(1), 1-16.}
+#' @references James, S. L., Flaxman, A. D., Murray, C. J., & Population Health Metrics Research Consortium. (2011). \emph{Performance of the Tariff Method: validation of a simple additive algorithm for analysis of verbal autopsies.} \emph{Population Health Metrics, 9(1), 1-16.}
 #' @keywords Tariff
 #' @examples
 #'\donttest{
