@@ -7,9 +7,9 @@
 #' This function implements Tariff method.
 #'
 #' @param causes.train character vector of causes, or the column name of cause in the training data
-#' @param symps.train N.train by S matrix, formatted as InSilicoVA input
-#' @param symps.test N.test by S matrix, formatted as InSilicoVA input
-#' @param causes.table list of causes in the data, if different from the InterVA4 and InSilico cause list.
+#' @param symps.train N.train by S matrix 
+#' @param symps.test N.test by S matrix 
+#' @param causes.table list of causes in the data
 #' @param use.rank logical indicator for whether using ranks instead of scores
 #' @param nboot.rank number of re-sampling for baseline rank comparison
 #' @param use.sig logical indicator for whether using significant Tariff only

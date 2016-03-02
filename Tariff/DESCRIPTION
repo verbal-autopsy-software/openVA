@@ -2,7 +2,7 @@ Package: Tariff
 Type: Package
 Title: Replicate Tariff Method for Verbal Autopsy
 Version: 1.0
-Date: 2015-12-09
+Date: 2016-03-02
 Author: Zehang Li, Tyler McCormick, Sam Clark
 Maintainer: Zehang Li <lizehang@uw.edu>
 Description: Provides an R version of the Tariff algorithm for

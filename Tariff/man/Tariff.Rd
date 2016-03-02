@@ -11,11 +11,11 @@ tariff(causes.train, symps.train, symps.test, causes.table = NULL,
 \arguments{
 \item{causes.train}{character vector of causes, or the column name of cause in the training data}
 
-\item{symps.train}{N.train by S matrix, formatted as InSilicoVA input}
+\item{symps.train}{N.train by S matrix}
 
-\item{symps.test}{N.test by S matrix, formatted as InSilicoVA input}
+\item{symps.test}{N.test by S matrix}
 
-\item{causes.table}{list of causes in the data, if different from the InterVA4 and InSilico cause list.}
+\item{causes.table}{list of causes in the data}
 
 \item{use.rank}{logical indicator for whether using ranks instead of scores}
 
