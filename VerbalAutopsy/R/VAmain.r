@@ -1,38 +1,36 @@
 
+
 #' Running automated method on VA data
 #'
 #' @param data 
 #' @param data.type 
+#' @param data.train 
+#' @param causes.train 
+#' @param causes.table 
 #' @param model 
 #' @param Nchain 
 #' @param Nsim 
 #' @param version 
 #' @param HIV 
 #' @param Malaria 
-#' @param physician 
-#' @param ... 
-#' @param data.train 
-#' @param causes.train 
-#' @param causes.table 
 #' @param phmrc.type 
+#' @param convert.type 
+#' @param ... 
 #'
-#' @return fitted object
-#' @export codeVA
+#' @return
+#' @export
 #'
 #' @examples
-#' \dontrun{
-#'  x <- 1
-#' }
-#'
-#'  
 codeVA <- function(data, data.type = c("WHO", "PHMRC", "customize")[1], 
                   data.train = NULL, 
                   causes.train = NULL, 
                   causes.table = NULL,
                   model = c("InSilicoVA", "InterVA", "Tariff")[1],
-                  Nchain = 1, Nsim=10000, physician = NULL,
+                  Nchain = 1, Nsim=10000, 
                   version = "4.02", HIV = "h", Malaria = "h", 
-                  phmrc.type = c("adult", "child", "neonate")[1], ...){
+                  phmrc.type = c("adult", "child", "neonate")[1], 
+                  convert.type = c("quantile", "fixed", "empirical")[1],
+                  ...){
   
   args <- as.list(match.call())
 
@@ -62,8 +60,8 @@ codeVA <- function(data, data.type = c("WHO", "PHMRC", "customize")[1],
                                 input.test = test, 
                                 cause = causes.train,
                                 type = phmrc.type, ...)
-    data.train <- data$output
-    data <- data$output.test
+    data.train <- binary$output
+    data <- binary$output.test
     causes.train <- colnames(data.train)[2]
   }
  
@@ -79,15 +77,17 @@ codeVA <- function(data, data.type = c("WHO", "PHMRC", "customize")[1],
     }  
     
     if(data.type == "WHO"){
-      fit <- insilico(data, length.sim = Nsim, burnin = burnin, thin = thin, ...)  
+      fit <- insilico(data, Nsim = Nsim, burnin = burnin, thin = thin, ...)  
     }else if(data.type == 'PHMRC'|| data.type == "customize"){
       fit <- insilico.train(data,
                           train = data.train, 
                           cause = causes.train,
                           causes.table = causes.table,
-                          length.sim = Nsim, 
+                          Nsim = Nsim, 
                           burnin = burnin, 
-                          thin = thin, ...)  
+                          thin = thin, 
+                          type = convert.type,
+                          ...)  
     }else{
       stop("Error: unknown data type specified")
     }
@@ -106,7 +106,13 @@ codeVA <- function(data, data.type = c("WHO", "PHMRC", "customize")[1],
     if(data.type == "WHO"){
         fit <- InterVA(Input = data, HIV = HIV, Malaria = Malaria, replicate = replicate, ...)
     }else if(data.type == 'PHMRC'|| data.type == "customize"){
-              
+        fit <- interVA.train(data = data, 
+                             train=data.train, 
+                             cause = causes.train, 
+                             causes.table = causes.table, 
+                             type = convert.type,
+                             ...)
+                       
     }else{
       stop("Error: unknown data type specified")
     }
@@ -140,15 +146,17 @@ codeVA <- function(data, data.type = c("WHO", "PHMRC", "customize")[1],
 }
 
 
-#' Title
+#' Plot top CSMF
 #'
-#' @param object 
-#' @param top 
-#' @param title 
-#' @param ... 
+#' @param a fitted object using \code{\link{codeVA}} 
+#' @param top number of top causes to plot
+#' @param title title of the plot
+#' @param ... additional arguments passed to \code{\link[InSilicoVA]{plot.insilico}}, 
+#' \code{\link[Tariff]{plot.tariff}}, or \code{\link[InterVA4]{CSMF}}.
 #'
 #' @export plotVA
-#'
+#' @seealso \code{\link[InSilicoVA]{plot.insilico}}, \code{\link[Tariff]{plot.tariff}}, 
+#' \code{\link[InterVA4]{CSMF}}
 #' @examples
 #' \dontrun{
 #'   x <- 1
