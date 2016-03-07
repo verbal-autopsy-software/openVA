@@ -13,6 +13,7 @@
 #' @param sample.size.print Logical indicator for printing also the sample size for each sub-population labels.
 #' @param xlab Labels for the causes.
 #' @param ylab Labels for the CSMF values.
+#' @param ylim Range of y-axis.
 #' @param title Title of the plot.
 #' @param horiz Logical indicator indicating if the bars are plotted
 #' horizontally.
@@ -35,7 +36,7 @@ stackplotVA <- function(x, grouping = NULL,
     type = c("stack", "dodge")[1], 
     order.group = NULL, order.sub = NULL,
     err = TRUE, CI = 0.95, sample.size.print = FALSE,
-	xlab = "Group", ylab = "CSMF", 
+	xlab = "Group", ylab = "CSMF", ylim = NULL,
 	title = "CSMF by broader cause categories", 
 	horiz = FALSE, angle = 60,  
 	err_width = .4, err_size = .6, point_size = 2, 
@@ -95,7 +96,7 @@ stackplotVA <- function(x, grouping = NULL,
 					    type = type, 
 					    order.group = order.group, order.sub = order.sub,
 					    err = err, CI = CI, sample.size.print = sample.size.print,
-						xlab = xlab, ylab = ylab, 
+						xlab = xlab, ylab = ylab, ylim = ylim, 
 						title = title, 
 						horiz = horiz, angle = angle,  
 						err_width = err_width, err_size = err_size, 
@@ -104,9 +105,9 @@ stackplotVA <- function(x, grouping = NULL,
 	}else{
 		csmf[[1]] <- getCSMF(x, CI = CI)
 		if(class(x) == "interVA"){
-			counts[1] <- length(x$VA) 
+			counts <- length(x$VA) 
 		}else if(class(x) == "tariff"){
-			counts[1] <- dim(x$causes.test)[1]
+			counts <- dim(x$causes.test)[1]
 		}
 		barNames <- ""
 	}
@@ -132,8 +133,10 @@ stackplotVA <- function(x, grouping = NULL,
 				which <- which(colnames(csmf[[index]]) %in% which.names)
 				if(length(which) > 1){
 					csmf.tmp <- apply(csmf[[index]][, which], 1, sum)
-				}else{
+				}else if(length(which) == 1){
 					csmf.tmp <- csmf[[index]][, which]
+				}else{
+					csmf.tmp <- 0
 				}
 				csmf.group.temp[, i] <- csmf.tmp
 			}	
@@ -191,6 +194,9 @@ stackplotVA <- function(x, grouping = NULL,
 		g <- g + geom_errorbar(aes(ymin = csmf.lower, ymax = csmf.upper), size = err_size, width = err_width,  position = position_dodge(.9))
 	}
 	g <- g + xlab(xlab) + ylab(ylab) 
+	if(!is.null(ylim)){
+		g <- g + ylim(ylim)
+	}
 	g <- g + ggtitle(title)
 	if(horiz) g <- g + coord_flip()
 	if(bw) g <- g + theme_bw()

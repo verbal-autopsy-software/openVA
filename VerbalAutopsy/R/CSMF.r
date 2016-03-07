@@ -72,5 +72,5 @@ getTopCOD <- function(x, interVA.rule = TRUE){
       id <- as.character(x$causes.test[, 1])
     }
 
-    return(list(ID = id, cause = pick))
+    return(data.frame(ID = id, cause = pick))
 }

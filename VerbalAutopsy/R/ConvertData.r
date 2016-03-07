@@ -56,9 +56,7 @@ ConvertData <- function(input, yesLabel = NULL, noLabel = NULL, missLabel = NULL
 	}
 
 	if(length(unchanged) > 0){
-		cat("The following columns are not modified since they contain values other than Yes, No, or Missing:\n")
-		cat(paste(unchanged, collapse = ", "))
-		cat("\n")
+		warning(paste("The following columns not recognized as symptoms and not modified:\n", paste(unchanged, collapse = ", "), "\n"))
 	}
 
 	colnames(output) <- colnames(input)

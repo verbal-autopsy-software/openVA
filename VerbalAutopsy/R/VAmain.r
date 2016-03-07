@@ -69,11 +69,14 @@ codeVA <- function(data, data.type = c("WHO", "PHMRC", "customize")[1],
  #                          InSilicoVA 
  # --------------------------------------------------------------------#
   if(model == "InSilicoVA"){
+    if(is.null(Nsim)){
+      stop("Please specify Nsim: number of iterations to draw from InSilicoVA sampler")
+    }
     if(is.null(args$burnin)){
       burnin <- round(Nsim / 2)
     }
     if(is.null(args$thin)){
-      thin <- 10 * (Nsim <= 10000) + 20 *(Nsim > 10000)
+      thin <- 10 * (Nsim <= 10000) + 10 *(Nsim > 10000)
     }  
     
     if(data.type == "WHO"){
