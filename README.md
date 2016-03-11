@@ -1,4 +1,4 @@
-# VerbalAutopsy
+# openVA
 Integrated system combining three major VA methods
 
 - InSilicoVA: available on CRAN: "InSilicoVA"
