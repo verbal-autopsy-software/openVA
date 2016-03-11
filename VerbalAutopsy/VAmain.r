@@ -1,1 +1,0 @@
-fitVA <- function()
