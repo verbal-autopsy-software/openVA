@@ -83,3 +83,51 @@ getTopCOD <- function(x, interVA.rule = TRUE){
 
     return(data.frame(ID = id, cause = pick))
 }
+
+#' Extract individual distribution of cause of death
+#'
+#' @param x a fitted object from \code{codeVA}.
+#' @param CI Credible interval for posterior estimates. If CI is set to TRUE, a list is returned instead of a data frame.
+#'
+#' @return a data frame of COD distribution for each individual specified by row names.
+#' @export getTopCOD
+#'
+#' @examples
+#' data(RandomVA1)
+#' # for illustration, only use interVA on 100 deaths
+#' fit <- codeVA(RandomVA1[1:100, ], data.type = "WHO", model = "InterVA", 
+#'                   version = "4.02", HIV = "h", Malaria = "l")
+#' probs <- getIndivProb(fit)
+#' 
+getIndivProb <- function(x, CI = NULL){
+  
+  if(class(x) == "insilico"){    
+    if(!is.null(CI)){
+       indiv  <- get.indiv(x, CI = CI)
+       probs <- NULL
+       probs$indiv.prob <- x$indiv.prob
+       probs$indiv.prob.lower <- indiv$lower
+       probs$indiv.prob.upper <- indiv$upper
+       probs$indiv.prob.median <- indiv$median
+       probs$indiv.CI <- CI
+    }else{
+       probs <- x$indiv.prob
+    }
+
+  }else if(class(x) == "interVA"){
+      id <- x$ID
+      probs <- matrix(NA, length(x$VA), length(x$VA[[1]]$wholeprob))
+      for(i in 1:length(x$VA)){
+          probs[i, ] <- x$VA[[i]]$wholeprob
+      }
+      rownames(probs) <- id
+      colnames(probs) <- names(x$VA[[i]]$wholeprob)
+
+    }else if(class(x) == "tariff"){
+      warning("Tariff method produces only rankings of causes, not probabilities")
+      probs <- x$score
+    }
+
+    return(probs)
+}
+
