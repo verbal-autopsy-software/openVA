@@ -25,6 +25,14 @@
 #' @importFrom InSilicoVA insilico insilico.train 
 #' @importFrom InterVA4 InterVA CSMF
 #' @importFrom Tariff tariff
+#' @references Tyler H. McCormick, Zehang R. Li, Clara Calvert, Amelia C.
+#' Crampin, Kathleen Kahn and Samuel J. Clark (2016) \emph{Probabilistic
+#' cause-of-death assignment using verbal autopsies.}
+#' \url{http://arxiv.org/abs/1411.3042}, \emph{To appear, Journal of the American Statistical Association}
+#' @references James, S. L., Flaxman, A. D., Murray, C. J., & Population Health Metrics Research Consortium. (2011). \emph{Performance of the Tariff Method: validation of a simple additive algorithm for analysis of verbal autopsies.} \emph{Population Health Metrics, 9(1), 1-16.}
+#' @references Zehang R. Li, Tyler H. McCormick, Samuel J. Clark (2014) \emph{InterVA4: An R package to analyze verbal autopsy data.} \emph{Center for Statistics and the Social Sciences Working Paper, No.146}
+#' @references http://www.interva.net/
+#' @keywords InSilicoVA InterVA4 Tariff
 
 #' @examples
 #' \donttest{
@@ -95,25 +103,27 @@ codeVA <- function(data, data.type = c("WHO", "PHMRC", "customize")[1],
     if(is.null(Nsim)){
       stop("Please specify Nsim: number of iterations to draw from InSilicoVA sampler")
     }
+
+
     if(is.null(args$burnin)){
-      burnin <- round(Nsim / 2)
+      args$burnin <- round(Nsim / 2)
     }
     if(is.null(args$thin)){
-      thin <- 10 * (Nsim <= 10000) + 10 *(Nsim > 10000)
-    }  
-    
+      args$thin <- 10 * (Nsim < 10000) + 10 *(Nsim >= 10000)
+    }
+
+
     if(data.type == "WHO"){
-      fit <- insilico(data, Nsim = Nsim, burnin = burnin, thin = thin, ...)  
+      fit <- do.call("insilico", pairlist(args)[[1]][-1])
+
     }else if(data.type == 'PHMRC'|| data.type == "customize"){
-      fit <- insilico.train(data,
-                          train = data.train, 
-                          cause = causes.train,
-                          causes.table = causes.table,
-                          Nsim = Nsim, 
-                          burnin = burnin, 
-                          thin = thin, 
-                          type = convert.type,
-                          ...)  
+      
+      args$train <- args$data.train
+      args$cause <- args$causes.train
+      args$type <- convert.type      
+
+      fit <- do.call("insilico.train", pairlist(args)[[1]][-1])
+  
     }else{
       stop("Error: unknown data type specified")
     }
