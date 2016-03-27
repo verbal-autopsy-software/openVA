@@ -517,7 +517,7 @@ new$a2_05_s1 <- .toBinary_group(raw$a2_05,
 							c("Continuous", "Only at Night"), 
 							c("Don't Know"))
 # Where was the rash located?	
-# Face, Trunk, Extremities, Everywhere, Other, Don’t Know	
+# Face, Trunk, Extremities, Everywhere, Other, Don't Know	
 	##	Was there a rash on the face?
 	##	Was there a rash on the trunk?
 	##	Was there a rash on the extremities?
