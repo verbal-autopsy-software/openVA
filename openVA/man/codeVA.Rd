@@ -68,7 +68,22 @@ fit3 <- codeVA(data = test, data.type = "customize", model = "Tariff",
                nboot.sig = 100)
 }
 }
+\references{
+Tyler H. McCormick, Zehang R. Li, Clara Calvert, Amelia C.
+Crampin, Kathleen Kahn and Samuel J. Clark (2016) \emph{Probabilistic
+cause-of-death assignment using verbal autopsies.}
+\url{http://arxiv.org/abs/1411.3042}, \emph{To appear, Journal of the American Statistical Association}
+
+James, S. L., Flaxman, A. D., Murray, C. J., & Population Health Metrics Research Consortium. (2011). \emph{Performance of the Tariff Method: validation of a simple additive algorithm for analysis of verbal autopsies.} \emph{Population Health Metrics, 9(1), 1-16.}
+
+Zehang R. Li, Tyler H. McCormick, Samuel J. Clark (2014) \emph{InterVA4: An R package to analyze verbal autopsy data.} \emph{Center for Statistics and the Social Sciences Working Paper, No.146}
+
+http://www.interva.net/
+}
 \seealso{
 \code{\link[InSilicoVA]{insilico}}, \code{\link[InterVA4]{InterVA}}, \code{\link{interVA.train}}, and \code{\link[Tariff]{tariff}}
 }
+\keyword{InSilicoVA}
+\keyword{InterVA4}
+\keyword{Tariff}
 

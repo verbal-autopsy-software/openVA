@@ -44,4 +44,15 @@ out <- interVA.train(data = test, train = train, causes.train = "cause",
                      prior = "train", type = "quantile")
 }
 }
+\references{
+Tyler H. McCormick, Zehang R. Li, Clara Calvert, Amelia C.
+Crampin, Kathleen Kahn and Samuel J. Clark (2016) \emph{Probabilistic
+cause-of-death assignment using verbal autopsies.}
+\url{http://arxiv.org/abs/1411.3042}, \emph{To appear, Journal of the American Statistical Association}
+
+Zehang R. Li, Tyler H. McCormick, Samuel J. Clark (2014) \emph{InterVA4: An R package to analyze verbal autopsy data.}, \emph{Center for Statistics and the Social Sciences Working Paper, No.146}
+
+http://www.interva.net/
+}
+\keyword{InterVA4}
 
