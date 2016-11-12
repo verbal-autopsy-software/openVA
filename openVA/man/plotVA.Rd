@@ -14,7 +14,7 @@ plotVA(object, top = 10, title = NULL, ...)
 \item{title}{title of the plot}
 
 \item{...}{additional arguments passed to \code{\link[InSilicoVA]{plot.insilico}},
-\code{\link[Tariff]{plot.tariff}}, or \code{\link[InterVA4]{CSMF}}.}
+\code{\link[Tariff]{plot.tariff}}, \code{\link[InterVA4]{CSMF}}, or \code{\link[nbc4va]{plot.nbc}}.}
 }
 \description{
 Plot top CSMF for a fitted model
@@ -36,10 +36,13 @@ fit3 <- codeVA(data = test, data.type = "customize", model = "Tariff",
                data.train = train, causes.train = "cause",
                nboot.sig = 100)
 
+fit4 <- codeVA(data = test, data.type = "customize", model = "NBC",
+               data.train = train, causes.train = "cause", known.nbc = TRUE)
 
 plotVA(fit1)
 plotVA(fit2)
 plotVA(fit3)
+plotVA(fit4)
 }
 }
 \seealso{

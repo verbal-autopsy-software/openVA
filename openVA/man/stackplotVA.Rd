@@ -74,6 +74,8 @@ fit2 <- codeVA(data = test, data.type = "customize", model = "InterVA",
 fit3 <- codeVA(data = test, data.type = "customize", model = "Tariff",
                data.train = train, causes.train = "cause",
                nboot.sig = 100)
+fit4 <- codeVA(data = test, data.type = "customize", model = "NBC",
+               data.train = train, causes.train = "cause", known.nbc = TRUE)
 
 data(SampleCategory3)
 stackplotVA(fit1, grouping = SampleCategory3, type ="dodge",
@@ -82,6 +84,8 @@ stackplotVA(fit2, grouping = SampleCategory3, type = "dodge",
             ylim = c(0, 1), title = "InterVA4.02")
 stackplotVA(fit3, grouping = SampleCategory3, type = "dodge",
             ylim = c(0, 1), title = "Tariff")
+stackplotVA(fit4, grouping = SampleCategory3, type = "dodge",
+            ylim = c(0, 1), title = "NBC")
 }
 }
 \author{

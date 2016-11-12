@@ -9,7 +9,8 @@ codeVA(data, data.type = c("WHO", "PHMRC", "customize")[1],
   model = c("InSilicoVA", "InterVA", "Tariff")[1], Nchain = 1,
   Nsim = 10000, version = "4.02", HIV = "h", Malaria = "h",
   phmrc.type = c("adult", "child", "neonate")[1],
-  convert.type = c("quantile", "fixed", "empirical")[1], ...)
+  convert.type = c("quantile", "fixed", "empirical")[1], known.nbc = FALSE,
+  ...)
 }
 \arguments{
 \item{data}{Input VA data, see \code{data.type} below for more information about the format.}
@@ -23,7 +24,7 @@ codeVA(data, data.type = c("WHO", "PHMRC", "customize")[1],
 
 \item{causes.table}{list of causes to consider in the training data. Default to be NULL, which uses all the causes present in the training data.}
 
-\item{model}{Currently support three models: ``InSilicoVA'', ``InterVA'', and ``Tariff''.}
+\item{model}{Currently support four models: ``InSilicoVA'', ``InterVA'', ``Tariff'', and ``NBC''.}
 
 \item{Nchain}{Parameter specific to ``InSilicoVA'' model. Currently not used.}
 
@@ -42,7 +43,9 @@ codeVA(data, data.type = c("WHO", "PHMRC", "customize")[1],
 \item{\code{quantile}: }{the rankings of the P(S|C) are obtained by matching the same quantile distributions in the default InterVA P(S|C)}\item{\code{fixed}: }{P(S|C) are matched to the closest values in the default InterVA P(S|C) table.} \item{\code{empirical}: }{no ranking is calculated, but use the empirical conditional probabilities directly, which will force \code{updateCondProb} to be FALSE for InSilicoVA algorithm.}
 }}
 
-\item{...}{other arguments passed to \code{\link[InSilicoVA]{insilico}}, \code{\link[InterVA4]{InterVA}}, \code{\link{interVA.train}}, and \code{\link[Tariff]{tariff}}. See respective package documents for details.}
+\item{known.nbc}{Specific for ``NBC'' method. TRUE to indicate that the test causes are available in the 2nd column and FALSE to indicate that they are not known.}
+
+\item{...}{other arguments passed to \code{\link[InSilicoVA]{insilico}}, \code{\link[InterVA4]{InterVA}}, \code{\link{interVA.train}}, \code{\link[Tariff]{tariff}}, and \code{\link[nbc4va]{nbc}}. See respective package documents for details.}
 }
 \value{
 a fitted object
@@ -66,6 +69,10 @@ fit2 <- codeVA(data = test, data.type = "customize", model = "InterVA",
 fit3 <- codeVA(data = test, data.type = "customize", model = "Tariff",
                data.train = train, causes.train = "cause",
                nboot.sig = 100)
+
+fit4 <- codeVA(data = test, data.type = "customize", model = "NBC",
+               data.train = train, causes.train = "cause", known.nbc = TRUE)
+
 }
 }
 \references{
@@ -79,11 +86,14 @@ James, S. L., Flaxman, A. D., Murray, C. J., & Population Health Metrics Researc
 Zehang R. Li, Tyler H. McCormick, Samuel J. Clark (2014) \emph{InterVA4: An R package to analyze verbal autopsy data.} \emph{Center for Statistics and the Social Sciences Working Paper, No.146}
 
 http://www.interva.net/
+
+Miasnikof P, Giannakeas V, Gomes M, Aleksandrowicz L, Shestopaloff AY, Alam D, Tollman S, Samarikhalaj, Jha P. \emph{Naive Bayes classifiers for verbal autopsies: comparison to physician-based classification for 21,000 child and adult deaths.} \emph{BMC Medicine. 2015;13:286.}
 }
 \seealso{
-\code{\link[InSilicoVA]{insilico}}, \code{\link[InterVA4]{InterVA}}, \code{\link{interVA.train}}, and \code{\link[Tariff]{tariff}}
+\code{\link[InSilicoVA]{insilico}}, \code{\link[InterVA4]{InterVA}}, \code{\link{interVA.train}}, \code{\link[Tariff]{tariff}}, and \code{\link[nbc4va]{nbc}}.
 }
 \keyword{InSilicoVA}
 \keyword{InterVA4}
+\keyword{NBC4VA}
 \keyword{Tariff}
 

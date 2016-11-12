@@ -47,6 +47,8 @@
 #' fit3 <- codeVA(data = test, data.type = "customize", model = "Tariff",
 #'                data.train = train, causes.train = "cause", 
 #'                nboot.sig = 100)
+#' fit4 <- codeVA(data = test, data.type = "customize", model = "NBC",
+#'                data.train = train, causes.train = "cause", known.nbc = TRUE)
 #'
 #' data(SampleCategory3)
 #' stackplotVA(fit1, grouping = SampleCategory3, type ="dodge", 
@@ -55,6 +57,8 @@
 #'             ylim = c(0, 1), title = "InterVA4.02")
 #' stackplotVA(fit3, grouping = SampleCategory3, type = "dodge", 
 #'             ylim = c(0, 1), title = "Tariff")
+#' stackplotVA(fit4, grouping = SampleCategory3, type = "dodge", 
+#'             ylim = c(0, 1), title = "NBC")
 #' }
 #' @export stackplotVA
 stackplotVA <- function(x, grouping = NULL,
@@ -109,6 +113,8 @@ stackplotVA <- function(x, grouping = NULL,
 					counts[i] <- length(x[[i]]$VA) 
 				}else if(class(x[[i]]) == "tariff"){
 					counts[i] <- dim(x[[i]]$causes.test)[1]
+				}else if(class(x[[i]]) == "nbc"){
+					counts[i] <- dim(x[[i]]$test)[1]
 				}
 			}
 			if(!is.null(names(x)[i])){
@@ -138,6 +144,8 @@ stackplotVA <- function(x, grouping = NULL,
 			counts <- length(x$VA) 
 		}else if(class(x) == "tariff"){
 			counts <- dim(x$causes.test)[1]
+		}else if(class(x) == "nbc"){
+			counts <- dim(x$test)[1]
 		}
 		barNames <- ""
 		err <- FALSE

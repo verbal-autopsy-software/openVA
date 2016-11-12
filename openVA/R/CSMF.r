@@ -31,6 +31,10 @@ getCSMF <- function(x, CI = 0.95, interVA.rule = TRUE){
   if(class(x) == "tariff"){
     return(x$csmf)
   }
+
+  if(class(x) == "nbc"){
+    return(csmf.nbc(x))
+  }
 }
 
 
@@ -79,6 +83,9 @@ getTopCOD <- function(x, interVA.rule = TRUE){
     }else if(class(x) == "tariff"){
       pick <- x$causes.test[, 2]
       id <- as.character(x$causes.test[, 1])
+    }else if(class(x) == "nbc"){
+      pick <-  topCOD.nbc(x)[, 2]
+      id <-  topCOD.nbc(x)[, 1]
     }
 
     return(data.frame(ID = id, cause = pick))
@@ -126,6 +133,8 @@ getIndivProb <- function(x, CI = NULL){
     }else if(class(x) == "tariff"){
       warning("Tariff method produces only rankings of causes, not probabilities")
       probs <- x$score
+    }else if(class(x) == "nbc"){
+      probs <- x$prob
     }
 
     return(probs)
