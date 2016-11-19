@@ -6,11 +6,10 @@
 \usage{
 codeVA(data, data.type = c("WHO", "PHMRC", "customize")[1],
   data.train = NULL, causes.train = NULL, causes.table = NULL,
-  model = c("InSilicoVA", "InterVA", "Tariff")[1], Nchain = 1,
+  model = c("InSilicoVA", "InterVA", "Tariff", "NBC")[1], Nchain = 1,
   Nsim = 10000, version = "4.02", HIV = "h", Malaria = "h",
   phmrc.type = c("adult", "child", "neonate")[1],
-  convert.type = c("quantile", "fixed", "empirical")[1], known.nbc = FALSE,
-  ...)
+  convert.type = c("quantile", "fixed", "empirical")[1], ...)
 }
 \arguments{
 \item{data}{Input VA data, see \code{data.type} below for more information about the format.}
@@ -42,8 +41,6 @@ codeVA(data, data.type = c("WHO", "PHMRC", "customize")[1],
 \itemize{
 \item{\code{quantile}: }{the rankings of the P(S|C) are obtained by matching the same quantile distributions in the default InterVA P(S|C)}\item{\code{fixed}: }{P(S|C) are matched to the closest values in the default InterVA P(S|C) table.} \item{\code{empirical}: }{no ranking is calculated, but use the empirical conditional probabilities directly, which will force \code{updateCondProb} to be FALSE for InSilicoVA algorithm.}
 }}
-
-\item{known.nbc}{Specific for ``NBC'' method. TRUE to indicate that the test causes are available in the 2nd column and FALSE to indicate that they are not known.}
 
 \item{...}{other arguments passed to \code{\link[InSilicoVA]{insilico}}, \code{\link[InterVA4]{InterVA}}, \code{\link{interVA.train}}, \code{\link[Tariff]{tariff}}, and \code{\link[nbc4va]{nbc}}. See respective package documents for details.}
 }
