@@ -4,6 +4,7 @@ Integrated system combining several major VA methods. Demonstration could be fou
 - InSilicoVA: available on CRAN: ["InSilicoVA"](https://cran.r-project.org/web/packages/InSilicoVA/index.html)
 - InterVA: available on CRAN: ["InterVA4"](https://cran.r-project.org/web/packages/InterVA4/index.html)
 - Tariff: available on CRAN: ["Tariff"](https://cran.r-project.org/web/packages/Tariff/index.html)
+- NBC: available on CRAN: ["nbc4va"](https://cran.r-project.org/web/packages/nbc4va/index.html)
 
 ## Future updates on deck
 - NBC algorithm to be included in version 1.1
