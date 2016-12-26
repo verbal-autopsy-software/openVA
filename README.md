@@ -6,6 +6,8 @@ Integrated system combining several major VA methods. Demonstration could be fou
 - Tariff: available on CRAN: ["Tariff"](https://cran.r-project.org/web/packages/Tariff/index.html)
 - NBC: available on CRAN: ["nbc4va"](https://cran.r-project.org/web/packages/nbc4va/index.html)
 
+For installation, it might be useful to check out this [installation guide](https://github.com/richardli/openVA/blob/master/Installation_guide.md)
+
 ## Future updates on deck
 - NBC algorithm to be included in version 1.1
 - Support for converting PHMRC child and neonate data
