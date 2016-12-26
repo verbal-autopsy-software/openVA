@@ -20,9 +20,80 @@ As the name suggests, to properly load the package **rJava**, you will need two 
 
 ## 3. Misc suggestions
 1. For users not familiar with R envrionment, see [the official introduction](https://www.r-project.org/about.html).
-2. Many people find using R from Rstudio to be most convenient. Rstudio could be downloaded from [its website](https://www.rstudio.com/products/rstudio/download3/). 
+2. Many people find using R from Rstudio to be more convenient. Rstudio could be downloaded from [its website](https://www.rstudio.com/products/rstudio/download3/). 
 
 
 ## 4. Errors and solutions
-If you encounter other errors not listed here, or could not resolve the errors following the steps listed, or would like to propose new solutions, you are more than welcome to contact me (Richard Li, lizehang@uw.edu) or submit issue reports to [this Github repository](https://github.com/richardli/openVA/issues).
+Here I include some tips of installing and loading **rJava** package that I found to be useful in the past. Some of those here have been fixed in later version so the solutions might be out-dated.   
+
+If you encounter other errors not listed here, or could not resolve the errors following the steps listed, or would like to propose new solutions, you are more than welcome to contact me (Richard Li, lizehang@uw.edu) or submit issue reports to [this Github repository](https://github.com/richardli/openVA/issues). If you know explicitly the errors are caused by rJava, you could also submit issue reports to the [rJava repository](https://github.com/s-u/rJava/issues) directly.
+
+Here is the things you might see down the rabbit hole - One thing omitted in the tricks is that typically for most of the tricks below, at the end, it requires another step of re-compiling rJava from source, i.e., adding the ```type='source'``` as below:
+
+```
+install.packages('rJava', type='source')
+```
+
+
+1. Fail to install rJava (usually from Rstudio): [original post](http://stackoverflow.com/questions/34212378/installation-of-rjava)
+  + Example Error Message:
+    
+    ```
+    ERROR: configuration failed for package ‘rJava’
+    * removing ‘....some directory.../rJava’
+    Warning in install.packages :
+    installation of package ‘rJava’ had non-zero exit status
+    ```
+   
+  + Solution: Open terminal and execute the commands:
+  
+   ```
+   sudo R CMD javareconf
+   ```
+   
+1. Fail to load rJava on Mac: [original post](http://stackoverflow.com/questions/30738974/rjava-load-error-in-rstudio-r-after-upgrading-to-osx-yosemite)
+  + Example Error Message:
+  
+  + Solution: This is a common problem whenever your Mac OS gets updated, especially if you use Rstudio. As of OSX El Capitan 10.11, the trick that seems to work for me is to run the following from terminal:
+  
+  ```
+  sudo ln -s $(/usr/libexec/java_home)/jre/lib/server/libjvm.dylib /usr/local/lib
+  ```
+  
+1. Fail to load rJava on 64-bit Windows: [original post](http://stackoverflow.com/questions/7019912/using-the-rjava-package-on-win7-64-bit-with-r)
+  + Example Error Message: 
+        
+        ```
+         Error : .onLoad failed in loadNamespace() for 'rJava', details: 
+         call: inDL(x, as.logical(local), as.logical(now), ...)
+         ```
+  + Solution: This is only useful when **rJava** package can be installed (```install.packages("rJava")```), but not loaded (```library('rJava')```). Sometimes it works by executing the following in R console:
+      
+      ```
+      if (Sys.getenv("JAVA_HOME")!="")
+      Sys.setenv(JAVA_HOME="")
+      library(rJava)
+      ```
+ 
+1. Failure to install rJava on Linux: [original post](http://stackoverflow.com/questions/3311940/r-rjava-package-install-failing)
+  
+  + Example Error Message:
+   
+   ```
+   checking JNI data types... configure: error: One or more JNI types differ from the corresponding native type. You may need to use non-standard compiler flags or a different compiler in order to fix this.
+ERROR: configuration failed for package ‘rJava’
+```
+  
+  + Solution:
+  ```
+  apt-get install r-cran-rjava
+  ```
+  
+1. More misc error messages and hacks that I have not tried myself:
+  + [OSX + Rstudio 1](http://stackoverflow.com/questions/26948777/how-can-i-make-rjava-use-the-newer-version-of-java-on-osx)
+  + [OSX + Rstudio 2](http://spartanideas.msu.edu/2015/06/27/the-rjava-nightmare/) 
+  + [OSX + Rstudio 3](https://andrewgoldstone.com/blog/2015/02/03/rjava/)
+  + [OSX + Rstudio 4](http://conjugateprior.org/2014/12/r-java8-osx/)
+  + [Windows + registry](https://www.r-bloggers.com/how-to-load-the-rjava-package-after-the-error-java_home-cannot-be-determined-from-the-registry/)
+  + [No Java run time in OSX](https://github.com/s-u/rJava/issues/37) (with many useful discussions)
 
