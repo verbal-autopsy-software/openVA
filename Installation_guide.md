@@ -34,7 +34,29 @@ Here is the things you might see down the rabbit hole - One thing omitted in the
 install.packages('rJava', type='source')
 ```
 
-
+1. Fail to load rJava on Mac OSX (El Capitan 10.11): [original post](http://stackoverflow.com/questions/35179151/cannot-load-r-xlsx-package-on-mac-os-10-11)
+  + Example Error Message:
+    
+    ```
+    JavaVM: Failed to load JVM: /bundle/Libraries/libserver.dylib
+    Java FATAL: Failed to load the jvm library.
+    Error : .onLoad failed in loadNamespace() for 'InSilicoVA', details:
+     call: .jinit()
+     error: JNI_GetCreatedJavaVMs returned -1
+    ```
+   
+  + Solution: Open terminal and execute the commands:
+  
+   ```
+   sudo R CMD javareconf
+   ```
+   Then reopen R and run
+   
+   ```
+   install.packages("rJava", type = "source")
+   library(openVA)
+   ```
+   
 1. Fail to install rJava (usually from Rstudio): [original post](http://stackoverflow.com/questions/34212378/installation-of-rjava)
   + Example Error Message:
     
