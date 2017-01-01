@@ -38,52 +38,52 @@ install.packages('rJava', type='source')
 1. Fail to load rJava on Mac OSX (El Capitan 10.11): [original post](http://stackoverflow.com/questions/35179151/cannot-load-r-xlsx-package-on-mac-os-10-11)
   + Example Error Message:
     
-    ```
-    JavaVM: Failed to load JVM: /bundle/Libraries/libserver.dylib
-    Java FATAL: Failed to load the jvm library.
-    Error : .onLoad failed in loadNamespace() for 'InSilicoVA', details:
-     call: .jinit()
-     error: JNI_GetCreatedJavaVMs returned -1
-    ```
+         ```
+         JavaVM: Failed to load JVM: /bundle/Libraries/libserver.dylib
+         Java FATAL: Failed to load the jvm library.
+         Error : .onLoad failed in loadNamespace() for 'InSilicoVA', details:
+          call: .jinit()
+          error: JNI_GetCreatedJavaVMs returned -1
+         ```
    
   + Solution: Open terminal and execute the commands:
   
-   ```
-   sudo R CMD javareconf
-   ```
+        ```
+        sudo R CMD javareconf
+        ```
    Then reopen R and run
-   
-   ```
-   install.packages("rJava", type = "source")
-   library(openVA)
-   ```
+
+        ```
+        install.packages("rJava", type = "source")
+        library(openVA)
+        ```
    
 1. Fail to install rJava (usually from Rstudio): [original post](http://stackoverflow.com/questions/34212378/installation-of-rjava)
   + Example Error Message:
     
-    ```
-    ERROR: configuration failed for package ‘rJava’
-    * removing ‘....some directory.../rJava’
-    Warning in install.packages :
-    installation of package ‘rJava’ had non-zero exit status
-    ```
+        ```
+        ERROR: configuration failed for package ‘rJava’
+        * removing ‘....some directory.../rJava’
+        Warning in install.packages :
+        installation of package ‘rJava’ had non-zero exit status
+        ```
    
   + Solution: Open terminal and execute the commands:
   
-   ```
-   sudo R CMD javareconf
-   ```
+        ```
+        sudo R CMD javareconf
+        ```
    
 1. Fail to load rJava on Mac: [original post](http://stackoverflow.com/questions/30738974/rjava-load-error-in-rstudio-r-after-upgrading-to-osx-yosemite)
   + Example Error Message:
   
   + Solution: This is a common problem whenever your Mac OS gets updated, especially if you use Rstudio. As of OSX El Capitan 10.11, the trick that seems to work for me is to run the following from terminal:
   
-  ```
-  sudo ln -s $(/usr/libexec/java_home)/jre/lib/server/libjvm.dylib /usr/local/lib
-  ```
-  
-1. Fail to load rJava on 64-bit Windows: [original post](http://stackoverflow.com/questions/7019912/using-the-rjava-package-on-win7-64-bit-with-r)
+        ```
+        sudo ln -s $(/usr/libexec/java_home)/jre/lib/server/libjvm.dylib /usr/local/lib
+        ```
+
+1. Failure to load rJava on 64-bit Windows: [original post](http://stackoverflow.com/questions/7019912/using-the-rjava-package-on-win7-64-bit-with-r)
   + Example Error Message: 
         
         ```
@@ -92,25 +92,35 @@ install.packages('rJava', type='source')
          ```
   + Solution: This is only useful when **rJava** package can be installed (```install.packages("rJava")```), but not loaded (```library('rJava')```). Sometimes it works by executing the following in R console:
       
-      ```
-      if (Sys.getenv("JAVA_HOME")!="")
-      Sys.setenv(JAVA_HOME="")
-      library(rJava)
-      ```
- 
+         ```
+         if (Sys.getenv("JAVA_HOME")!="")
+         Sys.setenv(JAVA_HOME="")
+         library(rJava)
+         ```
+1. Failure to install rJava on Windows with ``type = "source"``.
+  + Example Error Message:
+   
+         ```
+         Warning: running command 'sh ./configure.win' had status 127
+         ERROR: configuration failed for package 'rJava'
+         ```
+
+  + Solution: (1) Check java path is in the system environmental variable list (on Win 10, click Windows icon and type "environmental"), (2) Try re-install without ``type = "source"``.
+  
 1. Failure to install rJava on Linux: [original post](http://stackoverflow.com/questions/3311940/r-rjava-package-install-failing)
   
   + Example Error Message:
    
-   ```
-   checking JNI data types... configure: error: One or more JNI types differ from the corresponding native type. You may need to use non-standard compiler flags or a different compiler in order to fix this.
-ERROR: configuration failed for package ‘rJava’
-```
+          ```
+          checking JNI data types... configure: error: One or more JNI types differ from the corresponding native type. You may need to use     
+          non-standard compiler flags or a different compiler in order to fix this.
+          ERROR: configuration failed for package ‘rJava’
+          ```
   
   + Solution:
-  ```
-  apt-get install r-cran-rjava
-  ```
+          ```
+          apt-get install r-cran-rjava
+          ```
   
 1. More misc error messages and hacks that I have not tried myself:
   + [OSX + Rstudio 1](http://stackoverflow.com/questions/26948777/how-can-i-make-rjava-use-the-newer-version-of-java-on-osx)
