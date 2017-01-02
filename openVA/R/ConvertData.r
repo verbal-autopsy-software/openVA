@@ -172,8 +172,9 @@ ConvertData.phmrc <- function(input, input.test = NULL, cause = NULL, type = c("
     # attach the second dataset to the below,
     # but with NA in cause variable
     if(cause %in% colnames(input.test)){
+      # not making it NA anymore for the implementation of NBC
       # gs.test <- input.test[, cause]
-      input.test[, cause] <- NA
+      # input.test[, cause] <- NA
     }
     N <- dim(input)[1]
     input <- rbind(input, input.test)
@@ -193,7 +194,7 @@ ConvertData.phmrc <- function(input, input.test = NULL, cause = NULL, type = c("
 	if(cause %in% colnames(input) == FALSE){
 		stop("No cause of death column find in data")
 	}else{
-		gs <- input[, cause]
+		gs <- input[, cause] 
 	}
 
 
