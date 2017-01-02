@@ -136,17 +136,17 @@ getPHMRC_url <- function(type){
 #' head(clean2$output.test[, 1:20])
 #' }
 
-ConvertData.phmrc <- function(input, input.test = NULL, cause = NULL, type = c("adult", "child", "neonate")[1], cutoff = c("default", "adapt")[1], ...){
+ConvertData.phmrc <- function(input, input.test = NULL, cause = NULL, phmrc.type = c("adult", "child", "neonate")[1], cutoff = c("default", "adapt")[1], ...){
 
 	##
 	## Convert PHMRC data into binary format
 	##
 	
-	if(type == "adult"){
+	if(phmrc.type == "adult"){
 		out <- .phmrc_adult_convert(input, input.test, cause = cause, type = cutoff)
-	}else if(type == "child"){
+	}else if(phmrc.type == "child"){
 		stop("child data conversion still under development...")
-	}else if(type == "neonate"){
+	}else if(phmrc.type == "neonate"){
 		stop("child data conversion still under development...")
 	}
 

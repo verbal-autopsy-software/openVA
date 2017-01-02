@@ -96,8 +96,7 @@ codeVA <- function(data, data.type = c("WHO", "PHMRC", "customize")[1],
     }
     binary <- ConvertData.phmrc(input = data.train, 
                                 input.test = data, 
-                                cause = causes.train,
-                                type = phmrc.type, ...)
+                                cause = causes.train, ...)
     data.train <- binary$output
     data <- binary$output.test
     causes.train <- colnames(data.train)[2]
