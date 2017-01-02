@@ -125,8 +125,9 @@ codeVA <- function(data, data.type = c("WHO", "PHMRC", "customize")[1],
 
     }else if(data.type == 'PHMRC'|| data.type == "customize"){
       
-      args$train <- args$data.train
-      args$cause <- args$causes.train
+      args$data <- as.name("data")
+      args$train <- as.name("data.train")
+      args$cause <- as.name("causes.train")
       args$type <- convert.type      
 
       fit <- do.call("insilico.train", pairlist(args)[[1]][-1])
