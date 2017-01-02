@@ -29,7 +29,7 @@ Here I include some tips of installing and loading **rJava** package that I foun
 
 If you encounter other errors not listed here, or could not resolve the errors following the steps listed, or would like to propose new solutions, you are more than welcome to contact me (Richard Li, lizehang@uw.edu) or submit issue reports to [this Github repository](https://github.com/richardli/openVA/issues). If you know explicitly the errors are caused by rJava, you could also submit issue reports to the [rJava repository](https://github.com/s-u/rJava/issues) directly.
 
-Here is the things you might see down the rabbit hole - One thing omitted in the tricks is that typically for most of the tricks below, at the end, it requires another step of re-compiling rJava from source, i.e., adding the ```type='source'``` as below:
+Here is the things you might see down the rabbit hole - One thing omitted in the tricks is that typically for most of the tricks below (for Mac and Linux system especially, I found Windows machine usually does not need this), at the end, it requires another step of re-compiling rJava from source, i.e., adding the ```type='source'``` as below:
 
 ```
 install.packages('rJava', type='source')
