@@ -25,7 +25,7 @@ getCSMF <- function(x, CI = 0.95, interVA.rule = TRUE){
   }
 
   if(class(x) == "interVA"){
-    return(CSMF(x, interVA = interVA.rule, noplot = TRUE))
+    return(CSMF(x, InterVA.rule = interVA.rule, noplot = TRUE))
   } 
    
   if(class(x) == "tariff"){
@@ -35,6 +35,55 @@ getCSMF <- function(x, CI = 0.95, interVA.rule = TRUE){
   if(class(x) == "nbc"){
     return(csmf.nbc(x))
   }
+}
+
+#' Calculate CSMF accuracy
+#'
+#' @param csmf a CSMF vector from \code{getCSMF} or a InSilicoVA fitted object.
+#' @param truth a CSMF vectorof the true CSMF.
+#' Default value to be 0.95.
+#' @param undet name of the category denoting undetermined causes. Default to be NULL.
+#'
+#' @return a number (or vector if input is InSilicoVA fitted object) of CSMF accuracy as 1 - sum(abs(CSMF - CSMF_true)) / (2 * (1 - min(CSMF_true))).
+#' @export getCSMF_accuracy
+#'
+#' @examples
+#' csmf1 <- c(0.2, 0.3, 0.5)
+#' csmf0 <- c(0.3, 0.3, 0.4)
+#' acc <- getCSMF_accuracy(csmf1, csmf0)
+#' 
+#'
+
+getCSMF_accuracy <- function(csmf, truth, undet = NULL){
+  ## when input is insilico fit
+  if(class(csmf) == 'insilico'){
+    if(!is.null(names(truth))){
+      order <- match(colnames(csmf$csmf), names(truth))
+      if(is.na(sum(order))){stop("Names not matching")}
+      truth <- truth[order]
+    }
+    acc <- 1 - apply(abs(truth - t(csmf$csmf)), 2, sum) / 2 / (1 - min(truth))
+
+  }else{
+      ## when input is vector
+      if(!is.null(undet)){
+      if(undet %in% names(csmf)){
+        csmf <- csmf[-which(names(csmf)==undet)]
+      }else{
+        print("The undetermined category does not exist in input CSMF.")
+      }
+    }  
+    if(!is.null(names(csmf)) & !is.null(names(truth))){
+      order <- match(names(csmf), names(truth))
+      if(is.na(sum(order))){stop("Names not matching")}
+      truth <- truth[order]
+    }
+
+    acc <- 1 - sum(abs(truth - csmf)) / 2 / (1 - min(truth))
+  }
+
+
+ return(acc)
 }
 
 

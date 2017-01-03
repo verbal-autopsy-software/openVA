@@ -96,7 +96,7 @@ getPHMRC_url <- function(type){
 #' @param input standard PHMRC data format
 #' @param input.test standard PHMRC data format to be transformed in the same way as \code{input}
 #' @param cause the column name for the cause-of-death variable to use. For example, "va34", "va46", or "va55". It is used if adaptive cut-offs are to be calculated for continuous variables. See below for details.
-#' @param type which data input format it is. The three data formats currently available are "adult", "child", and "neonate".
+#' @param phmrc.type which data input format it is. The three data formats currently available are "adult", "child", and "neonate".
 #' @param cutoff This determines how the cut-off values are to be set for continuous variables. "default" sets the cut-off values proposed in the original paper published with the dataset. "adapt" sets the cut-off values using the rules described in the original paper, which calculates the cut-off as being two median absolute deviations above the median of the mean durations across causes. However, we are not able to replicate the default cut-offs following this rule. So we suggest users to use this feature with caution.
 #' @param ... not used
 #'
@@ -113,10 +113,10 @@ getPHMRC_url <- function(type){
 #' raw <- read.csv(getPHMRC_url("adult"), nrows = 100)
 #' head(raw[, 1:20])
 #' # default way of conversion
-#' clean <- ConvertData.phmrc(raw, type = "adult")
+#' clean <- ConvertData.phmrc(raw, phmrc.type = "adult")
 #' head(clean$output[, 1:20])
 #' # using cut-offs calculated from the data (caution)
-#' clean2 <- ConvertData.phmrc(raw, type = "adult", 
+#' clean2 <- ConvertData.phmrc(raw, phmrc.type = "adult", 
 #' 						cause = "va55", cutoff = "adapt")
 #' head(clean2$output[, 1:20])
 #' 
@@ -126,11 +126,11 @@ getPHMRC_url <- function(type){
 #' test <- test[-(1:100), ]
 #' 
 #' # For the default transformation it does matter
-#' clean <- ConvertData.phmrc(raw, test, type = "adult")
+#' clean <- ConvertData.phmrc(raw, test, phmrc.type = "adult")
 #' head(clean$output[, 1:20])
 #' head(clean$output.test[, 1:20])
 #' # For adaptive transformation, need to make sure both files use the same cutoff
-#' clean2 <-ConvertData.phmrc(raw, test, type = "adult", 
+#' clean2 <-ConvertData.phmrc(raw, test, phmrc.type = "adult", 
 #' 						cause = "va55", cutoff = "adapt")
 #' head(clean2$output[, 1:20])
 #' head(clean2$output.test[, 1:20])

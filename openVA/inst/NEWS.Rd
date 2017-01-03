@@ -10,5 +10,8 @@
   \itemize{ 
     \item Change the argument ``type'' into ``phmrc.type'' in the function ``ConvertData.phmrc'' to avoid conflict with multiple arguments.
     \item Fix bug for parsing arguments in calling InSilicoVA directly on PHMRC data.
-    }
+    \item Fix issues with nbc4va package in ova2nbc() function.
+    \item Add new function to calculate CSMF accuracy.
+    
+  }
 }
