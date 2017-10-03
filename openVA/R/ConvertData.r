@@ -145,7 +145,7 @@ ConvertData.phmrc <- function(input, input.test = NULL, cause = NULL, phmrc.type
 	if(phmrc.type == "adult"){
 		out <- .phmrc_adult_convert(input, input.test, cause = cause, type = cutoff)
 	}else if(phmrc.type == "child"){
-		stop("child data conversion still under development...")
+		out <- .phmrc_child_convert(input, input.test, cause = cause, type = cutoff)
 	}else if(phmrc.type == "neonate"){
 		stop("child data conversion still under development...")
 	}
@@ -153,8 +153,6 @@ ConvertData.phmrc <- function(input, input.test = NULL, cause = NULL, phmrc.type
 	return(out)
 
 }
-
-
 
 .phmrc_adult_convert <- function(input, input.test, cause, type = c("default", "adapt")[1]){
   
@@ -288,10 +286,142 @@ ConvertData.phmrc <- function(input, input.test = NULL, cause = NULL, phmrc.type
 	return(list(output = out, output.test = out.test))
 }
 
-
-
-
-
+.phmrc_child_convert <- function(input, input.test, cause, type = c("default", "adapt")[2]) {
+  input <- child.dat
+  input.test <- NULL
+  cause <- NULL
+  type <- "default"
+  
+  ## take care of cause of death
+  if(is.null(cause)){
+    cause <- "va34"
+  }
+  
+  # if two datasets are to be transformed
+  if(!is.null(input.test)){
+    if(length(which(colnames(input) != colnames(input.test)))){
+      stop("Columns do not match in the two dataset")
+    }
+    
+    # attach the second dataset to the below,
+    # but with NA in cause variable
+    if(cause %in% colnames(input.test)){
+      # not making it NA anymore for the implementation of NBC
+      # gs.test <- input.test[, cause]
+      # input.test[, cause] <- NA
+    }
+    N <- dim(input)[1]
+    input <- rbind(input, input.test)
+  }else{
+    N <- dim(input)[1]
+  }
+  
+  ## take care of ID
+  if(colnames(input)[1] != "site"){
+    cat("The first column is assumed to be ID by default\n")
+    id <- input[, 1]
+  }else{
+    cat("The first column is site, assign IDs to each row by default\n")
+    id <- seq(1:dim(input)[1])
+  }
+  
+  if(cause %in% colnames(input) == FALSE){
+    stop("No cause of death column find in data")
+  }else{
+    gs <- input[, cause] 
+  }
+  
+  
+  age <- which(colnames(input) == "g1_07a")
+  sex <- which(colnames(input) == "g1_05")
+  first_symp <- which(colnames(input) == "c1_01")
+  last_symp <- which(colnames(input) == "c5_19")
+  
+  if(length(age) != 1){
+    stop("Age variable g1_07a not in input data.")
+  }
+  if(length(sex) != 1){
+    stop("Gender variable g1_05 not in input data.")
+  }
+  if(length(first_symp) != 1 || length(last_symp) != 1){
+    stop("Symptoms not correctly specified in input format.")
+  }
+  symps_raw <- input[, c(sex, age, first_symp : last_symp)]
+  symps_raw <- data.frame(symps_raw, stringsAsFactors = FALSE)
+  
+  ####
+  # the output file
+  symps_binary <- matrix("", dim(symps_raw)[1], dim(symps_raw)[2])
+  
+  # this part has to be before file 9 and 10 to avoid different dimensions
+  symps_binary[which(symps_raw == "Yes")] <- "Y"
+  symps_binary[which(symps_raw == "No")] <- ""
+  symps_binary[which(symps_raw == "Don't Know")] <- "."
+  symps_binary[which(symps_raw == "Refused to Answer")] <- "."
+  symps_binary[which(symps_raw == "")] <- "."
+  
+  symps_binary <- data.frame(symps_binary)
+  colnames(symps_binary) <- colnames(as.matrix(symps_raw))
+  
+  if(type == "default"){
+    symps_binary <- .toBinary_file9_child(symps_raw, symps_binary, 
+                                          adapt = FALSE, cause = NULL)
+  }else if(type == "adapt"){
+    symps_binary <- .toBinary_file9_child(symps_raw, symps_binary, 
+                                          adapt = TRUE, cause = gs)
+  }else{
+    stop("Unknown cutoff argument given")
+  }
+  
+  symps_binary <- .toBinary_file10_child(symps_raw, symps_binary)
+  symps_binary <- .toBinary_unhandeled_child(symps_raw, symps_binary)
+  
+  # to make sure there's no conflict of notations for "Y", "" and "."
+  # we use "YesYes", "NoNo", and "MissingMissing" before
+  # also need to deal with NA values for c1_08b and g1_07a
+  for(i in 1:dim(symps_binary)[2]){
+    symps_binary[, i] <- as.character(symps_binary[, i])
+    symps_binary[which(is.na(symps_binary[,i])), i] <- "MissingMissing"
+    symps_binary[which(symps_binary[,i] == "YesYes"), i] <- "Y"
+    symps_binary[which(symps_binary[,i] == "NoNo"), i] <- ""
+    symps_binary[which(symps_binary[,i] == "MissingMissing"), i] <- "."
+  }
+  
+  # check if all cells are filled
+  n.empty <- length(which(is.na(symps_binary)))
+  n.yes <- length(which(symps_binary == "Y"))
+  n.no <- length(which(symps_binary == ""))
+  n.notknown <- length(which(symps_binary == "."))
+  
+  if(n.empty != 0){
+    cat("There are cells not converted by default rules! Left as NA\n")
+  }
+  
+  if(N == dim(input)[1]){
+    cat(paste0(N, " deaths in input. Format: adult\n"))
+  }else{
+    cat(paste0(N, " deaths in input. Format: adult\n"))
+    cat(paste0(dim(input)[1]-N, " deaths in test input. Format: adult\n"))
+    
+  }
+  cat(paste0(dim(symps_binary)[2], " binary symptoms generated\n"))
+  cat(paste0("\nNumber of Yes        ", n.yes, "\n", 
+             "Number of No         ", n.no, "\n",
+             "Number of Not known  ", n.notknown, "\n"))
+  
+  
+  data.out <- cbind(id, gs, symps_binary)
+  colnames(data.out)[1:2] <- c("ID", "Cause")
+  
+  if(!is.null(input.test)){
+    out <- data.out[1:N, ]
+    out.test <- data.out[-(1:N), ]
+  }else{
+    out <- data.out
+    out.test <- NULL
+  }
+  return(list(output = out, output.test = out.test))
+}
 
 ## 
 ## Function to convert a vector into T/F when there is "don't know"
@@ -454,6 +584,82 @@ ConvertData.phmrc <- function(input, input.test = NULL, cause = NULL, phmrc.type
 	symps$g1_07a <- .toBinary_cutoff(symps_raw$g1_07a, 67.6, missLabel, adapt, cause)
 
 	return(symps)
+}
+
+.toBinary_file9_child <- function(symps_raw, symps, missLabel = NULL, adapt = FALSE, cause = NULL){
+  ##########################################################
+  ## The comments are the transforming rule for the symptoms
+  ##	
+  ## The format of comments read:
+  ## 
+  ##	# Original question
+  ##  	# Cutoff
+  ##
+  ###########################################################	
+  # How long after delivery did the  mother die? [days]	
+  # 21.4
+  symps$c1_05 <- .toBinary_cutoff(symps_raw$c1_05, 21.4, missLabel, adapt, cause)
+  
+  # What was the weight of the deceased at birth? [grams]
+  # 2623
+  symps$c1_08b <- .toBinary_cutoff(symps_raw$c1_08b, 2623, missLabel, adapt, cause)
+  
+  # How old was the deceased when the fatal illness started [days]	
+  # 1574.3
+  symps$c1_20 <- .toBinary_cutoff(symps_raw$c1_20, 1574.3, missLabel, adapt, cause)
+  
+  # How long did the illness last? [days]
+  # 63.4
+  symps$c1_21 <- .toBinary_cutoff(symps_raw$c1_21, 63.4, missLabel, adapt, cause)
+  
+  # How old was the deceased at the time of death? [days]
+  # 1618.6
+  symps$c1_25 <- .toBinary_cutoff(symps_raw$c1_25, 1618.6, missLabel, adapt, cause)
+  
+  # How many days did the fever last? [days]
+  # 337.3
+  symps$c4_02 <- .toBinary_cutoff(symps_raw$c4_02, 337.3, missLabel, adapt, cause)
+  
+  # How many days before death did the frequest loose or liquid stools start?
+  # [days]
+  # 99.9
+  symps$c4_08 <- .toBinary_cutoff(symps_raw$c4_08, 99.9, missLabel, adapt, cause)
+  
+  
+  # How many days before death did the frequest loose or liquid stools stop?
+  # [days]
+  # 15.6
+  symps$c4_10 <- .toBinary_cutoff(symps_raw$c4_10, 15.6, missLabel, adapt, cause)
+  
+  # How many days did the cough last? [days] 
+  # 5.7
+  symps$c4_13 <- .toBinary_cutoff(symps_raw$c4_13, 5.7, missLabel, adapt, cause)
+  
+  # How many days did the difficult breathing last? [days]
+  # 9.1
+  symps$c4_17 <- .toBinary_cutoff(symps_raw$c4_17, 9.1, missLabel, adapt, cause)
+  
+  # How many days did the fast breathing last? [days]
+  # 1.5
+  symps$c4_19 <- .toBinary_cutoff(symps_raw$c4_19, 1.5, missLabel, adapt, cause)
+  
+  # How many days did the rash last? [days]
+  # 1.1
+  symps$c4_33 <- .toBinary_cutoff(symps_raw$c4_33, 1.1, missLabel, adapt, cause)
+  
+  # How long did the swelling last? [days]
+  # 2.2
+  symps$c4_37 <- .toBinary_cutoff(symps_raw$c4_37, 2.2, missLabel, adapt, cause)
+  
+  # How long did the decendent survive after the injury or accident? [days]
+  # 0.6
+  symps$c4_49 <- .toBinary_cutoff(symps_raw$c4_49, .6, missLabel, adapt, cause)
+  
+  # Age [years] (short duration cutoff)
+  # 2.4
+  symps$g1_07a <- .toBinary_cutoff(symps_raw$g1_07a, 2.4, missLabel, adapt, cause)
+  
+  return(symps)
 }
 
 ## 
@@ -696,6 +902,110 @@ new$a4_06_s1 <- .toBinary_group(raw$a4_06,
  return(new[, order(colnames(new))])
 }
 
+.toBinary_file10_child <- function(raw, new){
+  ##########################################################
+  ## The comments are the transforming rule for the symptoms
+  ##	
+  ## The format of comments read:
+  ## 
+  ##	# Original question
+  ##  # Original answer
+  ##		## New question(s)
+  ##		## ...
+  ##
+  ###########################################################	
+  
+  # Was the deceased a singleton or multiple birth?
+  # Singletone, Multiple, Don't Know
+  ## Was the deceased a multiple birth?
+  new$c1_01 <- .toBinary_group(raw$c1_01, 
+                               c("Multiple"), 
+                               c("Singleton"), 
+                               c("Don't Know", ""))
+  
+  # Was this the first, second, or later in the birth order?
+  # First, Second, Third or More, Don't Know
+  ## Was this birth the second or more in the birth order?
+  new$c1_02 <- .toBinary_group(raw$c1_02, 
+                               c("Second", "Third or More"), 
+                               c("First"), 
+                               c("Don't Know"))
+  
+  # Did the mother die during or after the delivery?
+  # During, After, Don't Know
+  ## Did the mother die after the delivery?
+  new$c1_04 <- .toBinary_group(raw$c1_04, 
+                               c("After"), 
+                               c("During"), 
+                               c("Don't Know"))
+  # Where was the deceased born?
+  # Hospital, Other Health Facility, On Route to Health Facility, Home, Other, Don't Know
+  ## Was the deceased born at home or in another non-health facility?
+  new$c1_06a <- .toBinary_group(raw$c1_06a, 
+                                c("Home", "Other"), 
+                                c("Hospital", "On Route to Health Facility",
+                                  "Other Health Facility"), 
+                                c("Don't Know"))
+  # At the time of the delivery, what was the size of the deceased?
+  # Very small, smaller than usual, about average, larger than usual, don't know
+  ## At the time of the delivery, was the deceased small or very small?
+  new$c1_07 <- .toBinary_group(raw$c1_07, 
+                               c("Very small", "smaller than usual"), 
+                               c("About average", "larger than usual"), 
+                               c("Don't Know", ""))
+  # Where did the deceased die?
+  # Hospital, Other Health Facility, On Route to Health Facility, Home, Other, Don't Know
+  ## Did the deceased die at home or on route to a health facility?
+  new$c1_22a <- .toBinary_group(raw$c1_22a, 
+                                c("Home", "On Route to Health Facility"), 
+                                c("Hospital", "Other",
+                                  "Other Health Facility"), 
+                                c("Don't Know"))
+  # How severe was the fever?
+  # Mild, Moderate, Severe, Don't Know
+  ## Was there a severe fever?
+  new$c4_04 <- .toBinary_group(raw$c4_04, 
+                               c("Severe"), 
+                               c("Mild", "Moderate"), 
+                               c("Don't Know"))
+  
+  # What was the pattern of the fever?
+  # Continuous, On and Off, Only at Night
+  ## Was the fever on and off or only at night?
+  new$c4_05 <- .toBinary_group(raw$c4_05, 
+                               c("On and Off", "Only at Night"), 
+                               c("Continuous"), 
+                               c("Don't Know"))
+  
+  # How many stools did [name] have on the day that loose liquid stools were most frequent?
+  # 0-30
+  ## Did [name] have 2 or more stools on the day that loose liquid stools were most frequent?
+  new$c4_07b <- .toBinary_group(raw$c4_07b, 
+                                2:30, 
+                                0:1, 
+                                NA)
+  
+  # Where was the rash?
+  # Face, Trunk, Extremities, Everywhere, Other, Don't Know
+  ## Was there a rash on the face?
+  new$c4_31_1 <- .toBinary_group(raw$c4_31_1, 
+                                 c("Face"), 
+                                 c("Everywhere", "Extremities",
+                                   "Other", "Trunk"), 
+                                 c("Don't Know"))
+  
+  # Where did the rash start?
+  # Face, Trunk, Extremities, Everywhere, Other, Don't Know
+  ## Did the rash start on the face?
+  new$c4_32 <- .toBinary_group(raw$c4_32, 
+                               c("Face"), 
+                               c("Everywhere", "Extremities",
+                                 "Other", "Trunk"), 
+                               c("Don't Know"))
+  return(new[, order(colnames(new))])
+}
+
+
 
 ##
 ## Function to reformulate matrix not specified by any documents
@@ -740,4 +1050,53 @@ new$g1_05_s1  <- .toBinary_group(raw$g1_05 ,
 							c("Female" ), 
 							c("Don't Know", ""))
  return(new[, order(colnames(new))])
+}
+
+.toBinary_unhandeled_child <- function(raw, new){
+  ##########################################################
+  ## The comments are the transforming rule for the symptoms
+  ##	
+  ## The format of comments read:
+  ## 
+  ##	# Original question
+  ##  # Original answer
+  ##		## New question(s)
+  ##		## ...
+  ##
+  ###########################################################	
+  
+  #### columns not handled by default Y/N/DK/RA/NA, or additionals files 9 or 10
+  # c1_08a, c1_09, c1_10, c1_10d, c1_10m, c1_10y, c1_11, c1_19_4b,
+  # c1_24, c1_24d, c1_24m, c1_24y, c1_26, c4_07a, c4_27, c4_31_2, c4_45, 
+  # c4_47_8b, c5_06_1d, c5_06_1m, c5_06_1y, c5_06_2d, ct_96_2m, ct_06_2y, 
+  # c5_07_1, c5_07_2, c5_08d, c5_08m, c5_08y
+  
+  cols.to.remove <- c("c1_08a", "c1_10", "c1_11", "c1_10d", "c1_10m", "c1_10y",
+                      "c1_194b", "c1_24", paste0("c1_24", c("d", "m", "y")),
+                      "c1_26", "c4_07a", "c4_31_2", "c4_45", "c4_47_8b",
+                      paste0("c5_06_1", c("d", "m", "y")),
+                      paste0("c5_06_2", c("d", "m", "y")),
+                      "c5_07_1", "c5_07_2",
+                      paste0("c5_08", c("d", "m", "y")))
+  
+  new <- new[, -which(colnames(new) %in% cols.to.remove)]
+  
+  # How long before death did unconsciousness start?
+  # < 6 hours, 6-23 hours, 24 hours or more, Don't Know
+  ## Did unconsciousness start less than 6 hours before death?
+  new$c4_27 <- .toBinary_group(raw$c4_27,
+                               c("<6 hours"),
+                               c("24 hours or more", "6-23 hours"),
+                               c("Don't Know"))
+  
+  # add sex
+  new$g1_05   <- .toBinary_group(raw$g1_05 , 
+                                 c("Female"), 
+                                 c("Male" ), 
+                                 c("Don't Know", ""))
+  new$g1_05_s1  <- .toBinary_group(raw$g1_05 , 
+                                   c("Male"), 
+                                   c("Female" ), 
+                                   c("Don't Know", ""))
+  return(new[, order(colnames(new))])
 }
