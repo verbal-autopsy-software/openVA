@@ -109,7 +109,7 @@ stackplotVA <- function(x, grouping = NULL,
 				}
 			}else{
 				csmf[[i]] <- getCSMF(x[[i]], CI = CI)	
-				if(class(x[[i]]) == "interVA"){
+				if(class(x[[i]]) == "interVA" || class(x[[i]]) == "interVA5" ){
 					counts[i] <- length(x[[i]]$VA) 
 				}else if(class(x[[i]]) == "tariff"){
 					counts[i] <- dim(x[[i]]$causes.test)[1]
@@ -140,7 +140,7 @@ stackplotVA <- function(x, grouping = NULL,
 						border = border, bw = bw, ...))
 	}else{
 		csmf[[1]] <- getCSMF(x, CI = CI)
-		if(class(x) == "interVA"){
+		if(class(x) == "interVA"|| class(x) == "interVA5" ){
 			counts <- length(x$VA) 
 		}else if(class(x) == "tariff"){
 			counts <- dim(x$causes.test)[1]

@@ -27,6 +27,9 @@ getCSMF <- function(x, CI = 0.95, interVA.rule = TRUE){
   if(class(x) == "interVA"){
     return(CSMF(x, InterVA.rule = interVA.rule, noplot = TRUE))
   } 
+  if(class(x) == "interVA5"){
+    return(CSMF5(x, InterVA.rule = interVA.rule, noplot = TRUE))
+  } 
    
   if(class(x) == "tariff"){
     return(x$csmf)
@@ -109,7 +112,7 @@ getTopCOD <- function(x, interVA.rule = TRUE){
     probs <- x$indiv.prob
     pick <- colnames(probs)[apply(probs, 1, which.max)]
     id <- x$id
-  }else if(class(x) == "interVA"){
+  }else if(class(x) == "interVA" ){
       id <- x$ID
       pick <- rep("", length(x$VA))
       for(i in 1:length(x$VA)){
@@ -117,6 +120,26 @@ getTopCOD <- function(x, interVA.rule = TRUE){
           pick[i] <- x$VA[[i]]$CAUSE1
         }else{
             prob <- x$VA[[i]]$wholeprob
+            causenames <- names(prob)
+            causeindex <- 1:length(causenames)
+            if(causenames[1] == "Not pregnant or recently delivered" &&
+                causenames[2] == "Pregnancy ended within 6 weeks of death" &&
+                causenames[3] == "Pregnant at death"){
+                    causeindex <- causeindex[-c(1:3)]
+                    causenames <- causenames[-c(1:3)]    
+            }
+            pick[i] <- causenames[which.max(prob[causeindex])]
+          }
+      }
+      pick[which(pick == " ")] <- "Undetermined"
+    }else if(class(x) == "interVA" ){
+      id <- x$ID
+      pick <- rep("", length(x$VA))
+      for(i in 1:length(x$VA)){
+        if(interVA.rule){
+          pick[i] <- x$VA[[i]]$CAUSE1
+        }else{
+            prob <- x$VA[[i]]$wholeprob[4:64]
             causenames <- names(prob)
             causeindex <- 1:length(causenames)
             if(causenames[1] == "Not pregnant or recently delivered" &&
@@ -178,6 +201,15 @@ getIndivProb <- function(x, CI = NULL){
       }
       rownames(probs) <- id
       colnames(probs) <- names(x$VA[[i]]$wholeprob)
+
+    }else if(class(x) == "interVA5"){
+      id <- x$ID
+      probs <- matrix(NA, length(x$VA), length(x$VA[[1]]$wholeprob[4:64]))
+      for(i in 1:length(x$VA)){
+          probs[i, ] <- x$VA[[i]]$wholeprob[4:64]
+      }
+      rownames(probs) <- id
+      colnames(probs) <- names(x$VA[[i]]$wholeprob[4:64])
 
     }else if(class(x) == "tariff"){
       warning("Tariff method produces only rankings of causes, not probabilities")

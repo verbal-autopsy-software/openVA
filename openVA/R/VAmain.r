@@ -2,7 +2,13 @@
 #'
 #' @param data Input VA data, see \code{data.type} below for more information about the format.
 #' @param data.type There are four data input types currently supported by \code{codeVA} function as below. 
-#'\itemize{\item{\code{WHO2012}: }{InterVA-4 input format using WHO 2012 questionnaire. For example see \code{data(RandomVA1)}. The first column should be death ID.}\itemize{\item{\code{WHO2016}: }{InterVA-5 input format using WHO 2016 questionnaire. For example see \code{data(RandomVA5)}. The first column should be death ID.} \item{\code{PHMRC}: }{PHMRC data format. For example see \code{\link{ConvertData.phmrc}}} \item{\code{customized}: }{Any dichotomized dataset with ``Y`` denote ``presence'', ``'' denote ``absence'', and ``.'' denote ``missing''. The first column should be death ID.}}
+#'\itemize{
+#' \item{\code{WHO2012}: }
+#'   {InterVA-4 input format using WHO 2012 questionnaire. For example see \code{data(RandomVA1)}. The first column should be death ID.}
+#' \item{\code{WHO2016}: }
+#'    {InterVA-5 input format using WHO 2016 questionnaire. For example see \code{data(RandomVA5)}. The first column should be death ID.} 
+#' \item{\code{PHMRC}: }{PHMRC data format. For example see \code{\link{ConvertData.phmrc}}} 
+#' \item{\code{customized}: }{Any dichotomized dataset with ``Y`` denote ``presence'', ``'' denote ``absence'', and ``.'' denote ``missing''. The first column should be death ID.}}
 #' @param data.train Training data with the same columns as \code{data}, except for an additional column specifying cause-of-death label. It is not used if \code{data.type} is ``WHO'' and \code{model} is ``InterVA'' or ``InSilicoVA''.  The first column also has to be death ID for ``WHO'' and ``customized'' types.
 #' @param causes.train the column name of the cause-of-death assignment label in training data.
 #' @param causes.table list of causes to consider in the training data. Default to be NULL, which uses all the causes present in the training data.
@@ -24,7 +30,12 @@
 #' @seealso \code{\link[InSilicoVA]{insilico}}, \code{\link[InterVA4]{InterVA}}, \code{\link{interVA.train}}, \code{\link[Tariff]{tariff}}, and \code{\link[nbc4va]{nbc}}.
 #' @importFrom InSilicoVA insilico insilico.train 
 #' @importFrom InterVA4 InterVA CSMF
+#' @importFrom InterVA5 InterVA5 CSMF5
 #' @importFrom Tariff tariff
+#' @importFrom graphics plot
+#' @importFrom stats aggregate median quantile reorder
+#' @importFrom utils data
+#' 
 #' @references Tyler H. McCormick, Zehang R. Li, Clara Calvert, Amelia C.
 #' Crampin, Kathleen Kahn and Samuel J. Clark (2016) \emph{Probabilistic
 #' cause-of-death assignment using verbal autopsies.}
@@ -64,7 +75,7 @@ codeVA <- function(data, data.type = c("WHO2012", "WHO2016", "PHMRC", "customize
                   causes.table = NULL,
                   model = c("InSilicoVA", "InterVA", "Tariff", "NBC")[1],
                   Nchain = 1, Nsim=10000, 
-                  version = c("4.02", "4.03", "5.0"), HIV = "h", Malaria = "h", 
+                  version = c("4.02", "4.03", "5.0")[2], HIV = "h", Malaria = "h", 
                   phmrc.type = c("adult", "child", "neonate")[1], 
                   convert.type = c("quantile", "fixed", "empirical")[1],
                   ...){
@@ -84,7 +95,13 @@ codeVA <- function(data, data.type = c("WHO2012", "WHO2016", "PHMRC", "customize
   # --------------------------------------------------------------------#
   # check data input 
   # --------------------------------------------------------------------#
- 
+  if(data.type == "WHO2016" & model == "InterVA" & version != "5.0"){
+    stop("WHO2016 type input does not works with InterVA 4.02 or 4.03. Consider switching to 5.0")
+  }
+  if(data.type == "WHO2012" & model == "InterVA" & version == "5.0"){
+    stop("WHO2012 type input does not works with InterVA 5.0. Consider switching to 4.03")
+  }
+  
   if(data.type %in% c("WHO2012", "WHO2016") && 
      (model == "Tariff" || model == "NBC")) {
     if(is.null(data.train) || is.null(causes.train)){
@@ -170,14 +187,14 @@ codeVA <- function(data, data.type = c("WHO2012", "WHO2016", "PHMRC", "customize
           write <- FALSE
         }
         # for interVA to recognize the syntax
-        for(i in 1:dim(data)[2]){
-          data[, i][data[, i] == "."] <- "-"
+        for(i in 1:dim(data)[2]){                
+          data[, i] <- as.character(data[, i])
           data[, i][data[, i] == ""] <- "n"
         }
         # check the input variables
         tmp <-  tolower(as.character(as.matrix(data[,-1])))
-        if(sum(tmp %in% c("y", "n", "-")) < length(tmp)){
-          stop("InterVA5 input data contains values other than 'y', 'n', or '-'. Please check your input, especially for extra space characters in the cells.")
+        if(sum(tmp %in% c("y", "n", "-", ".")) < length(tmp)){
+          stop("InterVA5 input data contains values other than 'y', 'n', '.', or '-'. Please check your input, especially for extra space characters in the cells, or standardize how missing data is coded.")
         }
         fit <- InterVA5(Input = data, HIV = HIV, Malaria = Malaria, write = write, ...)
     }else if(data.type == 'PHMRC'|| data.type == "customize"){

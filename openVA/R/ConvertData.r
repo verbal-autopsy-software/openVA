@@ -288,8 +288,6 @@ ConvertData.phmrc <- function(input, input.test = NULL, cause = NULL, phmrc.type
 }
 
 .phmrc_child_convert <- function(input, input.test, cause, type = c("default", "adapt")[2]) {
-  input <- child.dat
-  input.test <- NULL
   cause <- NULL
   type <- "default"
   

@@ -10,7 +10,6 @@
   \itemize{ 
     \item Adding support of two new methods: InterVA-5 and InSilicoVA-WHO2016.
     \item Adding functions to clean PHMRC child dataset.
-    \item 
   }
 }
 
