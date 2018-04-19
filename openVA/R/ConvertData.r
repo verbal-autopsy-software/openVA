@@ -146,6 +146,7 @@ ConvertData.phmrc <- function(input, input.test = NULL, cause = NULL, phmrc.type
 		out <- .phmrc_adult_convert(input, input.test, cause = cause, type = cutoff)
 	}else if(phmrc.type == "child"){
 		out <- .phmrc_child_convert(input, input.test, cause = cause, type = cutoff)
+		warnings("Child data conversion is experimental.")
 	}else if(phmrc.type == "neonate"){
 		stop("child data conversion still under development...")
 	}
