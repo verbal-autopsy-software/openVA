@@ -28,10 +28,11 @@
 #' @return a fitted object
 #' @export codeVA
 #' @seealso \code{\link[InSilicoVA]{insilico}}, \code{\link[InterVA4]{InterVA}}, \code{\link{interVA.train}}, \code{\link[Tariff]{tariff}}, and \code{\link[nbc4va]{nbc}}.
-#' @importFrom InSilicoVA insilico insilico.train 
-#' @importFrom InterVA4 InterVA CSMF
-#' @importFrom InterVA5 InterVA5 CSMF5
-#' @importFrom Tariff tariff
+#' @import nbc4va 
+#' @import InSilicoVA 
+#' @import InterVA4  
+#' @import InterVA5 
+#' @import Tariff
 #' @importFrom graphics plot
 #' @importFrom stats aggregate median quantile reorder
 #' @importFrom utils data
@@ -214,7 +215,7 @@ codeVA <- function(data, data.type = c("WHO2012", "WHO2016", "PHMRC", "customize
   #                          Tariff 
   # --------------------------------------------------------------------#
   }else if(model == "Tariff"){
-    if(data.type == "WHO2016"){
+   if(data.type == "WHO2016"){
       data <- ConvertData(data, yesLabel = c("y", "Y"), noLabel = c("n", "N"), missLabel = c("-"))
     }
     if(data.type %in% c("WHO2012", "WHO2016")){
@@ -335,6 +336,8 @@ codeVA <- function(data, data.type = c("WHO2012", "WHO2016", "PHMRC", "customize
 plotVA <- function(object, top = 10, title = NULL, ...){
   if(class(object) == "interVA"){
     csmf <- CSMF(object, top.plot = top, main = title, ...)
+  }else if(class(object) == "interVA5"){
+    csmf <- CSMF5(object, top.plot = top, main = title, ...)
   }else if(class(object) == "tariff"){
     plot(object, top = top, main = title, ...)
   }else if(class(object) == "insilico"){

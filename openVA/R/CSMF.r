@@ -11,11 +11,19 @@
 #' @export getCSMF
 #'
 #' @examples
+#' \dontrun{
+#' library(InSilicoVA)
 #' data(RandomVA1)
 #' # for illustration, only use interVA on 100 deaths
-#' fit <- codeVA(RandomVA1[1:100, ], data.type = "WHO", model = "InterVA", 
-#'                   version = "4.02", HIV = "h", Malaria = "l")
+#' fit <- codeVA(RandomVA1[1:100, ], data.type = "WHO2012", model = "InterVA", 
+#'                   version = "4.03", HIV = "h", Malaria = "l")
 #' getCSMF(fit)
+#' library(InterVA5)
+#' data(RandomVA5)
+#' fit <- codeVA(RandomVA5[1:100, ], data.type = "WHO2016", model = "InterVA", 
+#'                   version = "5.0", HIV = "h", Malaria = "l")
+#' getCSMF(fit)
+#' }
 #' 
 getCSMF <- function(x, CI = 0.95, interVA.rule = TRUE){
 
@@ -132,7 +140,7 @@ getTopCOD <- function(x, interVA.rule = TRUE){
           }
       }
       pick[which(pick == " ")] <- "Undetermined"
-    }else if(class(x) == "interVA" ){
+    }else if(class(x) == "interVA5"){
       id <- x$ID
       pick <- rep("", length(x$VA))
       for(i in 1:length(x$VA)){
@@ -169,7 +177,7 @@ getTopCOD <- function(x, interVA.rule = TRUE){
 #' @param CI Credible interval for posterior estimates. If CI is set to TRUE, a list is returned instead of a data frame.
 #'
 #' @return a data frame of COD distribution for each individual specified by row names.
-#' @export getTopCOD
+#' @export getIndivProb
 #'
 #' @examples
 #' data(RandomVA1)
