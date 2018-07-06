@@ -6,6 +6,12 @@
 \newcommand{\CRANpkg}{\href{http://CRAN.R-project.org/package=#1}{\pkg{#1}}}
 \newcommand{\sspace}{\ifelse{latex}{\out{~}}{ }}
 
+\section{Changes in version 1.0.4 (2018-07-06)}{
+  \itemize{ 
+    \item Optimize the imports of dependent packages.
+    \item Add version check functions and message when attached.
+  }
+}
 \section{Changes in version 1.0.4 (2018-04-20)}{
   \itemize{ 
     \item Adding support of two new methods: InterVA-5 and InSilicoVA-WHO2016.

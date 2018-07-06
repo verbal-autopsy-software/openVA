@@ -28,11 +28,6 @@
 #' @return a fitted object
 #' @export codeVA
 #' @seealso \code{\link[InSilicoVA]{insilico}}, \code{\link[InterVA4]{InterVA}}, \code{\link{interVA.train}}, \code{\link[Tariff]{tariff}}, and \code{\link[nbc4va]{nbc}}.
-#' @import nbc4va 
-#' @import InSilicoVA 
-#' @import InterVA4  
-#' @import InterVA5 
-#' @import Tariff
 #' @importFrom graphics plot
 #' @importFrom stats aggregate median quantile reorder
 #' @importFrom utils data
@@ -180,7 +175,7 @@ codeVA <- function(data, data.type = c("WHO2012", "WHO2016", "PHMRC", "customize
         if(is.null(args$write)){
           write <- FALSE
         }
-        fit <- InterVA(Input = data, HIV = HIV, Malaria = Malaria, replicate = replicate, 
+        fit <- InterVA4::InterVA(Input = data, HIV = HIV, Malaria = Malaria, replicate = replicate, 
                        write = write, ...)
     }else if(data.type == "WHO2016"){
         # to avoid writing to file every time
@@ -197,7 +192,7 @@ codeVA <- function(data, data.type = c("WHO2012", "WHO2016", "PHMRC", "customize
         if(sum(tmp %in% c("y", "n", "-", ".")) < length(tmp)){
           stop("InterVA5 input data contains values other than 'y', 'n', '.', or '-'. Please check your input, especially for extra space characters in the cells, or standardize how missing data is coded.")
         }
-        fit <- InterVA5(Input = data, HIV = HIV, Malaria = Malaria, write = write, ...)
+        fit <- InterVA5::InterVA5(Input = data, HIV = HIV, Malaria = Malaria, write = write, ...)
     }else if(data.type == 'PHMRC'|| data.type == "customize"){
         fit <- interVA.train(data = data, 
                              train=data.train, 
@@ -219,14 +214,14 @@ codeVA <- function(data, data.type = c("WHO2012", "WHO2016", "PHMRC", "customize
       data <- ConvertData(data, yesLabel = c("y", "Y"), noLabel = c("n", "N"), missLabel = c("-"))
     }
     if(data.type %in% c("WHO2012", "WHO2016")){
-      fit <- tariff(causes.train = causes.train, 
+      fit <- Tariff::tariff(causes.train = causes.train, 
                     symps.train = data.train, 
                     symps.test = data, 
                     causes.table = NULL,
                     ...)
       
     }else if(data.type == 'PHMRC'|| data.type == "customize"){
-      fit <- tariff(causes.train = causes.train, 
+      fit <- Tariff::tariff(causes.train = causes.train, 
                     symps.train = data.train, 
                     symps.test = data, 
                     causes.table = NULL,
@@ -239,6 +234,9 @@ codeVA <- function(data, data.type = c("WHO2012", "WHO2016", "PHMRC", "customize
   #                          NBC 
   # --------------------------------------------------------------------#
   }else if(model == "NBC"){
+      if (!isTRUE(requireNamespace("nbc4va", quietly = TRUE))) {
+          stop("You need to install the packages 'nbc4va'. Please run in your R terminal:\n install.packages('nbc4va')")
+        }
     #  # make sure the second column is cause     
     # if(which(colnames(data.train) == causes.train) != 2){
     #   k <- which(colnames(data.train) == causes.train)
@@ -277,7 +275,7 @@ codeVA <- function(data, data.type = c("WHO2012", "WHO2016", "PHMRC", "customize
     #            known = known.nbc)
 
     # update with NBC's official wrapper function
-    fit <- ova2nbc(data.train, data, causes.train)
+    fit <- nbc4va::ova2nbc(data.train, data, causes.train)
 
     # fix the caseID bug of NBC
     if(colnames(fit$prob)[1] != "CaseID"){
@@ -335,9 +333,9 @@ codeVA <- function(data, data.type = c("WHO2012", "WHO2016", "PHMRC", "customize
 #' }
 plotVA <- function(object, top = 10, title = NULL, ...){
   if(class(object) == "interVA"){
-    csmf <- CSMF(object, top.plot = top, main = title, ...)
+    csmf <- InterVA4::CSMF(object, top.plot = top, main = title, ...)
   }else if(class(object) == "interVA5"){
-    csmf <- CSMF5(object, top.plot = top, main = title, ...)
+    csmf <- InterVA5::CSMF5(object, top.plot = top, main = title, ...)
   }else if(class(object) == "tariff"){
     plot(object, top = top, main = title, ...)
   }else if(class(object) == "insilico"){

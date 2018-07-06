@@ -73,7 +73,21 @@ install.packages('rJava', type='source')
         ```
         sudo R CMD javareconf
         ```
-   
+1. Fail to install rJava (version 0.9-10, May 2018) on Mac [original issue](https://github.com/s-u/rJava/issues/153):
+  + Example Error Message:
+        ```
+        checking whether /usr/bin/javah actually works... no
+        checking whether javah was replaced by javac -h... no
+        configure: error: one or more Java tools are missing.
+        JDK is incomplete! Please make sure you have a complete JDK. JRE is not sufficient.
+        configure: error: ./configure failed for jri
+        ERROR: configuration failed for package 'rJava'
+        ```
+  + Solution: This is a temporary solution by installing the older version of rJava to get around the unrecognized javah command:
+    ```
+    install.packages("https://cran.r-project.org/src/contrib/Archive/rJava/rJava_0.9-9.tar.gz")
+    ```
+
 1. Fail to load rJava on Mac: [original post](http://stackoverflow.com/questions/30738974/rjava-load-error-in-rstudio-r-after-upgrading-to-osx-yosemite)
   + Example Error Message:
   

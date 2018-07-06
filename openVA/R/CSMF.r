@@ -33,10 +33,10 @@ getCSMF <- function(x, CI = 0.95, interVA.rule = TRUE){
   }
 
   if(class(x) == "interVA"){
-    return(CSMF(x, InterVA.rule = interVA.rule, noplot = TRUE))
+    return(InterVA4::CSMF(x, InterVA.rule = interVA.rule, noplot = TRUE))
   } 
   if(class(x) == "interVA5"){
-    return(CSMF5(x, InterVA.rule = interVA.rule, noplot = TRUE))
+    return(InterVA5::CSMF5(x, InterVA.rule = interVA.rule, noplot = TRUE))
   } 
    
   if(class(x) == "tariff"){
@@ -44,7 +44,10 @@ getCSMF <- function(x, CI = 0.95, interVA.rule = TRUE){
   }
 
   if(class(x) == "nbc"){
-    return(csmf.nbc(x))
+   if (!isTRUE(requireNamespace("nbc4va", quietly = TRUE))) {
+        stop("You need to install the packages 'nbc4va'. Please run in your R terminal:\n install.packages('nbc4va')")
+      }
+    return(nbc4va::csmf.nbc(x))
   }
 }
 
@@ -164,8 +167,11 @@ getTopCOD <- function(x, interVA.rule = TRUE){
       pick <- x$causes.test[, 2]
       id <- as.character(x$causes.test[, 1])
     }else if(class(x) == "nbc"){
-      pick <-  topCOD.nbc(x)[, 2]
-      id <-  topCOD.nbc(x)[, 1]
+      if (!isTRUE(requireNamespace("nbc4va", quietly = TRUE))) {
+        stop("You need to install the packages 'nbc4va'. Please run in your R terminal:\n install.packages('nbc4va')")
+      }
+      pick <-  nbc4va::topCOD.nbc(x)[, 2]
+      id <-  nbc4va::topCOD.nbc(x)[, 1]
     }
 
     return(data.frame(ID = id, cause = pick))
@@ -190,7 +196,7 @@ getIndivProb <- function(x, CI = NULL){
   
   if(class(x) == "insilico"){    
     if(!is.null(CI)){
-       indiv  <- get.indiv(x, CI = CI)
+       indiv  <- InSilicoVA::get.indiv(x, CI = CI)
        probs <- NULL
        probs$indiv.prob <- x$indiv.prob
        probs$indiv.prob.lower <- indiv$lower
