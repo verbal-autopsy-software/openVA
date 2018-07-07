@@ -92,11 +92,9 @@ openVA_status <- function() {
     crayon::col_align(versions, max(crayon::col_nchar(versions)))
   )
 
-  col1 <- 1:floor(length(packages)/2)
-  info <- paste0(packages[col1], "     ", packages[-col1])
+  message(paste(packages, collapse = "\n"))
 
-  message(paste(info, collapse = "\n"))
-
+if(length(to_load) > 0){
   message(
     cli::rule(
       center = paste0("Packages not attached for openVA ", packageVersion("openVA")), line_col="green"
@@ -109,6 +107,6 @@ openVA_status <- function() {
     crayon::col_align(versions, max(crayon::col_nchar(versions)))
   )
   message(paste(packages, collapse = "\n"))
-
+  }
   invisible()
 }

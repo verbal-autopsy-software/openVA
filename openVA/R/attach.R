@@ -43,10 +43,7 @@ openVA_attach <- function() {
     crayon::col_align(versions, max(crayon::col_nchar(versions)))
   )
 
-  col1 <- 1:floor(length(packages)/2)
-  info <- paste0(packages[col1], "     ", packages[-col1])
-
-  message(paste(info, collapse = "\n"))
+  message(paste(packages, collapse = "\n"))
 
   suppressPackageStartupMessages(
     lapply(to_load, library, character.only = TRUE, warn.conflicts = FALSE)
@@ -67,9 +64,7 @@ openVA_attach <- function() {
       crayon::green(cli::symbol$tick), " ", crayon::blue(format(notcore_has)), " ",
       crayon::col_align(versions, max(crayon::col_nchar(versions)))
     )
-    col1 <- 1:floor(length(packages)/2)
-    info <- paste0(packages[col1], "     ", packages[-col1])
-    message(paste(info, collapse = "\n"))
+    message(paste(packages, collapse = "\n"))
   }
   
   if(length(notcore_install) > 0){
