@@ -6,7 +6,12 @@
 \newcommand{\CRANpkg}{\href{http://CRAN.R-project.org/package=#1}{\pkg{#1}}}
 \newcommand{\sspace}{\ifelse{latex}{\out{~}}{ }}
 
-\section{Changes in version 1.0.4 (2018-07-06)}{
+\section{Changes in version 1.0.6 (2018-08-02)}{
+  \itemize{ 
+    \item Update some links in documentation for CRAN check.
+  }
+}
+\section{Changes in version 1.0.5 (2018-07-06)}{
   \itemize{ 
     \item Optimize the imports of dependent packages.
     \item Add version check functions and message when attached.
