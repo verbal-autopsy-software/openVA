@@ -23,11 +23,11 @@
 #' \itemize{
 #' \item{\code{quantile}: }{the rankings of the P(S|C) are obtained by matching the same quantile distributions in the default InterVA P(S|C)}\item{\code{fixed}: }{P(S|C) are matched to the closest values in the default InterVA P(S|C) table.} \item{\code{empirical}: }{no ranking is calculated, but use the empirical conditional probabilities directly, which will force \code{updateCondProb} to be FALSE for InSilicoVA algorithm.}  
 #'}
-#' @param ... other arguments passed to \code{\link[InSilicoVA]{insilico}}, \code{\link[InterVA4]{InterVA}}, \code{\link{interVA.train}}, \code{\link[Tariff]{tariff}}, and \code{{nbc}}. See respective package documents for details. 
+#' @param ... other arguments passed to \code{\link[InSilicoVA]{insilico}}, \code{\link[InterVA4]{InterVA}}, \code{\link{interVA.train}}, \code{\link[Tariff]{tariff}}, and \code{\link[nbc4va]{nbc}}. See respective package documents for details. 
 #'
 #' @return a fitted object
 #' @export codeVA
-#' @seealso \code{\link[InSilicoVA]{insilico}}, \code{\link[InterVA4]{InterVA}}, \code{\link{interVA.train}}, \code{\link[Tariff]{tariff}}, and \code{{nbc}}.
+#' @seealso \code{\link[InSilicoVA]{insilico}}, \code{\link[InterVA4]{InterVA}}, \code{\link{interVA.train}}, \code{\link[Tariff]{tariff}}, and \code{\link[nbc4va]{nbc}}.
 #' @importFrom graphics plot
 #' @importFrom stats aggregate median quantile reorder
 #' @importFrom utils data
@@ -301,7 +301,7 @@ codeVA <- function(data, data.type = c("WHO2012", "WHO2016", "PHMRC", "customize
 #' @param top number of top causes to plot
 #' @param title title of the plot
 #' @param ... additional arguments passed to \code{\link[InSilicoVA]{plot.insilico}}, 
-#' \code{\link[Tariff]{plot.tariff}}, \code{\link[InterVA4]{CSMF}}, or \code{{plot.nbc}}.
+#' \code{\link[Tariff]{plot.tariff}}, \code{\link[InterVA4]{CSMF}}, or \code{\link[nbc4va]{plot.nbc}}.
 #'
 #' @export plotVA
 #' @seealso \code{\link[InSilicoVA]{plot.insilico}}, \code{\link[Tariff]{plot.tariff}}, 
