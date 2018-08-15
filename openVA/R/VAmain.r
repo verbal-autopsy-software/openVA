@@ -141,6 +141,21 @@ codeVA <- function(data, data.type = c("WHO2012", "WHO2016", "PHMRC", "customize
       args$thin <- 10 * (Nsim < 10000) + 10 *(Nsim >= 10000)
     }
 
+    if(is.null(args$Nsim)){
+      args$Nsim <- Nsim
+    }
+
+    # # add in default parameters
+    # formals <- as.list(formals())
+    # defs <- setdiff(names(formals), names(args))
+    # if(length(defs) > 0){
+    #       for(i.args in 1:length(defs)){
+    #         if(!is.null(formals[[defs[i.args]]])){
+    #           args[[defs[i.args]]] <- formals[[defs[i.args]]]
+    #         }
+    #       }
+    # }
+
 
     if(data.type %in% c("WHO2012", "WHO2016")){
       fit <- do.call("insilico", pairlist(args)[[1]][-1])
