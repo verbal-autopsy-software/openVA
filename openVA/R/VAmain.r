@@ -229,7 +229,9 @@ codeVA <- function(data, data.type = c("WHO2012", "WHO2016", "PHMRC", "customize
   }else if(model == "Tariff"){
    if(data.type == "WHO2016"){
       data <- ConvertData(data, yesLabel = c("y", "Y"), noLabel = c("n", "N"), missLabel = c("-"))
+      data.train <- ConvertData(data.train, yesLabel = c("y", "Y"), noLabel = c("n", "N"), missLabel = c("-"))
     }
+    data.train[, causes.train] <- as.character(data.train[, causes.train])
     if(data.type %in% c("WHO2012", "WHO2016")){
       fit <- Tariff::tariff(causes.train = causes.train, 
                     symps.train = data.train, 
