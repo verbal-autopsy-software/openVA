@@ -6,6 +6,12 @@
 \newcommand{\CRANpkg}{\href{http://CRAN.R-project.org/package=#1}{\pkg{#1}}}
 \newcommand{\sspace}{\ifelse{latex}{\out{~}}{ }}
 
+\section{Changes in version 1.0.7 (2018-08-28)}{
+  \itemize{ 
+    \item Fix minor issue when saving InterVA and InSilicoVA results to file.
+  }
+}
+
 \section{Changes in version 1.0.6 (2018-08-14)}{
   \itemize{ 
     \item Fix minor bug where default arguments not passed to function when omitted.
