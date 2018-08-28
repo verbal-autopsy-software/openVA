@@ -5,7 +5,7 @@ Version: 1.0.7
 Date: 2018-08-28
 Author: Zehang Li, Tyler McCormick, Sam Clark
 Maintainer: Zehang Li <lizehang@uw.edu>
-Depends: R (>= 3.4.0) 
+Depends: R (>= 3.1) 
 Imports: InterVA5 (>= 1.0.1), InSilicoVA (>= 1.1.3), InterVA4 (>= 1.7.3), Tariff (>= 1.0.1), ggplot2, crayon, cli, purrr
 Suggests: nbc4va
 Description: Implements multiple existing open-source algorithms for coding cause of death from verbal autopsies. It also provides tools for data manipulation tasks commonly used in Verbal Autopsy analysis and implements easy graphical visualization of individual and population level statistics.
