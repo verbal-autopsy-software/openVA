@@ -13,4 +13,5 @@ For installation, it might be useful to check out this [installation guide](http
 - Support for converting PHMRC child and neonate data
 
 ## What's new
-- See CRAN News section: [NEWS](https://cran.r-project.org/web/packages/openVA/news.html)
+- [CRAN version](https://cran.r-project.org/web/packages/openVA/news.html)
+- [Current developer version](openVA/inst/NEWS.Rd)
