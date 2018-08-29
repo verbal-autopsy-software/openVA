@@ -135,11 +135,13 @@ interVA.train <- function(data, train, causes.train, causes.table = NULL, thre =
         input.current <- as.numeric(Input[i, ])       
         prob <- Sys_Prior
         temp <- which(input.current == 1)
- 
-        for(jj in 1:length(temp)){
-            temp_sub <- temp[jj]
-            for(j in 1:D){
-                prob[j] <- prob[j] * as.numeric(probbase[temp_sub, j])
+
+        if(length(temp) > 0){
+            for(jj in 1:length(temp)){
+                temp_sub <- temp[jj]
+                for(j in 1:D){
+                    prob[j] <- prob[j] * as.numeric(probbase[temp_sub, j])
+                }
             }
         }
         if(sum(prob) > 0){

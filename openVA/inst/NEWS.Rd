@@ -9,6 +9,7 @@
 \section{Changes in version 1.0.7 (2018-08-28)}{
   \itemize{ 
     \item Fix minor issue when saving InterVA and InSilicoVA results to file.
+    \item Fix crash from InterVA using training data with no symptom.
   }
 }
 
