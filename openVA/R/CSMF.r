@@ -122,6 +122,10 @@ getTopCOD <- function(x, interVA.rule = TRUE){
   if(class(x) == "insilico"){
     probs <- x$indiv.prob
     pick <- colnames(probs)[apply(probs, 1, which.max)]
+    # add possibility of no possible COD
+    if(sum(apply(probs, 1, max) == 0) > 0){
+      pick[which(apply(probs, 1, max) == 0)] <- "Undetermined"
+    }
     id <- x$id
   }else if(class(x) == "interVA" ){
       id <- x$ID

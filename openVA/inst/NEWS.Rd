@@ -6,6 +6,11 @@
 \newcommand{\CRANpkg}{\href{http://CRAN.R-project.org/package=#1}{\pkg{#1}}}
 \newcommand{\sspace}{\ifelse{latex}{\out{~}}{ }}
 
+\section{Changes in version 1.0.7 (2018-09-12)}{
+  \itemize{ 
+    \item Fix minor issue with reporting individual top cause when all causes have 0 probability.
+  }
+}
 \section{Changes in version 1.0.6 (2018-08-28)}{
   \itemize{ 
     \item Fix minor issue when saving InterVA and InSilicoVA results to file.
