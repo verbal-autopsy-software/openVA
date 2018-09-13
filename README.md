@@ -1,4 +1,4 @@
-# openVA[![Build Status](https://travis-ci.org/richardli/openVA.svg?branch=master)](https://travis-ci.org/richardli/openVA)
+# openVA[![Build Status](https://travis-ci.org/verbal-autopsy-software/openVA.svg?branch=master)](https://travis-ci.org/verbal-autopsy-software/openVA)
 Integrated system combining several major VA methods. Demonstration could be found at [here](http://www.zehangli.com/talks/openVA-slides.html). Current component packages include:
 
 - InSilicoVA: available on CRAN: ["InSilicoVA"](https://cran.r-project.org/web/packages/InSilicoVA/index.html)
