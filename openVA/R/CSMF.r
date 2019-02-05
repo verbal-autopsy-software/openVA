@@ -84,7 +84,7 @@ getCSMF_accuracy <- function(csmf, truth, undet = NULL){
       if(undet %in% names(csmf)){
         csmf <- csmf[-which(names(csmf)==undet)]
       }else{
-        print("The undetermined category does not exist in input CSMF.")
+        warning("The undetermined category does not exist in input CSMF.")
       }
     }  
     if(!is.null(names(csmf)) & !is.null(names(truth))){
