@@ -54,7 +54,7 @@ getCSMF <- function(x, CI = 0.95, interVA.rule = TRUE){
 #' Calculate CSMF accuracy
 #'
 #' @param csmf a CSMF vector from \code{getCSMF} or a InSilicoVA fitted object.
-#' @param truth a CSMF vectorof the true CSMF.
+#' @param truth a CSMF vector of the true CSMF.
 #' Default value to be 0.95.
 #' @param undet name of the category denoting undetermined causes. Default to be NULL.
 #'
