@@ -45,7 +45,7 @@ getCSMF <- function(x, CI = 0.95, interVA.rule = TRUE){
 
   if(class(x) == "nbc"){
    if (!isTRUE(requireNamespace("nbc4va", quietly = TRUE))) {
-        stop("You need to install the packages 'nbc4va'. Please run in your R terminal:\n install.packages('nbc4va')")
+        stop("You need to install the package 'nbc4va'. Please run in your R terminal:\n install.packages('nbc4va')")
       }
     return(nbc4va::csmf.nbc(x))
   }
