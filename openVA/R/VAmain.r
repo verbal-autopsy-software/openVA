@@ -92,10 +92,10 @@ codeVA <- function(data, data.type = c("WHO2012", "WHO2016", "PHMRC", "customize
   # check data input 
   # --------------------------------------------------------------------#
   if(data.type == "WHO2016" & model == "InterVA" & version != "5.0"){
-    stop("WHO2016 type input does not works with InterVA 4.02 or 4.03. Consider switching to 5.0")
+    stop("Error: WHO2016 type input does not work with InterVA 4.02 or 4.03. Consider switching to 5.0")
   }
   if(data.type == "WHO2012" & model == "InterVA" & version == "5.0"){
-    stop("WHO2012 type input does not works with InterVA 5.0. Consider switching to 4.03")
+    stop("Error: WHO2012 type input does not work with InterVA 5.0. Consider switching to 4.03")
   }
   
   if(data.type %in% c("WHO2012", "WHO2016") && 
