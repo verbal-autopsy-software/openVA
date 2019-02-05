@@ -12,7 +12,7 @@
 #' @param data.train Training data with the same columns as \code{data}, except for an additional column specifying cause-of-death label. It is not used if \code{data.type} is ``WHO'' and \code{model} is ``InterVA'' or ``InSilicoVA''.  The first column also has to be death ID for ``WHO'' and ``customized'' types.
 #' @param causes.train the column name of the cause-of-death assignment label in training data.
 #' @param causes.table list of causes to consider in the training data. Default to be NULL, which uses all the causes present in the training data.
-#' @param model Currently support four models: ``InSilicoVA'', ``InterVA'', ``Tariff'', and ``NBC''.
+#' @param model Currently supports four models: ``InSilicoVA'', ``InterVA'', ``Tariff'', and ``NBC''.
 #' @param Nchain Parameter specific to ``InSilicoVA'' model. Currently not used.
 #' @param Nsim Parameter specific to ``InSilicoVA'' model. Number of iterations to run the sampler.
 #' @param version Parameter specific to ``InterVA'' model. Currently supports ``4.02'', ``4.03'', and ``5.0''. For InterVA-4, ``4.03'' is strongly recommended as it fixes several major bugs in ``4.02'' version. ``4.02'' is only included for backward compatibility. ``5.0'' version implements the InterVA-5 model, which requires different data input format.
