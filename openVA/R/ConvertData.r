@@ -678,6 +678,29 @@ ConvertData.phmrc <- function(input, input.test = NULL, cause = NULL, phmrc.type
 	return(vec)
 }
 
+## 
+## Function to map two vector into Y/N/. by customized grouping
+##
+.toBinary_group2 <- function(vec1, vec2, gtrue, gfalse, gna){
+	vec1 <- as.character(vec1)
+	vec2 <- as.character(vec2)
+	# first set to vec1
+	for(i in gtrue){
+		vec1[which(vec1 == i)] <- "YesYes"
+	}
+	for(i in gfalse){
+		vec1[which(vec1 == i)] <- "NoNo"
+	}
+	for(i in gna){
+		vec1[which(vec1 == i)] <- "MissingMissing"
+	}	
+	# then check vec2 only if it is yes
+	for(i in gtrue){
+		vec1[which(vec2 == i)] <- "YesYes"
+	}
+	return(vec1)
+}
+
 ##
 ## Function to reformulate matrix based on Additional File 10
 ##
@@ -728,47 +751,48 @@ new$a2_05_s1 <- .toBinary_group(raw$a2_05,
 	##	Was there a rash on the trunk?
 	##	Was there a rash on the extremities?
 	##	Was there a rash everywhere?
-new$a2_09_1a  <- .toBinary_group(raw$a2_09_1a, 
+new$a2_09_1a  <- .toBinary_group2(raw$a2_09_1a, raw$a2_09_2a,
 							c("Face"), 
 							c("Trunk", "Extremities", "Everywhere", "Other"), 
 							c("Don't Know"))
-new$a2_09_1a_s1  <- .toBinary_group(raw$a2_09_1a, 
+new$a2_09_1a_s1  <- .toBinary_group2(raw$a2_09_1a, raw$a2_09_2a,
 							c("Trunk"), 
 							c("Face", "Extremities", "Everywhere", "Other"), 
 							c("Don't Know"))
-new$a2_09_1a_s2  <- .toBinary_group(raw$a2_09_1a, 
+new$a2_09_1a_s2  <- .toBinary_group2(raw$a2_09_1a, raw$a2_09_2a,
 							c("Extremities"), 
 							c("Trunk", "Face", "Everywhere", "Other"), 
 							c("Don't Know"))
-new$a2_09_1a_s3  <- .toBinary_group(raw$a2_09_1a, 
+new$a2_09_1a_s3  <- .toBinary_group2(raw$a2_09_1a, raw$a2_09_2a,
 							c("Everywhere"), 
 							c("Trunk", "Extremities", "Face", "Other"), 
 							c("Don't Know"))
-new$a2_09_1b  <- .toBinary_group(raw$a2_09_1a, 
+new$a2_09_1b  <- .toBinary_group2(raw$a2_09_1a, raw$a2_09_2a,
 							c("Other"), 
 							c("Trunk", "Extremities", "Face", "Everywhere"), 
 							c("Don't Know"))
-
-new$a2_09_2a  <- .toBinary_group(raw$a2_09_2a, 
-							c("Face"), 
-							c("Trunk", "Extremities", "Everywhere", "Other"), 
-							c("Don't Know"))
-new$a2_09_2a_s1  <- .toBinary_group(raw$a2_09_2a, 
-							c("Trunk"), 
-							c("Face", "Extremities", "Everywhere", "Other"), 
-							c("Don't Know"))
-new$a2_09_2a_s2  <- .toBinary_group(raw$a2_09_2a, 
-							c("Extremities"), 
-							c("Trunk", "Face", "Everywhere", "Other"), 
-							c("Don't Know"))
-new$a2_09_2a_s3  <- .toBinary_group(raw$a2_09_2a, 
-							c("Everywhere"), 
-							c("Trunk", "Extremities", "Face", "Other"), 
-							c("Don't Know"))
-new$a2_09_2b  <- .toBinary_group(raw$a2_09_2a, 
-							c("Other"), 
-							c("Trunk", "Extremities", "Face", "Everywhere"), 
-							c("Don't Know"))
+new <- new[, -which(colnames(new) == "a2_09_2a")]
+new <- new[, -which(colnames(new) == "a2_09_2b")]
+# new$a2_09_2a  <- .toBinary_group(raw$a2_09_2a, 
+# 							c("Face"), 
+# 							c("Trunk", "Extremities", "Everywhere", "Other"), 
+# 							c("Don't Know"))
+# new$a2_09_2a_s1  <- .toBinary_group(raw$a2_09_2a, 
+# 							c("Trunk"), 
+# 							c("Face", "Extremities", "Everywhere", "Other"), 
+# 							c("Don't Know"))
+# new$a2_09_2a_s2  <- .toBinary_group(raw$a2_09_2a, 
+# 							c("Extremities"), 
+# 							c("Trunk", "Face", "Everywhere", "Other"), 
+# 							c("Don't Know"))
+# new$a2_09_2a_s3  <- .toBinary_group(raw$a2_09_2a, 
+# 							c("Everywhere"), 
+# 							c("Trunk", "Extremities", "Face", "Other"), 
+# 							c("Don't Know"))
+# new$a2_09_2b  <- .toBinary_group(raw$a2_09_2a, 
+# 							c("Other"), 
+# 							c("Trunk", "Extremities", "Face", "Everywhere"), 
+# 							c("Don't Know"))
 
 # In what position did the breathing difficulty get worse?	
 # Lying, Sitting, Walking/Exertion, Didn't matter, Refused to answer, Don't know
@@ -776,39 +800,40 @@ new$a2_09_2b  <- .toBinary_group(raw$a2_09_2a,
 	##	Did the breathing difficulty get worse in the sitting position?
 	##	Did the breathing difficulty get worse in the walking position?
 	##	Did the breathing difficulty not get worse in any position?
-new$a2_39_1  <- .toBinary_group(raw$a2_39_1, 
+new$a2_39_1  <- .toBinary_group2(raw$a2_39_1, raw$a2_39_2,
 							c("Lying"), 
 							c("Sitting", "Walking/Exertion", "Didn't matter"), 
 							c("Didn't matter", "Refused to Answer","Don't Know"))
-new$a2_39_1_s1  <- .toBinary_group(raw$a2_39_1, 
+new$a2_39_1_s1  <- .toBinary_group2(raw$a2_39_1, raw$a2_39_2,
 							c("Sitting"), 
 							c("Lying", "Walking/Exertion", "Didn't matter"), 
 							c("Didn't matter", "Refused to Answer","Don't Know"))
-new$a2_39_1_s2  <- .toBinary_group(raw$a2_39_1, 
+new$a2_39_1_s2  <- .toBinary_group2(raw$a2_39_1, raw$a2_39_2,
 							c("Walking/Exertion"), 
 							c("Sitting", "Lying", "Didn't matter"), 
 							c("Didn't matter", "Refused to Answer","Don't Know"))
-new$a2_39_1_s3  <- .toBinary_group(raw$a2_39_1, 
+new$a2_39_1_s3  <- .toBinary_group2(raw$a2_39_1, raw$a2_39_2,
 							c("Didn't matter"), 
 							c("Lying", "Sitting", "Walking/Exertion"), 
 							c("Refused to Answer","Don't Know"))
+new <- new[, -which(colnames(new) == "a2_39_2")]
 
-new$a2_39_2  <- .toBinary_group(raw$a2_39_2, 
-							c("Lying"), 
-							c("Sitting", "Walking/Exertion", "Didn't matter"), 
-							c("Didn't matter", "Refused to Answer","Don't Know"))
-new$a2_39_2_s1  <- .toBinary_group(raw$a2_39_2, 
-							c("Sitting"), 
-							c("Lying", "Walking/Exertion", "Didn't matter"), 
-							c("Didn't matter", "Refused to Answer","Don't Know"))
-new$a2_39_2_s2  <- .toBinary_group(raw$a2_39_2, 
-							c("Walking/Exertion"), 
-							c("Sitting", "Lying", "Didn't matter"), 
-							c("Didn't matter", "Refused to Answer","Don't Know"))
-new$a2_39_2_s3  <- .toBinary_group(raw$a2_39_2, 
-							c("Didn't matter"), 
-							c("Lying", "Sitting", "Walking/Exertion"), 
-							c("Refused to Answer","Don't Know"))
+# new$a2_39_2  <- .toBinary_group(raw$a2_39_2, 
+# 							c("Lying"), 
+# 							c("Sitting", "Walking/Exertion", "Didn't matter"), 
+# 							c("Didn't matter", "Refused to Answer","Don't Know"))
+# new$a2_39_2_s1  <- .toBinary_group(raw$a2_39_2, 
+# 							c("Sitting"), 
+# 							c("Lying", "Walking/Exertion", "Didn't matter"), 
+# 							c("Didn't matter", "Refused to Answer","Don't Know"))
+# new$a2_39_2_s2  <- .toBinary_group(raw$a2_39_2, 
+# 							c("Walking/Exertion"), 
+# 							c("Sitting", "Lying", "Didn't matter"), 
+# 							c("Didn't matter", "Refused to Answer","Don't Know"))
+# new$a2_39_2_s3  <- .toBinary_group(raw$a2_39_2, 
+# 							c("Didn't matter"), 
+# 							c("Lying", "Sitting", "Walking/Exertion"), 
+# 							c("Refused to Answer","Don't Know"))
 # Was the breathing difficulty continuous or on and off?	
 # Continuous, On and Off, Don't Know	
 	##  Was the breathing difficulty continuous?
