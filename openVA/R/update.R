@@ -5,6 +5,7 @@
 #' dependencies) are up-to-date, and will install after an interactive
 #' confirmation.
 #' @importFrom utils available.packages
+#' @importFrom utils compareVersion
 #' @importFrom tools package_dependencies
 #' @importFrom utils packageVersion
 #' @importFrom cli cat_line
@@ -31,7 +32,7 @@ openVA_update <- function() {
   local_version <- lapply(pkg_deps, utils::packageVersion)
   behind <- rep(FALSE, length(local_version))
   for(i in 1:length(local_version)){
-    behind[i] <- compareVersion(as.character(local_version[[i]]), as.character(cran_version[[i]])) < 0 
+    behind[i] <- utils::compareVersion(as.character(local_version[[i]]), as.character(cran_version[[i]])) < 0 
   }
   behind <- behind[behind == TRUE]
 
