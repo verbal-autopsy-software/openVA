@@ -49,13 +49,13 @@ getCSMF <- function(x, CI = 0.95, interVA.rule = TRUE){
       }
     return(nbc4va::csmf.nbc(x))
   }
+  stop("Input object is not a fitted model from openVA. ")
 }
 
 #' Calculate CSMF accuracy
 #'
 #' @param csmf a CSMF vector from \code{getCSMF} or a InSilicoVA fitted object.
-#' @param truth a CSMF vectorof the true CSMF.
-#' Default value to be 0.95.
+#' @param truth a CSMF vector of the true CSMF.
 #' @param undet name of the category denoting undetermined causes. Default to be NULL.
 #'
 #' @return a number (or vector if input is InSilicoVA fitted object) of CSMF accuracy as 1 - sum(abs(CSMF - CSMF_true)) / (2 * (1 - min(CSMF_true))).
