@@ -9,8 +9,7 @@ getCSMF_accuracy(csmf, truth, undet = NULL)
 \arguments{
 \item{csmf}{a CSMF vector from \code{getCSMF} or a InSilicoVA fitted object.}
 
-\item{truth}{a CSMF vectorof the true CSMF.
-Default value to be 0.95.}
+\item{truth}{a CSMF vector of the true CSMF.}
 
 \item{undet}{name of the category denoting undetermined causes. Default to be NULL.}
 }

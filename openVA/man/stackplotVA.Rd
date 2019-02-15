@@ -6,10 +6,10 @@
 \usage{
 stackplotVA(x, grouping = NULL, type = c("stack", "dodge")[1],
   order.group = NULL, order.sub = NULL, err = TRUE, CI = 0.95,
-  sample.size.print = FALSE, xlab = "Group", ylab = "CSMF", ylim = NULL,
-  title = "CSMF by broader cause categories", horiz = FALSE, angle = 60,
-  err_width = 0.4, err_size = 0.6, point_size = 2, border = "black",
-  bw = FALSE, ...)
+  sample.size.print = FALSE, xlab = "Group", ylab = "CSMF",
+  ylim = NULL, title = "CSMF by broader cause categories",
+  horiz = FALSE, angle = 60, err_width = 0.4, err_size = 0.6,
+  point_size = 2, border = "black", bw = FALSE, ...)
 }
 \arguments{
 \item{x}{one or a list of fitted object from \code{codeVA} function}

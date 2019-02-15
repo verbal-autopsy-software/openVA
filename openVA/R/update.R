@@ -4,7 +4,6 @@
 #' This will check to see if all openVA packages (and optionally, their
 #' dependencies) are up-to-date, and will install after an interactive
 #' confirmation.
-#' @importFrom purrr map2_lgl
 #' @importFrom utils available.packages
 #' @importFrom tools package_dependencies
 #' @importFrom utils packageVersion
@@ -30,7 +29,10 @@ openVA_update <- function() {
   pkg_deps <- unique(sort(unlist(deps)))
   cran_version <- lapply(pkgs[pkg_deps, "Version"], base::package_version)
   local_version <- lapply(pkg_deps, utils::packageVersion)
-  behind <- purrr::map2_lgl(cran_version, local_version, `>`)
+  behind <- rep(FALSE, length(local_version))
+  for(i in 1:length(local_version)){
+    behind[i] <- compareVersion(as.character(local_version[[i]]), as.character(cran_version[[i]])) < 0 
+  }
   behind <- behind[behind == TRUE]
 
   if (sum(behind) == 0) {
