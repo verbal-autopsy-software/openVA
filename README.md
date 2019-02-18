@@ -15,4 +15,4 @@ For installation, it might be useful to check out this [installation guide](http
 
 ## What's new
 - [CRAN version](https://cran.r-project.org/web/packages/openVA/news.html)
-- [Current developer version](openVA/inst/NEWS.Rd)
+- [Current developer version](openVA/NEWS.md)
