@@ -45,7 +45,7 @@ getCSMF <- function(x, CI = 0.95, interVA.rule = TRUE){
 
   if(class(x) == "nbc"){
    if (!isTRUE(requireNamespace("nbc4va", quietly = TRUE))) {
-        stop("You need to install the packages 'nbc4va'. Please run in your R terminal:\n install.packages('nbc4va')")
+        stop("You need to install the package 'nbc4va'. Please run in your R terminal:\n install.packages('nbc4va')")
       }
     return(nbc4va::csmf.nbc(x))
   }
@@ -84,7 +84,7 @@ getCSMF_accuracy <- function(csmf, truth, undet = NULL){
       if(undet %in% names(csmf)){
         csmf <- csmf[-which(names(csmf)==undet)]
       }else{
-        print("The undetermined category does not exist in input CSMF.")
+        warning("The undetermined category does not exist in input CSMF.")
       }
     }  
     if(!is.null(names(csmf)) & !is.null(names(truth))){
