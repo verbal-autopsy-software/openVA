@@ -24,7 +24,7 @@ stackplotVA(x, grouping = NULL, type = c("stack", "dodge")[1],
 
 \item{err}{indicator of inclusion of error bars}
 
-\item{CI}{confidence interval for error bars.}
+\item{CI}{Level of posterior credible intervals.}
 
 \item{sample.size.print}{Logical indicator for printing also the sample size for each sub-population labels.}
 
