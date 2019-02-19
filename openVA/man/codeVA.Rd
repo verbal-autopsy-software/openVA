@@ -30,7 +30,7 @@ codeVA(data, data.type = c("WHO2012", "WHO2016", "PHMRC",
 
 \item{causes.table}{list of causes to consider in the training data. Default to be NULL, which uses all the causes present in the training data.}
 
-\item{model}{Currently support four models: ``InSilicoVA'', ``InterVA'', ``Tariff'', and ``NBC''.}
+\item{model}{Currently supports four models: ``InSilicoVA'', ``InterVA'', ``Tariff'', and ``NBC''.}
 
 \item{Nchain}{Parameter specific to ``InSilicoVA'' model. Currently not used.}
 
