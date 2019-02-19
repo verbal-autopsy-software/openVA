@@ -9,7 +9,7 @@
 #' @param order.group list of grouped categories. If set to NULL, make it default.
 #' @param order.sub Specification of the order of sub-populations to plot 
 #' @param err indicator of inclusion of error bars
-#' @param CI confidence interval for error bars.
+#' @param CI Level of posterior credible intervals.
 #' @param sample.size.print Logical indicator for printing also the sample size for each sub-population labels.
 #' @param xlab Labels for the causes.
 #' @param ylab Labels for the CSMF values.

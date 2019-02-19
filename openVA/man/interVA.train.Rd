@@ -4,9 +4,9 @@
 \alias{interVA.train}
 \title{Extended InterVA method for non-standard input}
 \usage{
-interVA.train(data, train, causes.train, causes.table = NULL, thre = 0.95,
-  type = c("quantile", "fixed", "empirical")[1], prior = c("uniform",
-  "train")[1], ...)
+interVA.train(data, train, causes.train, causes.table = NULL,
+  thre = 0.95, type = c("quantile", "fixed", "empirical")[1],
+  prior = c("uniform", "train")[1], ...)
 }
 \arguments{
 \item{data}{A matrix input, or data read from csv files. Sample input is included as \code{data(RandomVA3)}.}

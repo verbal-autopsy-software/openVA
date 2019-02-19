@@ -141,7 +141,7 @@ codeVA <- function(data, data.type = c("WHO2012", "WHO2016", "PHMRC", "customize
       args$burnin <- round(Nsim / 2)
     }
     if(is.null(args$thin)){
-      args$thin <- 10 * (Nsim < 10000) + 10 *(Nsim >= 10000)
+      args$thin <- 10 + 10 *(Nsim >= 10000)
     }
 
     if(is.null(args$Nsim)){
