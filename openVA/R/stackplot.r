@@ -6,11 +6,10 @@
 #' @param x one or a list of fitted object from \code{codeVA} function
 #' @param grouping C by 2 matrix of grouping rule. If set to NULL, make it default.
 #' @param type type of the plot to make
-#' @param order.group list of grouped categories. If set to NULL, make it default.
-#' @param order.sub Specification of the order of sub-populations to plot 
+#' @param group_order list of grouped categories. If set to NULL, make it default.
 #' @param err indicator of inclusion of error bars
 #' @param CI Level of posterior credible intervals.
-#' @param sample.size.print Logical indicator for printing also the sample size for each sub-population labels.
+#' @param sample_size_print Logical indicator for printing also the sample size for each sub-population labels.
 #' @param xlab Labels for the causes.
 #' @param ylab Labels for the CSMF values.
 #' @param ylim Range of y-axis.
@@ -22,14 +21,12 @@
 #' @param border The color for the border of the bars.
 #' @param err_width Size of the error bars.
 #' @param err_size Thickness of the error bar lines.
-#' @param point_size Size of the points.
 #' @param bw Logical indicator for setting the theme of the plots to be black
 #' and white.
 #' @param \dots Not used.
 #' @author Zehang Li, Tyler McCormick, Sam Clark
 #' 
 #' Maintainer: Zehang Li <lizehang@@uw.edu>
-#' @importFrom InSilicoVA stackplot
 #' @importFrom ggplot2 ggplot aes geom_bar position_dodge geom_errorbar ggtitle coord_flip theme_bw theme element_text
 #' @examples
 #' \donttest{
@@ -62,188 +59,171 @@
 #' }
 #' @export stackplotVA
 stackplotVA <- function(x, grouping = NULL,
-    type = c("stack", "dodge")[1], 
-    order.group = NULL, order.sub = NULL,
-    err = TRUE, CI = 0.95, sample.size.print = FALSE,
-	xlab = "Group", ylab = "CSMF", ylim = NULL,
-	title = "CSMF by broader cause categories", 
-	horiz = FALSE, angle = 60,  
-	err_width = .4, err_size = .6, point_size = 2, 
-	border = "black", bw = FALSE, ...){
-
-
-	if(is.null(grouping)){
-		data("SampleCategory", envir = environment())
-		SampleCategory <- get("SampleCategory", envir  = environment())
-		grouping <- SampleCategory
-		order.group <- c("TB/AIDS", 
-						"Communicable",
-						"NCD",
-						"External",
-						"Maternal",
-						"causes specific to infancy") 
-	}
-	if(is.null(order.group)){
-		order.group <- unique(grouping[, 2])
-	}
- 
-
-	csmf <- NULL
-	
-	if(type == "stack"){
-		err <- FALSE
-	}
-
-	if(class(x) == "list"){
-		counts <- rep(0, length(x))
-		for(i in 1:length(x)){
-			if(class(x[[i]]) == "insilico"){
-				if(is.null(x[[i]]$subpop)){
-					# for InSilicoVA, since the error bar needs to be calculated
-					# based on the grouping, need the raw CSMF here
-					# instead of summarized version as others
-					csmf[[i]] <- x[[i]]$csmf
-					counts[i] <- length(x[[i]]$id)
-				}else{
-					stop("Sub-population specification exists in InSilicoVA fit, please rerun with only the InSilicoVA object\n")
-				}
-			}else{
-				csmf[[i]] <- getCSMF(x[[i]], CI = CI)	
-				if(class(x[[i]]) == "interVA" || class(x[[i]]) == "interVA5" ){
-					counts[i] <- length(x[[i]]$VA) 
-				}else if(class(x[[i]]) == "tariff"){
-					counts[i] <- dim(x[[i]]$causes.test)[1]
-				}else if(class(x[[i]]) == "nbc"){
-					counts[i] <- dim(x[[i]]$test)[1]
-				}
-			}
-			if(!is.null(names(x)[i])){
-				names(csmf)[i] <- names(x)[i]
-			}else{
-				names(csmf)[i] <- paste("Input", i)
-			}
-		}
-		barNames <- names(x)
-		if(is.null(barNames)){
-			barNames <- paste("model", 1:length(x))
-		}
-	}else if(class(x) == "insilico"){
-			return(stackplot(x, grouping = grouping,
-					    type = type, 
-					    order.group = order.group, order.sub = order.sub,
-					    err = err, CI = CI, sample.size.print = sample.size.print,
-						xlab = xlab, ylab = ylab, ylim = ylim, 
-						title = title, 
-						horiz = horiz, angle = angle,  
-						err_width = err_width, err_size = err_size, 
-						point_size = point_size, 
-						border = border, bw = bw, ...))
-	}else{
-		csmf[[1]] <- getCSMF(x, CI = CI)
-		if(class(x) == "interVA"|| class(x) == "interVA5" ){
-			counts <- length(x$VA) 
-		}else if(class(x) == "tariff"){
-			counts <- dim(x$causes.test)[1]
-		}else if(class(x) == "nbc"){
-			counts <- dim(x$test)[1]
-		}
-		barNames <- ""
-		err <- FALSE
-	}
-
-
-    # to fix dodge and stack gives reverse ordering
-    if(type == "dodge"){
-      order.group <- rev(order.group)
+                        type = c("stack", "dodge")[1], 
+                        group_order = NULL, err = TRUE,
+                        CI = 0.95, sample_size_print = FALSE,
+                        xlab = "Group", ylab = "CSMF", ylim = NULL,
+                        title = "CSMF by broader cause categories", 
+                        horiz = FALSE, angle = 60,  
+                        err_width = .4, err_size = .6, 
+                        border = "black", bw = FALSE, ...) {
+  
+  # Check that user-provided arguments are usable
+  
+  # Error if invalid type given
+  if(!(type %in% c("stack", "dodge"))) {
+    stop("Invalid 'type' specified, must be either 'stack' or 'dodge'")
+  }
+  
+  # Error if invalid numbers for error bars
+  if(err_width < 0) stop("err_width must be non-negative and finite")
+  if(err_size < 0) stop("err_size must be non-negative and finite")
+  
+  
+  # Default grouping if none specified
+  if(is.null(grouping)) {
+    data("SampleCategory", envir = environment())
+    grouping <- SampleCategory
+  }
+  
+  # If no order specified, order taken from grouping provided
+  if(is.null(group_order)) {
+    if(length(unique(group_order[, 1])>length(unique(group_order[, 2])))) {
+      group_order <- unique(grouping[, 1])
+    } else {
+      group_order <- unique(grouping[, 2])
     }
-	
-	csmf.group <- NULL
-	group <- NULL
-	label <- NULL
-	low <- (1 - CI) / 2
-	high <- 1 - low
-
- 	for(index in 1:length(csmf)){
-		
- 		# now calculate grouped CSMF
-		if(class(x[[index]]) == "insilico"){
-			csmf.group.temp <- matrix(0, dim(csmf[[index]])[1], length(order.group))
-			colnames(csmf.group.temp) <- order.group
-			for(i in 1:length(order.group)){
-				which.names <- grouping[which(grouping[, 2] == order.group[i]),1]
-				which <- which(colnames(csmf[[index]]) %in% which.names)
-				if(length(which) > 1){
-					csmf.tmp <- apply(csmf[[index]][, which], 1, sum)
-				}else if(length(which) == 1){
-					csmf.tmp <- csmf[[index]][, which]
-				}else{
-					csmf.tmp <- 0
-				}
-				csmf.group.temp[, i] <- csmf.tmp
-			}	
-
-			csmf.mean <- apply(csmf.group.temp, 2, mean)
-			csmf.lower <- apply(csmf.group.temp, 2,function(x){quantile(x, low)})
-			csmf.upper <- apply(csmf.group.temp, 2,function(x){quantile(x, high)})
-
-		}else{
-			csmf.mean <- csmf.lower <- csmf.upper <- rep(0, length(order.group))
-			# only grouping
-			for(i in 1:length(order.group)){
-				which.names <- grouping[which(grouping[, 2] == order.group[i]), 1]
-				which <- which(names(csmf[[index]]) %in% which.names)
-				if(length(which) > 0){
-					csmf.tmp <- sum(csmf[[index]][which])
-				}else{
-					csmf.tmp <- 0
-				}
-				csmf.mean[i] <- csmf.lower[i] <- csmf.upper[i] <- csmf.tmp
-			}	
-		}
-
-		csmf.group <- rbind(csmf.group, cbind(csmf.mean, csmf.lower, csmf.upper))
-		group <- c(group, order.group)
-		if(sample.size.print){
-			label <- c(label, rep(paste(barNames[index], "\n", "n = ", counts[index], sep = ""), length(order.group)))
-		}else{
-			label <- c(label, rep(barNames[index], length(order.group)))
-		}
-	}
-
-	rownames(csmf.group) <- NULL
-	toplot <- data.frame(csmf.group)
-	subpop <- Causes <- NULL
-	if(type == "stack" ){
-		toplot$Causes <- factor(group, levels = rev(order.group))
-	}else if(type == "dodge"){
-		toplot$Causes <- factor(group, levels = (order.group))
-	}
-	toplot$subpop <- label
-
-	# initialize ggplot, force order of bars
-	if(horiz){
-		g <- ggplot(toplot, aes(x=reorder(subpop, seq(1:length(subpop))), y=csmf.mean, fill=Causes, order = as.numeric(Causes)))	
-	}else{
-		g <- ggplot(toplot, aes(x=reorder(subpop, seq(length(subpop):1)), y=csmf.mean, fill=Causes, order = -as.numeric(Causes)))
-	}
-	if(type == "stack"){
-		g <- g + geom_bar(stat='identity', color=border, size = .3)
-	}else if(type == "dodge"){
-		g <- g + geom_bar(stat='identity', color=border, size = .3, position=position_dodge(0.9))
-	}
-	if(err && type == "dodge"){
-		g <- g + geom_errorbar(aes(ymin = csmf.lower, ymax = csmf.upper), size = err_size, width = err_width,  position = position_dodge(.9))
-	}
-	g <- g + xlab(xlab) + ylab(ylab) 
-	if(!is.null(ylim)){
-		g <- g + ylim(ylim)
-	}
-	g <- g + ggtitle(title)
-	if(horiz) g <- g + coord_flip()
-	if(bw) g <- g + theme_bw()
-	hjust <- NULL
-	if(angle != 0) hjust = 1
-	if(!horiz) g <- g + theme(axis.text.x = element_text(angle = angle, hjust = hjust))	
-	return(g)
-
+  }
+  
+  csmf <- NULL
+  
+  if(class(x) != "list") {
+    x <- list(x)
+  }
+  n <- length(x)
+  counts <- rep(0, n)
+  
+  # Collects info from each given model for CSMF calculation
+  for(i in 1:n) {
+    if(class(x[[i]]) == "insilico") {
+      if(is.null(x[[i]]$subpop)) {
+        # for InSilicoVA, since the error bar needs to be calculated
+        # based on the grouping, need the raw CSMF here
+        # instead of summarized version as others
+        csmf[[i]] <- x[[i]]$csmf
+        counts[i] <- length(x[[i]]$id)
+      } else {
+        stop("Sub-population specification exists in InSilicoVA fit,
+             please rerun with only the InSilicoVA object\n")
+      }
+      } 
+    else {
+      csmf[[i]] <- getCSMF(x[[i]], CI = CI)	
+      if(class(x[[i]]) == "interVA" || class(x[[i]]) == "interVA5" ) {
+        counts[i] <- length(x[[i]]$VA) 
+      } else if(class(x[[i]]) == "tariff") {
+        counts[i] <- dim(x[[i]]$causes.test)[1]
+      } else if(class(x[[i]]) == "nbc") {
+        counts[i] <- dim(x[[i]]$test)[1]
+      }
+    }
+    if(!is.null(names(x[i])[i])) {
+      names(csmf)[i] <- names(x)[i]
+    } else {
+      names(csmf)[i] <- paste("Input", i)
+    }
+    }
+  
+  if(length(x)>1) {
+    barNames <- paste("model", 1:length(x))
+  } else {
+    barNames <- ""
+  }
+  
+  csmf_group <- NULL
+  group <- NULL
+  label <- NULL
+  low <- (1 - CI) / 2
+  high <- 1 - low
+  
+  # Calculates grouped CSMF for each given model
+  for(index in 1:length(csmf)) {
+    
+    if(class(x[[index]]) == "insilico") {
+      this_csmf <- t(as.data.frame(csmf[[index]]))
+      grouped_sums <- merge(this_csmf, grouping, by.x = "row.names",
+                            by.y = colnames(grouping)[1], all.x = TRUE)
+      grouped_sums <- merge(as.data.frame(group_order), grouped_sums, 
+                            by.x = "group_order", 
+                            by.y = colnames(grouped_sums)[ncol(grouped_sums)], all.x = TRUE)
+      grouped_sums <- apply(grouped_sums[, 3:ncol(grouped_sums)], 2, function(x) 
+        tapply(x, grouped_sums[, 1], sum))
+      grouped_sums[is.na(grouped_sums)] <- 0
+      grouped_sums <- grouped_sums[order(match(rownames(grouped_sums), group_order)),]
+      csmf_mean <- apply(grouped_sums, 1, mean)
+      csmf_lower <- apply(grouped_sums, 1, function(x) {quantile(x, low, na.rm = T)})
+      csmf_upper <- apply(grouped_sums, 1, function(x) {quantile(x, high, na.rm = T)})
+    } else {
+      this_csmf<-as.data.frame(as.table(csmf[[index]]))
+      grouped_sums <- merge(this_csmf, grouping, by.x = "Var1",
+                            by.y = colnames(grouping)[1], all.x = TRUE)
+      grouped_sums <- merge(as.data.frame(group_order), grouped_sums, 
+                            by.x = "group_order", by.y = colnames(grouped_sums)[3], all.x = TRUE)
+      grouped_sums <- tapply(grouped_sums[, 3], grouped_sums[, 1], sum)
+      grouped_sums <- grouped_sums[order(match(names(grouped_sums), group_order))]
+      csmf_mean <- csmf_lower <- csmf_upper <- ifelse(is.na(grouped_sums), 0, grouped_sums)
+    }
+    
+    csmf_group <- rbind(csmf_group, cbind(csmf_mean, csmf_lower, csmf_upper))
+    group <- c(group, group_order)
+    if(sample_size_print) {
+      label <- c(label, rep(paste(barNames[index], "\n", "n = ", counts[index], sep = ""),
+                            length(group_order)))
+    } else {
+      label <- c(label, rep(barNames[index], length(group_order)))
+    }
+  }
+  
+  rownames(csmf_group) <- NULL
+  toplot <- data.frame(csmf_group)
+  subpop <- Causes <- NULL
+  
+  if(type == "stack" ) {
+    toplot$Causes <- factor(group, levels = rev(group_order))
+  } else {
+    toplot$Causes <- factor(group, levels = (group_order))
+  }
+  toplot$subpop <- label
+  
+  # initialize ggplot, force order of bars
+  hjust <- NULL
+  if(angle != 0) hjust = 1
+  if(horiz) {
+    g <- ggplot(toplot, aes(x=reorder(subpop, seq(1:length(subpop))),
+                            y=csmf_mean, fill=Causes, order = as.numeric(Causes))) +
+      theme(axis.text.y = element_text(angle = angle, hjust = hjust)) +
+      coord_flip()
+  } else {
+    g <- ggplot(toplot, aes(x=reorder(subpop, seq(length(subpop):1)),
+                            y=csmf_mean, fill=Causes, order = -as.numeric(Causes))) +
+      theme(axis.text.x = element_text(angle = angle, hjust = hjust))	
+  }
+  
+  if(type == "stack") {
+    g <- g + geom_bar(stat='identity', color=border, size = .3)
+  } else {
+    g <- g + geom_bar(stat='identity', color=border, size = .3, position=position_dodge(0.9))
+    if(err) {
+      g <- g + geom_errorbar(aes(ymin = csmf_lower, ymax = csmf_upper),
+                             size = err_size, width = err_width,  position = position_dodge(0.9))
+    }
+  }
+  
+  g <- g + xlab(xlab) + ylab(ylab) + ggtitle(title)
+  if(!is.null(ylim)) {
+    g <- g + ylim(ylim)
+  }
+  if(bw) g <- g + theme_bw() + scale_fill_grey(start = 0, end = 0.9)
+  return(g)
+  
 }
