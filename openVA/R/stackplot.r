@@ -112,6 +112,21 @@ stackplotVA <- function(x, grouping = NULL,
         # instead of summarized version as others
         csmf[[i]] <- x[[i]]$csmf
         counts[i] <- length(x[[i]]$id)
+        
+        # if broad causes are missing, add them in
+        if (sum(colnames(csmf[[i]]) %in% as.character(grouping[,1]))!=ncol(csmf[[i]])){
+          
+          warning("Causes exist in the CSMF that are not specified in the COD grouping. Automatically carrying through missed CODs.")
+          
+          grouping <- data.frame(sapply(grouping, as.character))
+          miss_bc <- colnames(csmf[[i]]) [! colnames(csmf[[i]]) %in% as.character(grouping[,1]) ]
+          group_order <- unique(c(as.character(group_order), miss_bc))
+          
+          miss_bc_df <- data.frame(miss_bc, miss_bc)
+          names(miss_bc_df) <- names(grouping)
+          grouping <- rbind(grouping, miss_bc_df)
+        }
+        
       } else {
         stop("Sub-population specification exists in InSilicoVA fit,
              please rerun with only the InSilicoVA object\n")
@@ -126,12 +141,29 @@ stackplotVA <- function(x, grouping = NULL,
       } else if(class(x[[i]]) == "nbc") {
         counts[i] <- dim(x[[i]]$test)[1]
       }
+      
+      # if broad causes are missing, add them in
+      if (sum(names(csmf[[i]]) %in% as.character(grouping[,1]))!=length(csmf[[i]])){
+        
+        warning("Causes exist in the CSMF that are not specified in the COD grouping. Automatically carrying through missed CODs.")
+        
+        grouping <- data.frame(sapply(grouping, as.character))
+        miss_bc <- names(csmf[[i]]) [! names(csmf[[i]]) %in% as.character(grouping[,1]) ]
+        group_order <- unique(c(as.character(group_order), miss_bc))
+        
+        miss_bc_df <- data.frame(miss_bc, miss_bc)
+        names(miss_bc_df) <- names(grouping)
+        grouping <- rbind(grouping, miss_bc_df)
+      }
+      
     }
+    
     if(!is.null(names(x[i])[i])) {
       names(csmf)[i] <- names(x)[i]
     } else {
       names(csmf)[i] <- paste("Input", i)
     }
+    
     }
   
   if(length(x)>1) {
