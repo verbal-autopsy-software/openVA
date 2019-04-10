@@ -102,6 +102,7 @@ stackplotVA <- function(x, grouping = NULL,
   }
   n <- length(x)
   counts <- rep(0, n)
+  fixcod <- F
   
   # Collects info from each given model for CSMF calculation
   for(i in 1:n) {
@@ -116,7 +117,7 @@ stackplotVA <- function(x, grouping = NULL,
         # if broad causes are missing, add them in
         if (sum(colnames(csmf[[i]]) %in% as.character(grouping[,1]))!=ncol(csmf[[i]])){
           
-          warning("Causes exist in the CSMF that are not specified in the COD grouping. Automatically carrying through missed CODs.")
+          fixcod <- T
           
           grouping <- data.frame(sapply(grouping, as.character))
           miss_bc <- colnames(csmf[[i]]) [! colnames(csmf[[i]]) %in% as.character(grouping[,1]) ]
@@ -145,7 +146,7 @@ stackplotVA <- function(x, grouping = NULL,
       # if broad causes are missing, add them in
       if (sum(names(csmf[[i]]) %in% as.character(grouping[,1]))!=length(csmf[[i]])){
         
-        warning("Causes exist in the CSMF that are not specified in the COD grouping. Automatically carrying through missed CODs.")
+        fixcod <- T
         
         grouping <- data.frame(sapply(grouping, as.character))
         miss_bc <- names(csmf[[i]]) [! names(csmf[[i]]) %in% as.character(grouping[,1]) ]
@@ -157,6 +158,8 @@ stackplotVA <- function(x, grouping = NULL,
       }
       
     }
+    
+    if (fixcod) warning("Causes exist in the CSMF that are not specified in the COD grouping. Automatically carrying through missed CODs.")
     
     if(!is.null(names(x[i])[i])) {
       names(csmf)[i] <- names(x)[i]
