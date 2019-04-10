@@ -1,11 +1,17 @@
 context("Plotting")
 library(openVA)
 
+data("RandomVA3", envir = environment())
+RandomVA3 <- get("RandomVA3", envir  = environment())
+test <- RandomVA3[1:200, ]
+train <- RandomVA3[201:400, ]
+
+data("SampleCategory3", envir = environment())
+SampleCategory3 <- get("SampleCategory3", envir  = environment())
+grouping <- SampleCategory3
+
 test_that("Insilico - every symptom is the same broad cause", {
 
-  data("SampleCategory", envir = environment())
-  SampleCategory3 <- get("SampleCategory3", envir  = environment())
-  grouping <- SampleCategory3
   grouping$broad_cause <- rep("everyone is the same", nrow(grouping))
 
   # insilico
@@ -18,16 +24,13 @@ test_that("Insilico - every symptom is the same broad cause", {
   s_data <- layer_data(s)
 
   expect_equal(nrow(s_data), 1)
-  expect_equal(s_data$ymax, 1)
-  expect_equal(s_data$ymin, 0)
+  expect_equal(max(s_data$ymax), 1)
+  expect_equal(min(s_data$ymin), 0)
 
 })
 
 test_that("InterVA4 - every symptom is the same broad cause", {
 
-  data("SampleCategory", envir = environment())
-  SampleCategory3 <- get("SampleCategory3", envir  = environment())
-  grouping <- SampleCategory3
   grouping$broad_cause <- rep("everyone is the same", nrow(grouping))
 
   # interva
@@ -40,16 +43,13 @@ test_that("InterVA4 - every symptom is the same broad cause", {
   s_data <- layer_data(s)
 
   expect_equal(nrow(s_data), 1)
-  expect_equal(s_data$ymax, 1)
-  expect_equal(s_data$ymin, 0)
+  expect_equal(max(s_data$ymax), 1)
+  expect_equal(min(s_data$ymin), 0)
 
 })
 
 test_that("InterVA5 - every symptom is the same broad cause", {
 
-  data("SampleCategory", envir = environment())
-  SampleCategory3 <- get("SampleCategory3", envir  = environment())
-  grouping <- SampleCategory3
   grouping$broad_cause <- rep("everyone is the same", nrow(grouping))
 
   # interva
@@ -62,16 +62,13 @@ test_that("InterVA5 - every symptom is the same broad cause", {
   s_data <- layer_data(s)
 
   expect_equal(nrow(s_data), 1)
-  expect_equal(s_data$ymax, 1)
-  expect_equal(s_data$ymin, 0)
+  expect_equal(max(s_data$ymax), 1)
+  expect_equal(min(s_data$ymin), 0)
 
 })
 
 test_that("Tariff - every symptom is the same broad cause", {
 
-  data("SampleCategory", envir = environment())
-  SampleCategory3 <- get("SampleCategory3", envir  = environment())
-  grouping <- SampleCategory3
   grouping$broad_cause <- rep("everyone is the same", nrow(grouping))
 
   # tariff
@@ -84,17 +81,14 @@ test_that("Tariff - every symptom is the same broad cause", {
   s_data <- layer_data(s)
 
   expect_equal(nrow(s_data), 1)
-  expect_equal(s_data$ymax, 1)
-  expect_equal(s_data$ymin, 0)
+  expect_equal(max(s_data$ymax), 1)
+  expect_equal(min(s_data$ymin), 0)
 
 
 })
 
 test_that("NBC - every symptom is the same broad cause", {
 
-  data("SampleCategory", envir = environment())
-  SampleCategory3 <- get("SampleCategory3", envir  = environment())
-  grouping <- SampleCategory3
   grouping$broad_cause <- rep("everyone is the same", nrow(grouping))
 
   # nbc
@@ -106,15 +100,12 @@ test_that("NBC - every symptom is the same broad cause", {
   s_data <- layer_data(s)
 
   expect_equal(nrow(s_data), 1)
-  expect_equal(s_data$ymax, 1)
-  expect_equal(s_data$ymin, 0)
+  expect_equal(max(s_data$ymax), 1)
+  expect_equal(min(s_data$ymin), 0)
 
 })
 
 test_that("InSilico - list of three identical runs", {
-  data("SampleCategory", envir = environment())
-  SampleCategory3 <- get("SampleCategory3", envir  = environment())
-  grouping <- SampleCategory3
 
   # insilico
   set.seed(13)
@@ -133,11 +124,7 @@ test_that("InSilico - list of three identical runs", {
 })
 
 test_that("InterVA4 - list of three identical runs", {
-  data("SampleCategory", envir = environment())
-  SampleCategory3 <- get("SampleCategory3", envir  = environment())
-  grouping <- SampleCategory3
 
-  set.seed(13)
   set.seed(13)
   fit2 <- codeVA(data = test, data.type = "customize", model = "InterVA",
                data.train = train, causes.train = "cause",
@@ -147,7 +134,6 @@ test_that("InterVA4 - list of three identical runs", {
     ylim = c(0, 1), title = "InterVA4.02")
   s_data <- layer_data(s)
 
-  s_data <- layer_data(s)
   subset <- s_data[1:length(unique(grouping$broad_cause)),
                             !names(s_data) %in% c("x", "group", "xmax", "xmin")]
   generated <- rbind(subset, subset, subset)
@@ -156,11 +142,7 @@ test_that("InterVA4 - list of three identical runs", {
 })
 
 test_that("InterVA5 - list of three identical runs", {
-  data("SampleCategory", envir = environment())
-  SampleCategory3 <- get("SampleCategory3", envir  = environment())
-  grouping <- SampleCategory3
 
-  set.seed(13)
   set.seed(13)
   fit2 <- codeVA(data = test, data.type = "customize", model = "InterVA",
                data.train = train, causes.train = "cause",
@@ -178,9 +160,6 @@ test_that("InterVA5 - list of three identical runs", {
 })
 
 test_that("Tariff - list of three identical runs", {
-  data("SampleCategory", envir = environment())
-  SampleCategory3 <- get("SampleCategory3", envir  = environment())
-  grouping <- SampleCategory3
 
   set.seed(13)
   fit3 <- codeVA(data = test, data.type = "customize", model = "Tariff",
@@ -199,9 +178,6 @@ test_that("Tariff - list of three identical runs", {
 })
 
 test_that("NBC - list of three identical runs", {
-  data("SampleCategory", envir = environment())
-  SampleCategory3 <- get("SampleCategory3", envir  = environment())
-  grouping <- SampleCategory3
 
   set.seed(13)
   fit4 <- codeVA(data = test, data.type = "customize", model = "NBC",
