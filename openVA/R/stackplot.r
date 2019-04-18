@@ -23,6 +23,7 @@
 #' @param err_size Thickness of the error bar lines.
 #' @param bw Logical indicator for setting the theme of the plots to be black
 #' and white.
+#' @param filter_legend Logical indicator for including all broad causes in the plot legend (default; FALSE) or filtering to only the broad causes in the data being plotted
 #' @param \dots Not used.
 #' @author Zehang Li, Tyler McCormick, Sam Clark
 #' 
@@ -47,14 +48,14 @@
 #' fit4 <- codeVA(data = test, data.type = "customize", model = "NBC",
 #'                data.train = train, causes.train = "cause", known.nbc = TRUE)
 #'
-#' data(SampleCategory3)
-#' stackplotVA(fit1, grouping = SampleCategory3, type ="dodge", 
+#' data(SampleCategory)
+#' stackplotVA(fit1, grouping = SampleCategory, type ="dodge", 
 #'             ylim = c(0, 1), title = "InSilicoVA")
-#' stackplotVA(fit2, grouping = SampleCategory3, type = "dodge", 
+#' stackplotVA(fit2, grouping = SampleCategory, type = "dodge", 
 #'             ylim = c(0, 1), title = "InterVA4.02")
-#' stackplotVA(fit3, grouping = SampleCategory3, type = "dodge", 
+#' stackplotVA(fit3, grouping = SampleCategory, type = "dodge", 
 #'             ylim = c(0, 1), title = "Tariff")
-#' stackplotVA(fit4, grouping = SampleCategory3, type = "dodge", 
+#' stackplotVA(fit4, grouping = SampleCategory, type = "dodge", 
 #'             ylim = c(0, 1), title = "NBC")
 #' }
 #' @export stackplotVA
@@ -66,7 +67,7 @@ stackplotVA <- function(x, grouping = NULL,
                         title = "CSMF by broader cause categories", 
                         horiz = FALSE, angle = 60,  
                         err_width = .4, err_size = .6, 
-                        border = "black", bw = FALSE, ...) {
+                        border = "black", bw = FALSE, filter_legend = FALSE, ...) {
   
   # Check that user-provided arguments are usable
   
@@ -83,16 +84,25 @@ stackplotVA <- function(x, grouping = NULL,
   # Default grouping if none specified
   if(is.null(grouping)) {
     data("SampleCategory", envir = environment())
+    SampleCategory <- get("SampleCategory", envir  = environment())
     grouping <- SampleCategory
+  }
+  grouping[] <- lapply(grouping, as.character) # convert the grouping dataframe to all character
+  
+  # assign grouping names
+  if(length(unique(grouping[, 1]))>length(unique(grouping[, 2]))) {
+    names(grouping) <- c("cod", "broad_cause")
+  } else {
+    names(grouping) <- c("broad_cause", "cod")
   }
   
   # If no order specified, order taken from grouping provided
   if(is.null(group_order)) {
-    if(length(unique(group_order[, 1])>length(unique(group_order[, 2])))) {
-      group_order <- unique(grouping[, 1])
-    } else {
-      group_order <- unique(grouping[, 2])
-    }
+    group_order <- unique(grouping$broad_cause)
+  } else if (!setequal(group_order, unique(grouping$broad_cause))){
+    # make sure that group_order agrees with the grouping; if not, warn and replace
+    warning("User-specified order.group does not encompass what is contained in the grouping specification. Replacing with the default.")
+    group_order <- unique(grouping$broad_cause)
   }
   
   csmf <- NULL
@@ -102,7 +112,6 @@ stackplotVA <- function(x, grouping = NULL,
   }
   n <- length(x)
   counts <- rep(0, n)
-  fixcod <- F
   
   # Collects info from each given model for CSMF calculation
   for(i in 1:n) {
@@ -114,27 +123,15 @@ stackplotVA <- function(x, grouping = NULL,
         csmf[[i]] <- x[[i]]$csmf
         counts[i] <- length(x[[i]]$id)
         
-        # if broad causes are missing, add them in
-        if (sum(colnames(csmf[[i]]) %in% as.character(grouping[,1]))!=ncol(csmf[[i]])){
-          
-          fixcod <- T
-          
-          grouping <- data.frame(sapply(grouping, as.character))
-          miss_bc <- colnames(csmf[[i]]) [! colnames(csmf[[i]]) %in% as.character(grouping[,1]) ]
-          group_order <- unique(c(as.character(group_order), miss_bc))
-          
-          miss_bc_df <- data.frame(miss_bc, miss_bc)
-          names(miss_bc_df) <- names(grouping)
-          grouping <- rbind(grouping, miss_bc_df)
-        }
+        present_cod <- colnames(csmf[[i]])
         
       } else {
         stop("Sub-population specification exists in InSilicoVA fit,
              please rerun with only the InSilicoVA object\n")
       }
-      } 
+    }
     else {
-      csmf[[i]] <- getCSMF(x[[i]], CI = CI)	
+      csmf[[i]] <- getCSMF(x[[i]], CI = CI)
       if(class(x[[i]]) == "interVA" || class(x[[i]]) == "interVA5" ) {
         counts[i] <- length(x[[i]]$VA) 
       } else if(class(x[[i]]) == "tariff") {
@@ -143,23 +140,21 @@ stackplotVA <- function(x, grouping = NULL,
         counts[i] <- dim(x[[i]]$test)[1]
       }
       
-      # if broad causes are missing, add them in
-      if (sum(names(csmf[[i]]) %in% as.character(grouping[,1]))!=length(csmf[[i]])){
-        
-        fixcod <- T
-        
-        grouping <- data.frame(sapply(grouping, as.character))
-        miss_bc <- names(csmf[[i]]) [! names(csmf[[i]]) %in% as.character(grouping[,1]) ]
-        group_order <- unique(c(as.character(group_order), miss_bc))
-        
-        miss_bc_df <- data.frame(miss_bc, miss_bc)
-        names(miss_bc_df) <- names(grouping)
-        grouping <- rbind(grouping, miss_bc_df)
-      }
+      present_cod <- names(csmf[[i]])[csmf[[i]]>0]
       
     }
     
-    if (fixcod) warning("Causes exist in the CSMF that are not specified in the COD grouping. Automatically carrying through missed CODs.")
+    # if broad causes are missing, add them in
+    if (!setequal(present_cod, grouping$cod)){
+      warning("Causes exist in the CSMF that are not specified in the grouping. Automatically carrying through missed CODs.")
+      
+      miss_bc <- present_cod[!present_cod %in% grouping$cod]
+      group_order <- unique(c(group_order, miss_bc))
+      
+      miss_bc_df <- data.frame(miss_bc, miss_bc)
+      names(miss_bc_df) <- names(grouping)
+      grouping <- rbind(grouping, miss_bc_df)
+    }
     
     if(!is.null(names(x[i])[i])) {
       names(csmf)[i] <- names(x)[i]
@@ -208,7 +203,7 @@ stackplotVA <- function(x, grouping = NULL,
       grouped_sums <- grouped_sums[order(match(names(grouped_sums), group_order))]
       csmf_mean <- csmf_lower <- csmf_upper <- ifelse(is.na(grouped_sums), 0, grouped_sums)
     }
-    
+      
     csmf_group <- rbind(csmf_group, cbind(csmf_mean, csmf_lower, csmf_upper))
     group <- c(group, group_order)
     if(sample_size_print) {
@@ -223,12 +218,22 @@ stackplotVA <- function(x, grouping = NULL,
   toplot <- data.frame(csmf_group)
   subpop <- Causes <- NULL
   
+  if (filter_legend){
+    rm <- rowSums(toplot)==0
+    toplot <- toplot[!rm, ]
+    group_order <- group_order[!rm]
+    group <- group[group %in% group_order]
+    label <- label[!rm]
+  }
+  
   if(type == "stack" ) {
     toplot$Causes <- factor(group, levels = rev(group_order))
   } else {
     toplot$Causes <- factor(group, levels = (group_order))
   }
   toplot$subpop <- label
+  
+
   
   # initialize ggplot, force order of bars
   hjust <- NULL
