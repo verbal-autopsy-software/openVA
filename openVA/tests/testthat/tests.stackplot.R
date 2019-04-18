@@ -1,14 +1,18 @@
 context("Plotting")
-library(openVA)
 
 data("RandomVA3", envir = environment())
 RandomVA3 <- get("RandomVA3", envir  = environment())
 test <- RandomVA3[1:200, ]
 train <- RandomVA3[201:400, ]
 
+# generate a grouping dataset that can encompass every possible COD
 data("SampleCategory3", envir = environment())
 SampleCategory3 <- get("SampleCategory3", envir  = environment())
-grouping <- SampleCategory3
+data("SampleCategory", envir = environment())
+SampleCategory <- get("SampleCategory", envir  = environment())
+names(SampleCategory) <- names(SampleCategory3)
+grouping <- rbind(SampleCategory3, SampleCategory, data.frame(cause="Undetermined", broad_cause="Undetermined"))
+grouping <- grouping[!duplicated(grouping$cause), ]
 
 test_that("Insilico - every symptom is the same broad cause", {
 
