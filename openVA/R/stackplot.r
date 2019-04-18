@@ -145,7 +145,7 @@ stackplotVA <- function(x, grouping = NULL,
     }
     
     # if broad causes are missing, add them in
-    if (!setequal(present_cod, grouping$cod)){
+    if (!identical(setdiff(present_cod, grouping$cod), character(0))){
       warning("Causes exist in the CSMF that are not specified in the grouping. Automatically carrying through missed CODs.")
       
       miss_bc <- present_cod[!present_cod %in% grouping$cod]
@@ -188,6 +188,11 @@ stackplotVA <- function(x, grouping = NULL,
                             by.y = colnames(grouped_sums)[ncol(grouped_sums)], all.x = TRUE)
       grouped_sums <- apply(grouped_sums[, 3:ncol(grouped_sums)], 2, function(x) 
         tapply(x, grouped_sums[, 1], sum))
+      
+      if (!is.data.frame(grouped_sums)){
+        grouped_sums <- t(as.data.frame(grouped_sums))
+      }
+      
       grouped_sums[is.na(grouped_sums)] <- 0
       grouped_sums <- grouped_sums[order(match(rownames(grouped_sums), group_order)),]
       csmf_mean <- apply(grouped_sums, 1, mean)

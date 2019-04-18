@@ -14,15 +14,6 @@ names(SampleCategory) <- names(SampleCategory3)
 grouping <- rbind(SampleCategory3, SampleCategory, data.frame(cause="Undetermined", broad_cause="Undetermined"))
 grouping <- grouping[!duplicated(grouping$cause), ]
 
-data("RandomVA3", envir = environment())
-RandomVA3 <- get("RandomVA3", envir  = environment())
-test <- RandomVA3[1:200, ]
-train <- RandomVA3[201:400, ]
-
-data("SampleCategory3", envir = environment())
-SampleCategory3 <- get("SampleCategory3", envir  = environment())
-grouping <- SampleCategory3
-
 test_that("Insilico - every symptom is the same broad cause", {
 
   grouping$broad_cause <- rep("everyone is the same", nrow(grouping))
