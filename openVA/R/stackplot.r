@@ -189,12 +189,15 @@ stackplotVA <- function(x, grouping = NULL,
       grouped_sums <- apply(grouped_sums[, 3:ncol(grouped_sums)], 2, function(x) 
         tapply(x, grouped_sums[, 1], sum))
       
-      if (!is.data.frame(grouped_sums)){
-        grouped_sums <- t(as.data.frame(grouped_sums))
+      # handle the case where there is one broad cause; only need to order if there is more than one
+      if (length(unique(grouping$broad_cause))==1){
+        grouped_sums <- t(as.matrix(grouped_sums))
+        rownames(grouped_sums) <- unique(grouping$broad_cause)
+      } else {
+        grouped_sums <- grouped_sums[order(match(rownames(grouped_sums), group_order)),]
       }
       
       grouped_sums[is.na(grouped_sums)] <- 0
-      grouped_sums <- grouped_sums[order(match(rownames(grouped_sums), group_order)),]
       csmf_mean <- apply(grouped_sums, 1, mean)
       csmf_lower <- apply(grouped_sums, 1, function(x) {quantile(x, low, na.rm = T)})
       csmf_upper <- apply(grouped_sums, 1, function(x) {quantile(x, high, na.rm = T)})
