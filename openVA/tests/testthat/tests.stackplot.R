@@ -197,3 +197,26 @@ test_that("NBC - list of three identical runs", {
   expect_equal(generated, s_data[, !names(s_data) %in% c("x", "group", "xmax", "xmin")])
 
 })
+
+test_that("InterVA4 - category missing from grouping is handled", {
+
+  set.seed(13)
+
+  grouping <- grouping[1:(nrow(grouping)-1), ]
+
+  fit2 <- codeVA(data = test, data.type = "customize", model = "InterVA",
+                 data.train = train, causes.train = "cause",
+                 version = "4.02", HIV = "h", Malaria = "l")
+
+  expect_warning(stackplotVA(fit2, grouping = grouping, type = "stack",
+                                  ylim = c(0, 1), title = "InterVA4.02"),
+                                  "Causes exist in the CSMF that are not specified in the grouping. Automatically carrying through missed CODs.")
+
+  s <- suppressWarnings(stackplotVA(fit2, grouping = grouping, type = "stack",
+                                   ylim = c(0, 1), title = "InterVA4.02") )
+  s_data <- layer_data(s)
+
+  expect_equal(max(s_data$ymax), 1)
+  expect_equal(min(s_data$ymin), 0)
+
+})
