@@ -1,5 +1,10 @@
 language: R
 sudo: false
 cache: packages
+warnings_are_errors: false
 before_install:
  - cd openVA
+
+# do not build vignettes...takes too long and times out on travis
+r_build_args: --no-build-vignettes --no-manual
+r_check_args: --no-build-vignettes --no-manual --timings
