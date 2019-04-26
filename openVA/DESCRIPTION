@@ -14,4 +14,4 @@ Description: Implements multiple existing open-source algorithms for coding caus
 License: GPL-2
 URL: https://github.com/verbal-autopsy-software/openVA
 BugReports: https://github.com/verbal-autopsy-software/openVA/issues
-RoxygenNote: 6.1.0
+RoxygenNote: 6.1.1
