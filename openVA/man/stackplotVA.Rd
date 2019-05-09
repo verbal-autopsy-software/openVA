@@ -5,11 +5,11 @@
 \title{plot grouped CSMF from a "insilico" object}
 \usage{
 stackplotVA(x, grouping = NULL, type = c("stack", "dodge")[1],
-  order.group = NULL, order.sub = NULL, err = TRUE, CI = 0.95,
-  sample.size.print = FALSE, xlab = "Group", ylab = "CSMF",
+  group_order = NULL, err = TRUE, CI = 0.95,
+  sample_size_print = FALSE, xlab = "Group", ylab = "CSMF",
   ylim = NULL, title = "CSMF by broader cause categories",
   horiz = FALSE, angle = 60, err_width = 0.4, err_size = 0.6,
-  point_size = 2, border = "black", bw = FALSE, ...)
+  border = "black", bw = FALSE, filter_legend = FALSE, ...)
 }
 \arguments{
 \item{x}{one or a list of fitted object from \code{codeVA} function}
@@ -18,15 +18,13 @@ stackplotVA(x, grouping = NULL, type = c("stack", "dodge")[1],
 
 \item{type}{type of the plot to make}
 
-\item{order.group}{list of grouped categories. If set to NULL, make it default.}
-
-\item{order.sub}{Specification of the order of sub-populations to plot}
+\item{group_order}{list of grouped categories. If set to NULL, make it default.}
 
 \item{err}{indicator of inclusion of error bars}
 
 \item{CI}{Level of posterior credible intervals.}
 
-\item{sample.size.print}{Logical indicator for printing also the sample size for each sub-population labels.}
+\item{sample_size_print}{Logical indicator for printing also the sample size for each sub-population labels.}
 
 \item{xlab}{Labels for the causes.}
 
@@ -46,12 +44,12 @@ set to FALSE}
 
 \item{err_size}{Thickness of the error bar lines.}
 
-\item{point_size}{Size of the points.}
-
 \item{border}{The color for the border of the bars.}
 
 \item{bw}{Logical indicator for setting the theme of the plots to be black
 and white.}
+
+\item{filter_legend}{Logical indicator for including all broad causes in the plot legend (default; FALSE) or filtering to only the broad causes in the data being plotted}
 
 \item{\dots}{Not used.}
 }
@@ -77,14 +75,14 @@ fit3 <- codeVA(data = test, data.type = "customize", model = "Tariff",
 fit4 <- codeVA(data = test, data.type = "customize", model = "NBC",
                data.train = train, causes.train = "cause", known.nbc = TRUE)
 
-data(SampleCategory3)
-stackplotVA(fit1, grouping = SampleCategory3, type ="dodge", 
+data(SampleCategory)
+stackplotVA(fit1, grouping = SampleCategory, type ="dodge", 
             ylim = c(0, 1), title = "InSilicoVA")
-stackplotVA(fit2, grouping = SampleCategory3, type = "dodge", 
+stackplotVA(fit2, grouping = SampleCategory, type = "dodge", 
             ylim = c(0, 1), title = "InterVA4.02")
-stackplotVA(fit3, grouping = SampleCategory3, type = "dodge", 
+stackplotVA(fit3, grouping = SampleCategory, type = "dodge", 
             ylim = c(0, 1), title = "Tariff")
-stackplotVA(fit4, grouping = SampleCategory3, type = "dodge", 
+stackplotVA(fit4, grouping = SampleCategory, type = "dodge", 
             ylim = c(0, 1), title = "NBC")
 }
 }
