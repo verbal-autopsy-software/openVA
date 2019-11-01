@@ -1,6 +1,10 @@
 # openVA - changes
 
-Version 1.0.8 (not yet released)
+Version 1.0.9
+==========================
++ Various minor document and helper function enhancements.
+
+Version 1.0.8 
 ==========================
 + Minor clarifications in documentation.
 + Reduced the number of iterations saved for InSilicoVA when Nsim is large.

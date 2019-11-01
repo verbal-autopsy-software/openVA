@@ -185,6 +185,7 @@ getTopCOD <- function(x, interVA.rule = TRUE){
 #'
 #' @param x a fitted object from \code{codeVA}.
 #' @param CI Credible interval for posterior estimates. If CI is set to TRUE, a list is returned instead of a data frame.
+#' @param ... additional arguments that can be passed to \code{get.indiv} from InSilicoVA package.
 #'
 #' @return a data frame of COD distribution for each individual specified by row names.
 #' @export getIndivProb
@@ -196,11 +197,11 @@ getTopCOD <- function(x, interVA.rule = TRUE){
 #'                   version = "4.02", HIV = "h", Malaria = "l")
 #' probs <- getIndivProb(fit)
 #' 
-getIndivProb <- function(x, CI = NULL){
+getIndivProb <- function(x, CI = NULL, ...){
   
   if(class(x) == "insilico"){    
     if(!is.null(CI)){
-       indiv  <- InSilicoVA::get.indiv(x, CI = CI)
+       indiv  <- InSilicoVA::get.indiv(x, CI = CI, ...)
        probs <- NULL
        probs$indiv.prob <- x$indiv.prob
        probs$indiv.prob.lower <- indiv$lower

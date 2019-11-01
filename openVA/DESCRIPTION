@@ -2,7 +2,7 @@ Package: openVA
 Type: Package
 Title: Automated Method for Verbal Autopsy
 Version: 1.0.9
-Date: 2019-02-19
+Date: 2019-11-01
 Author: Zehang Li, Tyler McCormick, Sam Clark
 Maintainer: Zehang Li <lizehang@gmail.com>
 Depends: R (>= 3.1)

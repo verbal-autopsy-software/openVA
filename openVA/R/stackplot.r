@@ -28,7 +28,7 @@
 #' @author Zehang Li, Tyler McCormick, Sam Clark
 #' 
 #' Maintainer: Zehang Li <lizehang@@uw.edu>
-#' @importFrom ggplot2 ggplot aes geom_bar position_dodge geom_errorbar ggtitle coord_flip theme_bw theme element_text
+#' @importFrom ggplot2 ggplot aes geom_bar position_dodge geom_errorbar ggtitle coord_flip theme_bw theme element_text scale_fill_grey
 #' @examples
 #' \donttest{
 #' data(RandomVA3)

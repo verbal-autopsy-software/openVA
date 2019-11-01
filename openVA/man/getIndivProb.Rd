@@ -4,12 +4,14 @@
 \alias{getIndivProb}
 \title{Extract individual distribution of cause of death}
 \usage{
-getIndivProb(x, CI = NULL)
+getIndivProb(x, CI = NULL, ...)
 }
 \arguments{
 \item{x}{a fitted object from \code{codeVA}.}
 
 \item{CI}{Credible interval for posterior estimates. If CI is set to TRUE, a list is returned instead of a data frame.}
+
+\item{...}{additional arguments that can be passed to \code{get.indiv} from InSilicoVA package.}
 }
 \value{
 a data frame of COD distribution for each individual specified by row names.
