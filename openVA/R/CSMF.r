@@ -16,12 +16,12 @@
 #' data(RandomVA1)
 #' # for illustration, only use interVA on 100 deaths
 #' fit <- codeVA(RandomVA1[1:100, ], data.type = "WHO2012", model = "InterVA", 
-#'                   version = "4.03", HIV = "h", Malaria = "l")
+#'                   version = "4.03", HIV = "h", Malaria = "l", write=FALSE)
 #' getCSMF(fit)
 #' library(InterVA5)
 #' data(RandomVA5)
 #' fit <- codeVA(RandomVA5[1:100, ], data.type = "WHO2016", model = "InterVA", 
-#'                   version = "5.0", HIV = "h", Malaria = "l")
+#'                   version = "5.0", HIV = "h", Malaria = "l", write=FALSE)
 #' getCSMF(fit)
 #' }
 #' 
@@ -114,7 +114,7 @@ getCSMF_accuracy <- function(csmf, truth, undet = NULL){
 #' data(RandomVA1)
 #' # for illustration, only use interVA on 100 deaths
 #' fit <- codeVA(RandomVA1[1:100, ], data.type = "WHO", model = "InterVA", 
-#'                   version = "4.02", HIV = "h", Malaria = "l")
+#'                   version = "4.02", HIV = "h", Malaria = "l", write=FALSE)
 #' getTopCOD(fit)
 #' 
 getTopCOD <- function(x, interVA.rule = TRUE){
@@ -194,7 +194,7 @@ getTopCOD <- function(x, interVA.rule = TRUE){
 #' data(RandomVA1)
 #' # for illustration, only use interVA on 100 deaths
 #' fit <- codeVA(RandomVA1[1:100, ], data.type = "WHO", model = "InterVA", 
-#'                   version = "4.02", HIV = "h", Malaria = "l")
+#'                   version = "4.02", HIV = "h", Malaria = "l", write=FALSE)
 #' probs <- getIndivProb(fit)
 #' 
 getIndivProb <- function(x, CI = NULL, ...){

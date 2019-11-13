@@ -52,7 +52,7 @@
 #'                     Nsim=1000, auto.length = FALSE)
 #'
 #' fit2 <- codeVA(data = test, data.type = "customize", model = "InterVA",
-#'                data.train = train, causes.train = "cause",
+#'                data.train = train, causes.train = "cause", write=FALSE,
 #'                version = "4.02", HIV = "h", Malaria = "l")
 #'
 #' fit3 <- codeVA(data = test, data.type = "customize", model = "Tariff",
