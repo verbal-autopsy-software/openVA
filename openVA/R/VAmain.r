@@ -351,15 +351,15 @@ codeVA <- function(data, data.type = c("WHO2012", "WHO2016", "PHMRC", "customize
 #' plotVA(fit4)
 #' }
 plotVA <- function(object, top = 10, title = NULL, ...){
-  if(class(object) == "interVA"){
+  if(methods::is(object, "interVA")){
     csmf <- InterVA4::CSMF(object, top.plot = top, main = title, ...)
-  }else if(class(object) == "interVA5"){
+  }else if(methods::is(object, "interVA5")){
     csmf <- InterVA5::CSMF5(object, top.plot = top, main = title, ...)
-  }else if(class(object) == "tariff"){
+  }else if(methods::is(object, "tariff")){
     plot(object, top = top, main = title, ...)
-  }else if(class(object) == "insilico"){
+  }else if(methods::is(object, "insilico")){
     plot(object, top = top, title = title, ...)
-  }else if(class(object) == "nbc"){
+  }else if(methods::is(object,  "nbc")){
     plot(object, top.plot = top, main = title, ...)
   }else{
     stop("Unknown object to plot")

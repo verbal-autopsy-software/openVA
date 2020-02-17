@@ -28,22 +28,22 @@
 getCSMF <- function(x, CI = 0.95, interVA.rule = TRUE){
 
   # For InSilico object
-  if(class(x) == "insilico"){
+  if(methods::is(x, "insilico")){
     return(summary(x, CI.csmf = CI)$csmf) 
   }
 
-  if(class(x) == "interVA"){
+  if(methods::is(x, "interVA")){
     return(InterVA4::CSMF(x, InterVA.rule = interVA.rule, noplot = TRUE))
   } 
-  if(class(x) == "interVA5"){
+  if(methods::is(x, "interVA5")){
     return(InterVA5::CSMF5(x, InterVA.rule = interVA.rule, noplot = TRUE))
   } 
    
-  if(class(x) == "tariff"){
+  if(methods::is(x, "tariff")){
     return(x$csmf)
   }
 
-  if(class(x) == "nbc"){
+  if(methods::is(x, "nbc")){
    if (!isTRUE(requireNamespace("nbc4va", quietly = TRUE))) {
         stop("You need to install the package 'nbc4va'. Please run in your R terminal:\n install.packages('nbc4va')")
       }
@@ -70,7 +70,7 @@ getCSMF <- function(x, CI = 0.95, interVA.rule = TRUE){
 
 getCSMF_accuracy <- function(csmf, truth, undet = NULL){
   ## when input is insilico fit
-  if(class(csmf) == 'insilico'){
+  if(methods::is(csmf, 'insilico')){
     if(!is.null(names(truth))){
       order <- match(colnames(csmf$csmf), names(truth))
       if(is.na(sum(order))){stop("Names not matching")}
@@ -119,7 +119,7 @@ getCSMF_accuracy <- function(csmf, truth, undet = NULL){
 #' 
 getTopCOD <- function(x, interVA.rule = TRUE){
   
-  if(class(x) == "insilico"){
+  if(methods::is(x, "insilico")){
     probs <- x$indiv.prob
     pick <- colnames(probs)[apply(probs, 1, which.max)]
     # add possibility of no possible COD
@@ -127,7 +127,7 @@ getTopCOD <- function(x, interVA.rule = TRUE){
       pick[which(apply(probs, 1, max) == 0)] <- "Undetermined"
     }
     id <- x$id
-  }else if(class(x) == "interVA" ){
+  }else if(methods::is(x, "interVA" )){
       id <- x$ID
       pick <- rep("", length(x$VA))
       for(i in 1:length(x$VA)){
@@ -147,7 +147,7 @@ getTopCOD <- function(x, interVA.rule = TRUE){
           }
       }
       pick[which(pick == " ")] <- "Undetermined"
-    }else if(class(x) == "interVA5"){
+    }else if(methods::is(x, "interVA5")){
       id <- x$ID
       pick <- rep("", length(x$VA))
       for(i in 1:length(x$VA)){
@@ -167,10 +167,10 @@ getTopCOD <- function(x, interVA.rule = TRUE){
           }
       }
       pick[which(pick == " ")] <- "Undetermined"
-    }else if(class(x) == "tariff"){
+    }else if(methods::is(x, "tariff")){
       pick <- x$causes.test[, 2]
       id <- as.character(x$causes.test[, 1])
-    }else if(class(x) == "nbc"){
+    }else if(methods::is(x, "nbc")){
       if (!isTRUE(requireNamespace("nbc4va", quietly = TRUE))) {
         stop("You need to install the packages 'nbc4va'. Please run in your R terminal:\n install.packages('nbc4va')")
       }
@@ -199,7 +199,7 @@ getTopCOD <- function(x, interVA.rule = TRUE){
 #' 
 getIndivProb <- function(x, CI = NULL, ...){
   
-  if(class(x) == "insilico"){    
+  if(methods::is(x, "insilico")){    
     if(!is.null(CI)){
        indiv  <- InSilicoVA::get.indiv(x, CI = CI, ...)
        probs <- NULL
@@ -212,7 +212,7 @@ getIndivProb <- function(x, CI = NULL, ...){
        probs <- x$indiv.prob
     }
 
-  }else if(class(x) == "interVA"){
+  }else if(methods::is(x, "interVA")){
       id <- x$ID
       probs <- matrix(NA, length(x$VA), length(x$VA[[1]]$wholeprob))
       for(i in 1:length(x$VA)){
@@ -221,7 +221,7 @@ getIndivProb <- function(x, CI = NULL, ...){
       rownames(probs) <- id
       colnames(probs) <- names(x$VA[[i]]$wholeprob)
 
-    }else if(class(x) == "interVA5"){
+    }else if(methods::is(x, "interVA5")){
       id <- x$ID
       probs <- matrix(NA, length(x$VA), length(x$VA[[1]]$wholeprob[4:64]))
       for(i in 1:length(x$VA)){
@@ -230,10 +230,10 @@ getIndivProb <- function(x, CI = NULL, ...){
       rownames(probs) <- id
       colnames(probs) <- names(x$VA[[i]]$wholeprob[4:64])
 
-    }else if(class(x) == "tariff"){
+    }else if(methods::is(x, "tariff")){
       warning("Tariff method produces only rankings of causes, not probabilities")
       probs <- x$score
-    }else if(class(x) == "nbc"){
+    }else if(methods::is(x, "nbc")){
       probs <- x$prob
     }
 

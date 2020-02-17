@@ -107,7 +107,7 @@ stackplotVA <- function(x, grouping = NULL,
   
   csmf <- NULL
   
-  if(class(x) != "list") {
+  if(!methods::is(x, "list")) {
     x <- list(x)
   }
   n <- length(x)
@@ -115,7 +115,7 @@ stackplotVA <- function(x, grouping = NULL,
   
   # Collects info from each given model for CSMF calculation
   for(i in 1:n) {
-    if(class(x[[i]]) == "insilico") {
+    if(methods::is(x[[i]],  "insilico")) {
       if(is.null(x[[i]]$subpop)) {
         # for InSilicoVA, since the error bar needs to be calculated
         # based on the grouping, need the raw CSMF here
@@ -132,11 +132,11 @@ stackplotVA <- function(x, grouping = NULL,
     }
     else {
       csmf[[i]] <- getCSMF(x[[i]], CI = CI)
-      if(class(x[[i]]) == "interVA" || class(x[[i]]) == "interVA5" ) {
+      if(methods::is(x[[i]], "interVA") || methods::is(x[[i]], "interVA5") ) {
         counts[i] <- length(x[[i]]$VA) 
-      } else if(class(x[[i]]) == "tariff") {
+      } else if(methods::is(x[[i]], "tariff")) {
         counts[i] <- dim(x[[i]]$causes.test)[1]
-      } else if(class(x[[i]]) == "nbc") {
+      } else if(methods::is(x[[i]],  "nbc")) {
         counts[i] <- dim(x[[i]]$test)[1]
       }
       
@@ -179,7 +179,7 @@ stackplotVA <- function(x, grouping = NULL,
   # Calculates grouped CSMF for each given model
   for(index in 1:length(csmf)) {
     
-    if(class(x[[index]]) == "insilico") {
+    if(methods::is(x[[index]], "insilico")) {
       this_csmf <- t(as.data.frame(csmf[[index]]))
       grouped_sums <- merge(this_csmf, grouping, by.x = "row.names",
                             by.y = colnames(grouping)[1], all.x = TRUE)
