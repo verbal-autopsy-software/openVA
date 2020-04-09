@@ -1,5 +1,9 @@
 # openVA - changes
 
+Version 1.0.10 (2020-04-09)
+==========================
++ Minor unit test updates.
+
 Version 1.0.9 (2020-02-17)
 ==========================
 + Various minor document and helper function enhancements.

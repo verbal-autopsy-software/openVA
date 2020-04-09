@@ -91,23 +91,23 @@ test_that("Tariff - every symptom is the same broad cause", {
 
 })
 
-test_that("NBC - every symptom is the same broad cause", {
+# test_that("NBC - every symptom is the same broad cause", {
 
-  grouping$broad_cause <- rep("everyone is the same", nrow(grouping))
+#   grouping$broad_cause <- rep("everyone is the same", nrow(grouping))
 
-  # nbc
-  set.seed(13)
-  fit4 <- codeVA(data = test, data.type = "customize", model = "NBC",
-                 data.train = train, causes.train = "cause", known.nbc = TRUE)
-  s <- stackplotVA(fit4, grouping = grouping, type = "stack",
-  ylim = c(0, 1), title = "NBC")
-  s_data <- layer_data(s)
+#   # nbc
+#   set.seed(13)
+#   fit4 <- codeVA(data = test, data.type = "customize", model = "NBC",
+#                  data.train = train, causes.train = "cause", known.nbc = TRUE)
+#   s <- stackplotVA(fit4, grouping = grouping, type = "stack",
+#   ylim = c(0, 1), title = "NBC")
+#   s_data <- layer_data(s)
 
-  expect_equal(nrow(s_data), 1)
-  expect_equal(max(s_data$ymax), 1)
-  expect_equal(min(s_data$ymin), 0)
+#   expect_equal(nrow(s_data), 1)
+#   expect_equal(max(s_data$ymax), 1)
+#   expect_equal(min(s_data$ymin), 0)
 
-})
+# })
 
 test_that("InSilico - list of three identical runs", {
 
@@ -181,22 +181,22 @@ test_that("Tariff - list of three identical runs", {
 
 })
 
-test_that("NBC - list of three identical runs", {
+# test_that("NBC - list of three identical runs", {
 
-  set.seed(13)
-  fit4 <- codeVA(data = test, data.type = "customize", model = "NBC",
-                 data.train = train, causes.train = "cause", known.nbc = TRUE)
-  l <- list(fit4, fit4, fit4)
-  s <- stackplotVA(l, grouping = grouping, type = "stack",
-  ylim = c(0, 1), title = "NBC")
-  s_data <- layer_data(s)
+#   set.seed(13)
+#   fit4 <- codeVA(data = test, data.type = "customize", model = "NBC",
+#                  data.train = train, causes.train = "cause", known.nbc = TRUE)
+#   l <- list(fit4, fit4, fit4)
+#   s <- stackplotVA(l, grouping = grouping, type = "stack",
+#   ylim = c(0, 1), title = "NBC")
+#   s_data <- layer_data(s)
 
-  subset <- s_data[1:length(unique(grouping$broad_cause)),
-                            !names(s_data) %in% c("x", "group", "xmax", "xmin")]
-  generated <- rbind(subset, subset, subset)
-  expect_equal(generated, s_data[, !names(s_data) %in% c("x", "group", "xmax", "xmin")])
+#   subset <- s_data[1:length(unique(grouping$broad_cause)),
+#                             !names(s_data) %in% c("x", "group", "xmax", "xmin")]
+#   generated <- rbind(subset, subset, subset)
+#   expect_equal(generated, s_data[, !names(s_data) %in% c("x", "group", "xmax", "xmin")])
 
-})
+# })
 
 test_that("InterVA4 - category missing from grouping is handled", {
 
