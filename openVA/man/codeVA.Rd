@@ -8,9 +8,9 @@ codeVA(data, data.type = c("WHO2012", "WHO2016", "PHMRC",
   "customize")[1], data.train = NULL, causes.train = NULL,
   causes.table = NULL, model = c("InSilicoVA", "InterVA", "Tariff",
   "NBC")[1], Nchain = 1, Nsim = 10000, version = c("4.02", "4.03",
-  "5.0")[2], HIV = "h", Malaria = "h", phmrc.type = c("adult",
-  "child", "neonate")[1], convert.type = c("quantile", "fixed",
-  "empirical")[1], ...)
+  "5")[2], HIV = "h", Malaria = "h", phmrc.type = c("adult", "child",
+  "neonate")[1], convert.type = c("quantile", "fixed", "empirical")[1],
+  ...)
 }
 \arguments{
 \item{data}{Input VA data, see \code{data.type} below for more information about the format.}
@@ -36,7 +36,7 @@ codeVA(data, data.type = c("WHO2012", "WHO2016", "PHMRC",
 
 \item{Nsim}{Parameter specific to ``InSilicoVA'' model. Number of iterations to run the sampler.}
 
-\item{version}{Parameter specific to ``InterVA'' model. Currently supports ``4.02'', ``4.03'', and ``5.0''. For InterVA-4, ``4.03'' is strongly recommended as it fixes several major bugs in ``4.02'' version. ``4.02'' is only included for backward compatibility. ``5.0'' version implements the InterVA-5 model, which requires different data input format.}
+\item{version}{Parameter specific to ``InterVA'' model. Currently supports ``4.02'', ``4.03'', and ``5''. For InterVA-4, ``4.03'' is strongly recommended as it fixes several major bugs in ``4.02'' version. ``4.02'' is only included for backward compatibility. ``5'' version implements the InterVA-5 model, which requires different data input format.}
 
 \item{HIV}{Parameter specific to ``InterVA'' model. HIV prevalence level, can take values ``h'' (high), ``l'' (low), and ``v'' (very low).}
 
@@ -74,8 +74,6 @@ fit3 <- codeVA(data = test, data.type = "customize", model = "Tariff",
                data.train = train, causes.train = "cause", 
                nboot.sig = 100)
 
-fit4 <- codeVA(data = test, data.type = "customize", model = "NBC",
-               data.train = train, causes.train = "cause", known.nbc = TRUE)
 
 }
 }

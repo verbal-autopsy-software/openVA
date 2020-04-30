@@ -33,7 +33,7 @@ getCSMF(fit)
 library(InterVA5)
 data(RandomVA5)
 fit <- codeVA(RandomVA5[1:100, ], data.type = "WHO2016", model = "InterVA", 
-                  version = "5.0", HIV = "h", Malaria = "l", write=FALSE)
+                  version = "5", HIV = "h", Malaria = "l", write=FALSE)
 getCSMF(fit)
 }
 

@@ -15,7 +15,7 @@
 #' @param model Currently supports four models: ``InSilicoVA'', ``InterVA'', ``Tariff'', and ``NBC''.
 #' @param Nchain Parameter specific to ``InSilicoVA'' model. Currently not used.
 #' @param Nsim Parameter specific to ``InSilicoVA'' model. Number of iterations to run the sampler.
-#' @param version Parameter specific to ``InterVA'' model. Currently supports ``4.02'', ``4.03'', and ``5.0''. For InterVA-4, ``4.03'' is strongly recommended as it fixes several major bugs in ``4.02'' version. ``4.02'' is only included for backward compatibility. ``5.0'' version implements the InterVA-5 model, which requires different data input format.
+#' @param version Parameter specific to ``InterVA'' model. Currently supports ``4.02'', ``4.03'', and ``5''. For InterVA-4, ``4.03'' is strongly recommended as it fixes several major bugs in ``4.02'' version. ``4.02'' is only included for backward compatibility. ``5'' version implements the InterVA-5 model, which requires different data input format.
 #' @param HIV Parameter specific to ``InterVA'' model. HIV prevalence level, can take values ``h'' (high), ``l'' (low), and ``v'' (very low).
 #' @param Malaria HIV Parameter specific to ``InterVA'' model. Malaria prevalence level, can take values ``h'' (high), ``l'' (low), and ``v'' (very low). 
 #' @param phmrc.type Which PHMRC data format is used. Currently supports only ``adult'' and ``child'', ``neonate'' will be supported in the next release.
@@ -59,8 +59,6 @@
 #'                data.train = train, causes.train = "cause", 
 #'                nboot.sig = 100)
 #'
-#' fit4 <- codeVA(data = test, data.type = "customize", model = "NBC",
-#'                data.train = train, causes.train = "cause", known.nbc = TRUE)
 #'
 #' }
 
@@ -71,10 +69,13 @@ codeVA <- function(data, data.type = c("WHO2012", "WHO2016", "PHMRC", "customize
                   causes.table = NULL,
                   model = c("InSilicoVA", "InterVA", "Tariff", "NBC")[1],
                   Nchain = 1, Nsim=10000, 
-                  version = c("4.02", "4.03", "5.0")[2], HIV = "h", Malaria = "h", 
+                  version = c("4.02", "4.03", "5")[2], HIV = "h", Malaria = "h", 
                   phmrc.type = c("adult", "child", "neonate")[1], 
                   convert.type = c("quantile", "fixed", "empirical")[1],
                   ...){
+
+  version <- as.character(version)
+  if(version=="5.0") version <- "5"
 
   args <- as.list(match.call())
   # --------------------------------------------------------------------#
@@ -91,11 +92,11 @@ codeVA <- function(data, data.type = c("WHO2012", "WHO2016", "PHMRC", "customize
   # --------------------------------------------------------------------#
   # check data input 
   # --------------------------------------------------------------------#
-  if(data.type == "WHO2016" & model == "InterVA" & version != "5.0"){
-    stop("Error: WHO2016 type input does not work with InterVA 4.02 or 4.03. Consider switching to 5.0")
+  if(data.type == "WHO2016" & model == "InterVA" & version != "5"){
+    stop("Error: WHO2016 type input does not work with InterVA 4.02 or 4.03. Consider switching to 5")
   }
-  if(data.type == "WHO2012" & model == "InterVA" & version == "5.0"){
-    stop("Error: WHO2012 type input does not work with InterVA 5.0. Consider switching to 4.03")
+  if(data.type == "WHO2012" & model == "InterVA" & version == "5"){
+    stop("Error: WHO2012 type input does not work with InterVA 5. Consider switching to 4.03")
   }
   
   if(data.type %in% c("WHO2012", "WHO2016") && 
@@ -342,13 +343,9 @@ codeVA <- function(data, data.type = c("WHO2012", "WHO2016", "PHMRC", "customize
 #'                data.train = train, causes.train = "cause", 
 #'                nboot.sig = 100)
 #'
-#' fit4 <- codeVA(data = test, data.type = "customize", model = "NBC",
-#'                data.train = train, causes.train = "cause", known.nbc = TRUE)
-#'
 #' plotVA(fit1)
 #' plotVA(fit2)
 #' plotVA(fit3)
-#' plotVA(fit4)
 #' }
 plotVA <- function(object, top = 10, title = NULL, ...){
   if(methods::is(object, "interVA")){

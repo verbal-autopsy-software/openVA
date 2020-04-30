@@ -36,13 +36,9 @@ fit3 <- codeVA(data = test, data.type = "customize", model = "Tariff",
                data.train = train, causes.train = "cause", 
                nboot.sig = 100)
 
-fit4 <- codeVA(data = test, data.type = "customize", model = "NBC",
-               data.train = train, causes.train = "cause", known.nbc = TRUE)
-
 plotVA(fit1)
 plotVA(fit2)
 plotVA(fit3)
-plotVA(fit4)
 }
 }
 \seealso{

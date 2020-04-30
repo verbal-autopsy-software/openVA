@@ -1,4 +1,8 @@
 # openVA - changes
+Version 1.0.11 (2020-05-01)
+==========================
++ Minor CRAN check update.
++ Now support `version='5'` for the latest version of InterVA-5.
 
 Version 1.0.10 (2020-04-09)
 ==========================
