@@ -28,6 +28,7 @@ openVA_update <- function() {
   pkgs <- utils::available.packages()
   deps <- tools::package_dependencies("openVA", pkgs)
   pkg_deps <- unique(sort(unlist(deps)))
+  pkg_deps <- pkg_deps[pkg_deps %in% pkgs[, 1]]
   cran_version <- lapply(pkgs[pkg_deps, "Version"], base::package_version)
   local_version <- lapply(pkg_deps, utils::packageVersion)
   behind <- rep(FALSE, length(local_version))
