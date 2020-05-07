@@ -4,7 +4,8 @@
 \alias{ConvertData}
 \title{Converting Input data with different coding scheme to standard format}
 \usage{
-ConvertData(input, yesLabel = NULL, noLabel = NULL, missLabel = NULL)
+ConvertData(input, yesLabel = NULL, noLabel = NULL, missLabel = NULL,
+  data.type = c("WHO2012", "WHO2016")[1])
 }
 \arguments{
 \item{input}{matrix input, the first column is ID, the rest of the columns each represent one symptom}
@@ -14,9 +15,11 @@ ConvertData(input, yesLabel = NULL, noLabel = NULL, missLabel = NULL)
 \item{noLabel}{The value(s) coding "No" in the input matrix.}
 
 \item{missLabel}{The value(s) coding "Missing" in the input matrix.}
+
+\item{data.type}{The coding scheme of the output. This can be either "WHO2012" or "WHO2016".}
 }
 \value{
-a matrix with coding scheme as follows: "Y" for yes, "" for No, and "." for missing.
+a data frame coded as follows. For WHO2012 scheme: "Y" for yes, "" for No, and "." for missing. For WHO2016 scheme: "y" for yes, "n" for No, and "-" for missing.
 }
 \description{
 Converting Input data with different coding scheme to standard format

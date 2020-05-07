@@ -4,8 +4,9 @@
 #' @param yesLabel The value(s) coding "Yes" in the input matrix.
 #' @param noLabel The value(s) coding "No" in the input matrix.
 #' @param missLabel The value(s) coding "Missing" in the input matrix.
+#' @param data.type The coding scheme of the output. This can be either "WHO2012" or "WHO2016".
 #'
-#' @return a matrix with coding scheme as follows: "Y" for yes, "" for No, and "." for missing.
+#' @return a data frame coded as follows. For WHO2012 scheme: "Y" for yes, "" for No, and "." for missing. For WHO2016 scheme: "y" for yes, "n" for No, and "-" for missing.
 #' @export ConvertData
 #'
 #' @examples
@@ -24,7 +25,7 @@
 #' new
 #' }
 
-ConvertData <- function(input, yesLabel = NULL, noLabel = NULL, missLabel = NULL){
+ConvertData <- function(input, yesLabel = NULL, noLabel = NULL, missLabel = NULL, data.type = c("WHO2012", "WHO2016")[1]){
 
 	##
 	## Help user prepare data from other format into the default
@@ -32,6 +33,10 @@ ConvertData <- function(input, yesLabel = NULL, noLabel = NULL, missLabel = NULL
 	if(is.null(yesLabel) || is.null(noLabel) || is.null(missLabel)){
 		stop("Error: please specify what values are used in the data to represent yes, no, and missing")
 	}
+
+	ynm <- c("Y", "", ".")
+	if(data.type == "WHO2016") ynm <- c("y", "n", "-")
+
 	
 	output <- data.frame(matrix("", dim(input)[1], dim(input)[2]), 
 						stringsAsFactors = FALSE)
@@ -51,9 +56,9 @@ ConvertData <- function(input, yesLabel = NULL, noLabel = NULL, missLabel = NULL
 			output[, i] <- tmp
 		# if the column contains only yes, no, or missing
 		}else{
-			output[which(tmp %in% yesLabel), i] <- "Y"
-			output[which(tmp %in% noLabel), i] <- ""
-			output[which(tmp %in% missLabel), i] <- "."
+			output[which(tmp %in% yesLabel), i] <- ynm[1]
+			output[which(tmp %in% noLabel), i] <- ynm[2]
+			output[which(tmp %in% missLabel), i] <- ynm[3]
 			}
 	}
 
