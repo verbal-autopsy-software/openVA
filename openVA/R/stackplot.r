@@ -121,9 +121,19 @@ stackplotVA <- function(x, grouping = NULL,
         
         present_cod <- colnames(csmf[[i]])
         
-      } else {
+      } else if(n == 1){
+        g <- InSilicoVA::stackplot(x[[i]], grouping = grouping,
+                        type = type, 
+                        group_order = group_order, err = err,
+                        CI = CI, sample_size_print = sample_size_print,
+                        xlab = xlab, ylab = ylab, ylim = ylim,
+                        title = title,  horiz = horiz, angle = angle,  
+                        err_width = err_width, err_size = err_size, 
+                        border = border, bw = bw, filter_legend = filter_legend, ...)
+        return(g)
+       }else{ 
         stop("Sub-population specification exists in InSilicoVA fit,
-             please rerun with only the InSilicoVA object\n")
+             # please rerun with only the InSilicoVA object\n")
       }
     }
     else {
