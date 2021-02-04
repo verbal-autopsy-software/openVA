@@ -4,9 +4,14 @@
 \alias{ConvertData.phmrc}
 \title{Convert standard PHMRC data into binary indicator format}
 \usage{
-ConvertData.phmrc(input, input.test = NULL, cause = NULL,
-  phmrc.type = c("adult", "child", "neonate")[1], cutoff = c("default",
-  "adapt")[1], ...)
+ConvertData.phmrc(
+  input,
+  input.test = NULL,
+  cause = NULL,
+  phmrc.type = c("adult", "child", "neonate")[1],
+  cutoff = c("default", "adapt")[1],
+  ...
+)
 }
 \arguments{
 \item{input}{standard PHMRC data format}
@@ -25,7 +30,7 @@ ConvertData.phmrc(input, input.test = NULL, cause = NULL,
 converted dataset with only ID and binary symptoms. Notice that when applying this function to the raw PHMRC data, the returned ID variable corresponds to the row index of the raw PHMRC data (i.e., cleaned data with ID = 10 correspond to the 10th row of the raw dataset), and does not correspond to the "newid" column in the PHMRC data.
 }
 \description{
-The PHMRC data and the description of the format could be found at \url{http://ghdx.healthdata.org/record/population-health-metrics-research-consortium-gold-standard-verbal-autopsy-data-2005-2011}. This function convert the symptoms into binary indicators of three levels: Yes, No, and Missing. The health care experience (HCE) and free-text columns, i.e., columns named "word_****", are not considered in the current version of data conversion.
+The PHMRC data and the description of the format could be found at \url{https://ghdx.healthdata.org/record/ihme-data/population-health-metrics-research-consortium-gold-standard-verbal-autopsy-data-2005-2011}. This function convert the symptoms into binary indicators of three levels: Yes, No, and Missing. The health care experience (HCE) and free-text columns, i.e., columns named "word_****", are not considered in the current version of data conversion.
 }
 \examples{
 \donttest{

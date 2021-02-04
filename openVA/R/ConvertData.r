@@ -96,7 +96,7 @@ getPHMRC_url <- function(type){
 }
 #' Convert standard PHMRC data into binary indicator format
 #'
-#' The PHMRC data and the description of the format could be found at \url{http://ghdx.healthdata.org/record/population-health-metrics-research-consortium-gold-standard-verbal-autopsy-data-2005-2011}. This function convert the symptoms into binary indicators of three levels: Yes, No, and Missing. The health care experience (HCE) and free-text columns, i.e., columns named "word_****", are not considered in the current version of data conversion.
+#' The PHMRC data and the description of the format could be found at \url{https://ghdx.healthdata.org/record/ihme-data/population-health-metrics-research-consortium-gold-standard-verbal-autopsy-data-2005-2011}. This function convert the symptoms into binary indicators of three levels: Yes, No, and Missing. The health care experience (HCE) and free-text columns, i.e., columns named "word_****", are not considered in the current version of data conversion.
 
 #' @param input standard PHMRC data format
 #' @param input.test standard PHMRC data format to be transformed in the same way as \code{input}

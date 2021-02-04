@@ -35,7 +35,7 @@
 #' @references Tyler H. McCormick, Zehang R. Li, Clara Calvert, Amelia C.
 #' Crampin, Kathleen Kahn and Samuel J. Clark (2016) \emph{Probabilistic
 #' cause-of-death assignment using verbal autopsies.}
-#' \url{http://arxiv.org/abs/1411.3042}, \emph{To appear, Journal of the American Statistical Association}
+#' \url{https://arxiv.org/abs/1411.3042}, \emph{Journal of the American Statistical Association}
 #' @references James, S. L., Flaxman, A. D., Murray, C. J., & Population Health Metrics Research Consortium. (2011). \emph{Performance of the Tariff Method: validation of a simple additive algorithm for analysis of verbal autopsies.} \emph{Population Health Metrics, 9(1), 1-16.}
 #' @references Zehang R. Li, Tyler H. McCormick, Samuel J. Clark (2014) \emph{InterVA4: An R package to analyze verbal autopsy data.} \emph{Center for Statistics and the Social Sciences Working Paper, No.146}
 #' @references http://www.interva.net/

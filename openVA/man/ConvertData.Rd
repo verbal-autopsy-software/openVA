@@ -4,8 +4,13 @@
 \alias{ConvertData}
 \title{Converting Input data with different coding scheme to standard format}
 \usage{
-ConvertData(input, yesLabel = NULL, noLabel = NULL, missLabel = NULL,
-  data.type = c("WHO2012", "WHO2016")[1])
+ConvertData(
+  input,
+  yesLabel = NULL,
+  noLabel = NULL,
+  missLabel = NULL,
+  data.type = c("WHO2012", "WHO2016")[1]
+)
 }
 \arguments{
 \item{input}{matrix input, the first column is ID, the rest of the columns each represent one symptom}

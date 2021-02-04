@@ -4,13 +4,22 @@
 \alias{codeVA}
 \title{Running automated method on VA data}
 \usage{
-codeVA(data, data.type = c("WHO2012", "WHO2016", "PHMRC",
-  "customize")[1], data.train = NULL, causes.train = NULL,
-  causes.table = NULL, model = c("InSilicoVA", "InterVA", "Tariff",
-  "NBC")[1], Nchain = 1, Nsim = 10000, version = c("4.02", "4.03",
-  "5")[2], HIV = "h", Malaria = "h", phmrc.type = c("adult", "child",
-  "neonate")[1], convert.type = c("quantile", "fixed", "empirical")[1],
-  ...)
+codeVA(
+  data,
+  data.type = c("WHO2012", "WHO2016", "PHMRC", "customize")[1],
+  data.train = NULL,
+  causes.train = NULL,
+  causes.table = NULL,
+  model = c("InSilicoVA", "InterVA", "Tariff", "NBC")[1],
+  Nchain = 1,
+  Nsim = 10000,
+  version = c("4.02", "4.03", "5")[2],
+  HIV = "h",
+  Malaria = "h",
+  phmrc.type = c("adult", "child", "neonate")[1],
+  convert.type = c("quantile", "fixed", "empirical")[1],
+  ...
+)
 }
 \arguments{
 \item{data}{Input VA data, see \code{data.type} below for more information about the format.}
@@ -81,7 +90,7 @@ fit3 <- codeVA(data = test, data.type = "customize", model = "Tariff",
 Tyler H. McCormick, Zehang R. Li, Clara Calvert, Amelia C.
 Crampin, Kathleen Kahn and Samuel J. Clark (2016) \emph{Probabilistic
 cause-of-death assignment using verbal autopsies.}
-\url{http://arxiv.org/abs/1411.3042}, \emph{To appear, Journal of the American Statistical Association}
+\url{https://arxiv.org/abs/1411.3042}, \emph{Journal of the American Statistical Association}
 
 James, S. L., Flaxman, A. D., Murray, C. J., & Population Health Metrics Research Consortium. (2011). \emph{Performance of the Tariff Method: validation of a simple additive algorithm for analysis of verbal autopsies.} \emph{Population Health Metrics, 9(1), 1-16.}
 

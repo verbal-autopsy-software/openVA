@@ -1,4 +1,9 @@
 # openVA - changes
+Version 1.0.12 (2021-02-02)
+==========================
++ Now support both WHO 2012 and WHO 2016 output in `ConvertData` function.
++ Minor plot improvements.
+ 
 Version 1.0.11 (2020-05-01)
 ==========================
 + Minor CRAN check update.

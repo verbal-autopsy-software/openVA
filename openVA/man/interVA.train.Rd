@@ -4,9 +4,16 @@
 \alias{interVA.train}
 \title{Extended InterVA method for non-standard input}
 \usage{
-interVA.train(data, train, causes.train, causes.table = NULL,
-  thre = 0.95, type = c("quantile", "fixed", "empirical")[1],
-  prior = c("uniform", "train")[1], ...)
+interVA.train(
+  data,
+  train,
+  causes.train,
+  causes.table = NULL,
+  thre = 0.95,
+  type = c("quantile", "fixed", "empirical")[1],
+  prior = c("uniform", "train")[1],
+  ...
+)
 }
 \arguments{
 \item{data}{A matrix input, or data read from csv files. Sample input is included as \code{data(RandomVA3)}.}
@@ -48,7 +55,7 @@ out <- interVA.train(data = test, train = train, causes.train = "cause",
 Tyler H. McCormick, Zehang R. Li, Clara Calvert, Amelia C.
 Crampin, Kathleen Kahn and Samuel J. Clark (2016) \emph{Probabilistic
 cause-of-death assignment using verbal autopsies.}
-\url{http://arxiv.org/abs/1411.3042}, \emph{To appear, Journal of the American Statistical Association}
+\url{https://arxiv.org/abs/1411.3042}, \emph{To appear, Journal of the American Statistical Association}
 
 Zehang R. Li, Tyler H. McCormick, Samuel J. Clark (2014) \emph{InterVA4: An R package to analyze verbal autopsy data.}, \emph{Center for Statistics and the Social Sciences Working Paper, No.146}
 
