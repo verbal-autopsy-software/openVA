@@ -76,6 +76,7 @@ getCSMF_accuracy <- function(csmf, truth, undet = NULL){
       if(is.na(sum(order))){stop("Names not matching")}
       truth <- truth[order]
     }
+    truth <- matrix(truth, dim(csmf$csmf)[2], dim(csmf$csmf)[1])
     acc <- 1 - apply(abs(truth - t(csmf$csmf)), 2, sum) / 2 / (1 - min(truth))
 
   }else{
