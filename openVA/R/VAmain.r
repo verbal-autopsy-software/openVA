@@ -149,17 +149,6 @@ codeVA <- function(data, data.type = c("WHO2012", "WHO2016", "PHMRC", "customize
       args$Nsim <- Nsim
     }
 
-    # # add in default parameters
-    # formals <- as.list(formals())
-    # defs <- setdiff(names(formals), names(args))
-    # if(length(defs) > 0){
-    #       for(i.args in 1:length(defs)){
-    #         if(!is.null(formals[[defs[i.args]]])){
-    #           args[[defs[i.args]]] <- formals[[defs[i.args]]]
-    #         }
-    #       }
-    # }
-
 
     if(data.type %in% c("WHO2012", "WHO2016")){
       fit <- do.call("insilico", pairlist(args)[[1]][-1])
@@ -257,34 +246,7 @@ codeVA <- function(data, data.type = c("WHO2012", "WHO2016", "PHMRC", "customize
       if (!isTRUE(requireNamespace("nbc4va", quietly = TRUE))) {
           stop("You need to install the packages 'nbc4va'. Please run in your R terminal:\n install.packages('nbc4va')")
         }
-    #  # make sure the second column is cause     
-    # if(which(colnames(data.train) == causes.train) != 2){
-    #   k <- which(colnames(data.train) == causes.train)
-    #   rest <- (1:dim(data.train)[2])[-c(1, k)]
-    #   data.train <- data.train[, c(1, k, rest)]
-    # }
-    
-    # # make sure the second column is cause     
-    # if(causes.train %in% colnames(data) == FALSE){
-    #   # it is handled
-    # }else if(which(colnames(data) == causes.train) != 2){
-    #   k <- which(colnames(data) == causes.train)
-    #   rest <- (1:dim(data)[2])[-c(1, k)]
-    #   data <- data[, c(1, k, rest)]
-    # }
 
-    # data.train[data.train == "Y"] <- 1
-    # data.train[data.train == ""] <- 0    
-    # data.train[data.train == "."] <- 0
-    # data[data == "Y"] <- 1
-    # data[data == ""] <- 0    
-    # data[data == "."] <- 0
-    # for(i in 3:dim(data.train)[2]){
-    #   data.train[, i] <- as.numeric(data.train[, i])
-    # }
-    # for(i in 2:dim(data)[2]){
-    #   if(colnames(data)[i] != causes.train) data[, i] <- as.numeric(data[, i])
-    # }
     if(data.type == "WHO2016"){
       data <- ConvertData(data, yesLabel = c("y", "Y"), noLabel = c("n", "N"), missLabel = c("-"))
     }

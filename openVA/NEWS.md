@@ -1,4 +1,8 @@
 # openVA - changes
+Version 1.0.13 (2021-09-16)
+==========================
++ Minor code improvements.
+ 
 Version 1.0.12 (2021-02-02)
 ==========================
 + Now support both WHO 2012 and WHO 2016 output in `ConvertData` function.

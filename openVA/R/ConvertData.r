@@ -173,13 +173,6 @@ ConvertData.phmrc <- function(input, input.test = NULL, cause = NULL, phmrc.type
 	    stop("Columns do not match in the two dataset")
 	  }
     
-    # attach the second dataset to the below,
-    # but with NA in cause variable
-    if(cause %in% colnames(input.test)){
-      # not making it NA anymore for the implementation of NBC
-      # gs.test <- input.test[, cause]
-      # input.test[, cause] <- NA
-    }
     N <- dim(input)[1]
     input <- rbind(input, input.test)
   }else{
