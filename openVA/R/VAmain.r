@@ -109,6 +109,12 @@ codeVA <- function(data, data.type = c("WHO2012", "WHO2016", "PHMRC", "customize
     if(is.null(data.train) || is.null(causes.train)){
       stop("Error: need training data for customized input.")
     }
+    tmp <- data.test[, -1]
+    tmp <- tmp[, colnames(tmp)!=causes.train]
+    tmp <- toupper(as.character(as.matrix(tmp)))
+    if(sum(!tmp %in% c("Y", "", "N", ".", "-")) != 0){
+      stop("Error: customized train/test data need to use ``Y`` to denote ``presence'', ``'' to denote ``absence'', and ``.'' to denote ``missing''.")
+    }
   }
 
   if(data.type == "PHMRC"){
