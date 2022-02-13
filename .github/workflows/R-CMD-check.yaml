@@ -39,6 +39,11 @@ jobs:
           http-user-agent: ${{ matrix.config.http-user-agent }}
           use-public-rspm: true
 
+      - name: Install R dependencies
+        run: |
+          install.packages("remotes")
+          remotes::install_github("rrwen/nbc4va")    
+
       - uses: r-lib/actions/setup-r-dependencies@v1
         with:
           extra-packages: rcmdcheck
