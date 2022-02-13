@@ -47,9 +47,9 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: rcmdcheck
           dependencies: '"hard"'
           extra-packages: |
             any::testthat
+            rcmdcheck
 
       - uses: r-lib/actions/check-r-package@v1
