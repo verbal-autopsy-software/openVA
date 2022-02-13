@@ -43,6 +43,7 @@ jobs:
         run: |
           install.packages("remotes")
           remotes::install_github("rrwen/nbc4va")    
+        shell: Rscript {0}
 
       - uses: r-lib/actions/setup-r-dependencies@v1
         with:
