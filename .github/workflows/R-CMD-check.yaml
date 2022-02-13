@@ -41,12 +41,13 @@ jobs:
 
       - name: Install R dependencies
         run: |
-          install.packages("remotes")
+          install.packages(c("remotes","rcmdcheck"))
           remotes::install_github("rrwen/nbc4va")    
         shell: Rscript {0}
 
       - uses: r-lib/actions/setup-r-dependencies@v1
         with:
           extra-packages: rcmdcheck
+          dependencies: '"hard"'
 
       - uses: r-lib/actions/check-r-package@v1
