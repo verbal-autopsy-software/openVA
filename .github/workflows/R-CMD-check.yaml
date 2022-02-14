@@ -23,6 +23,10 @@ jobs:
           - {os: ubuntu-latest, r: 'release', java: 11,os-name: ubuntu}
           - {os: ubuntu-latest, r: 'devel', java: 11,os-name: ubuntu}
           - {os: ubuntu-latest, r: 'release', java: 16,os-name: ubuntu}
+ 
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      R_KEEP_PKG_SOURCE: yes
 
     steps:
       - uses: actions/checkout@v1
