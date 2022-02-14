@@ -75,6 +75,12 @@ jobs:
           remotes::install_cran("rcmdcheck")
         shell: Rscript {0}
 
+      - name: Install R dependencies
+        run: |
+          install.packages(c("remotes","rcmdcheck"))
+          remotes::install_github("rrwen/nbc4va")    
+        shell: Rscript {0}
+
       - name: Check
         env:
           _R_CHECK_CRAN_INCOMING_REMOTE_: false
