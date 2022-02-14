@@ -53,12 +53,6 @@ jobs:
           http-user-agent: ${{ matrix.config.http-user-agent }}
           use-public-rspm: true
 
-      - name: Install R dependencies
-        run: |
-          install.packages(c("remotes","rcmdcheck"))
-          remotes::install_github("rrwen/nbc4va")    
-        shell: Rscript {0}
-
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           dependencies: '"hard"'
@@ -68,23 +62,12 @@ jobs:
 
       - name: R CMD check (Windows)
         if: runner.os == 'Windows'
-        run: "bash -c 'R CMD check --no-multiarch --no-manual ../rJava_*.tar.gz'"
+        run: "bash -c 'R CMD check --no-multiarch --no-manual ../openVA_*.tar.gz'"
 
       - name: R CMD check (Linux)
         if: runner.os == 'Linux'
-        run: "bash -c 'xvfb-run R CMD check --no-manual ../rJava_*.tar.gz'"
+        run: "bash -c 'xvfb-run R CMD check --no-manual ../openVA_*.tar.gz'"
 
       - name: R CMD check (macOS)
         if: runner.os == 'macOS'
-        run: "bash -c 'NOAWT=1 R CMD check --no-manual ../rJava_*.tar.gz'"
-
-      - name: Show install log
-        run: "bash -c 'if [ -e rJava.Rcheck/00install.out ]; then cat rJava.Rcheck/00install.out; fi'"
-
-      - name: Upload check results
-        if: failure()
-        uses: actions/upload-artifact@master
-        with:
-          name: ${{ runner.os }}-r${{ matrix.r }}-j${{ matrix.java }}-results
-          path: rJava.Rcheck
-
+        run: "bash -c 'NOAWT=1 R CMD check --no-manual ../openVA_*.tar.gz'"
