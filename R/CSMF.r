@@ -56,7 +56,7 @@ getCSMF <- function(x, CI = 0.95, interVA.rule = TRUE){
 #'
 #' @param csmf a CSMF vector from \code{getCSMF} or a InSilicoVA fitted object.
 #' @param truth a CSMF vector of the true CSMF.
-#' @param undet name of the category denoting undetermined causes. Default to be NULL. If undetermined cause is present, it will be removed and the rest of the CSMF will be re-normalized to sum to 1.
+#' @param undet name of the category denoting undetermined causes. Default to be NULL.
 #'
 #' @return a number (or vector if input is InSilicoVA fitted object) of CSMF accuracy as 1 - sum(abs(CSMF - CSMF_true)) / (2 * (1 - min(CSMF_true))).
 #' @export getCSMF_accuracy
@@ -64,10 +64,7 @@ getCSMF <- function(x, CI = 0.95, interVA.rule = TRUE){
 #' @examples
 #' csmf1 <- c(0.2, 0.3, 0.5)
 #' csmf0 <- c(0.3, 0.3, 0.4)
-#' names(csmf0) <- names(csmf1) <- c("c1", "c2", "c3")
-#' getCSMF_accuracy(csmf1, csmf0)
-#' getCSMF_accuracy(csmf1, rev(csmf0))
-#' 
+#' acc <- getCSMF_accuracy(csmf1, csmf0)
 #' 
 #'
 
@@ -75,16 +72,9 @@ getCSMF_accuracy <- function(csmf, truth, undet = NULL){
   ## when input is insilico fit
   if(methods::is(csmf, 'insilico')){
     if(!is.null(names(truth))){
-      order1 <- match(colnames(csmf$csmf), names(truth))
-      if(is.na(sum(order1))){stop("Exist names in estimated CSMF but not in the true CSMF")}
-      order2 <- match(names(truth), colnames(csmf$csmf))
-      if(is.na(sum(order2))){stop("Exist names in true CSMF but not in the estimated CSMF")}
-      truth <- truth[order1]
-
-    }else if(dim(csmf$csmf)[2] == length(truth)){
-      warning("The CSMF vectors do not have name attributes. Treat the CSMFs as having the same order. Please double check they are correctly ordered.")
-    }else{
-      stop("The CSMF vector doesn't have the same length and there are no cause labels.")
+      order <- match(colnames(csmf$csmf), names(truth))
+      if(is.na(sum(order))){stop("Names not matching")}
+      truth <- truth[order]
     }
     truth <- matrix(truth, dim(csmf$csmf)[2], dim(csmf$csmf)[1])
     acc <- 1 - apply(abs(truth - t(csmf$csmf)), 2, sum) / 2 / (1 - min(truth))
@@ -94,22 +84,14 @@ getCSMF_accuracy <- function(csmf, truth, undet = NULL){
       if(!is.null(undet)){
       if(undet %in% names(csmf)){
         csmf <- csmf[-which(names(csmf)==undet)]
-        csmf <- csmf / sum(csmf)
       }else{
         warning("The undetermined category does not exist in input CSMF.")
       }
     }  
-    if(!is.null(names(csmf)) && !is.null(names(truth))){
-      order1 <- match(names(csmf), names(truth))
-      if(is.na(sum(order1))){stop("Exist names in estimated CSMF but not in the true CSMF")}
-      order2 <- match(names(truth), names(csmf))
-      if(is.na(sum(order2))){stop("Exist names in true CSMF but not in the estimated CSMF")}
-      
-      truth <- truth[order1]
-    }else if(length(csmf) == length(truth)){
-      warning("The CSMF vectors do not have name attributes. Treat the CSMFs as having the same order. Please double check they are correctly ordered.")
-    }else{
-      stop("The CSMF vectors don't have the same length and there are no cause labels.")
+    if(!is.null(names(csmf)) & !is.null(names(truth))){
+      order <- match(names(csmf), names(truth))
+      if(is.na(sum(order))){stop("Names not matching")}
+      truth <- truth[order]
     }
 
     acc <- 1 - sum(abs(truth - csmf)) / 2 / (1 - min(truth))
@@ -120,13 +102,15 @@ getCSMF_accuracy <- function(csmf, truth, undet = NULL){
 }
 
 
-#' Extract the most likely cause of death
+#' Extract the most likely cause(s) of death
 #'
 #' @param x a fitted object from \code{codeVA}.
 #' @param interVA.rule Logical indicator for \code{interVA} object only. If TRUE, 
-#' only the InterVA reported first cause is extracted.
+#' only the InterVA reported first cause is extracted (and the n parameter is ignored).
+#' @param n Number of top causes to include
 #'
-#' @return a data frame of ID and most likely cause assignment.
+#' @return a data frame of ID, most likely cause assignment(s), and corresponding
+#' probability (for \code{insilico}) or indicator of how likely the cause is (for \code{interVA})
 #' @export getTopCOD
 #'
 #' @examples
@@ -136,68 +120,109 @@ getCSMF_accuracy <- function(csmf, truth, undet = NULL){
 #'                   version = "4.02", HIV = "h", Malaria = "l", write=FALSE)
 #' getTopCOD(fit)
 #' 
-getTopCOD <- function(x, interVA.rule = TRUE){
+getTopCOD <- function(x, interVA.rule = TRUE, n = 1){
   
-  if(methods::is(x, "insilico")){
+  if (!is.numeric(n)) {
+    n_top <- 1
+  }
+  n_top <- round(n)
+
+  if (methods::is(x, "insilico")) {
     probs <- x$indiv.prob
-    pick <- colnames(probs)[apply(probs, 1, which.max)]
-    # add possibility of no possible COD
-    if(sum(apply(probs, 1, max) == 0) > 0){
-      pick[which(apply(probs, 1, max) == 0)] <- "Undetermined"
+
+    output <- data.frame(ID = row.names(probs))
+    if (n_top == 1) {
+      output$cause = ""
+      output$prob = 0.0
+    } else {
+      for (i in 1:n_top) {
+        output[[paste0("cause", i)]] <- ""
+        output[[paste0("prob", i)]] <- NA_real_
+        }
     }
-    id <- x$id
-  }else if(methods::is(x, "interVA" )){
-      id <- x$ID
-      pick <- rep("", length(x$VA))
-      for(i in 1:length(x$VA)){
-        if(interVA.rule){
-          pick[i] <- x$VA[[i]]$CAUSE1
-        }else{
-            prob <- x$VA[[i]]$wholeprob
-            causenames <- names(prob)
-            causeindex <- 1:length(causenames)
-            if(causenames[1] == "Not pregnant or recently delivered" &&
-                causenames[2] == "Pregnancy ended within 6 weeks of death" &&
-                causenames[3] == "Pregnant at death"){
-                    causeindex <- causeindex[-c(1:3)]
-                    causenames <- causenames[-c(1:3)]    
-            }
-            pick[i] <- causenames[which.max(prob[causeindex])]
+    top_probs_index <- apply(probs, 1, order, decreasing = TRUE)[1:n_top,]
+    n_unique <- apply(probs, 1, function(x) length(unique(x)))
+
+    for (i in 1:nrow(probs)) {
+      n_top_i <- ifelse(n_unique[i] - 1 < n_top, n_unique[i] - 1, n_top)
+      cause_col_names <- paste0("cause", 1:n_top_i)
+      prob_col_names <- paste0("prob", 1:n_top_i)
+      top_probs_index_i <- top_probs_index[1:n_top_i, i]
+      output[i, cause_col_names] <- names(probs[i, top_probs_index_i])
+      output[i, prob_col_names] <- probs[i, top_probs_index_i]
+    }
+
+    # add possibility of no possible COD
+    if (sum(apply(probs, 1, max) == 0) > 0) {
+      cause_col_names <- paste0("cause", 1:n_top)
+      prob_col_names <- paste0("prob", 1:n_top)
+      output[which(apply(probs, 1, max) == 0), cause_col_names] <- "Undetermined"
+      output[which(apply(probs, 1, max) == 0), prob_col_names] <- NA_real_
+    }
+  } else if (methods::is(x, "interVA") | methods::is(x, "interVA5")) {
+      output <- data.frame(ID = x$ID)
+      if (n_top == 1) {
+        output$cause = ""
+        output$prob = 0.0
+      } else {
+          for (i in 1:n_top) {
+            output[[paste0("cause", i)]] <- ""
+            output[[paste0("lik", i)]] <- NA_real_
           }
       }
-      pick[which(pick == " ")] <- "Undetermined"
-    }else if(methods::is(x, "interVA5")){
-      id <- x$ID
-      pick <- rep("", length(x$VA))
-      for(i in 1:length(x$VA)){
-        if(interVA.rule){
-          pick[i] <- x$VA[[i]]$CAUSE1
-        }else{
-            prob <- x$VA[[i]]$wholeprob[4:64]
-            causenames <- names(prob)
-            causeindex <- 1:length(causenames)
-            if(causenames[1] == "Not pregnant or recently delivered" &&
-                causenames[2] == "Pregnancy ended within 6 weeks of death" &&
-                causenames[3] == "Pregnant at death"){
-                    causeindex <- causeindex[-c(1:3)]
-                    causenames <- causenames[-c(1:3)]    
-            }
-            pick[i] <- causenames[which.max(prob[causeindex])]
-          }
+      if (interVA.rule) { 
+        n_top <- 1
       }
-      pick[which(pick == " ")] <- "Undetermined"
-    }else if(methods::is(x, "tariff")){
-      pick <- x$causes.test[, 2]
-      id <- as.character(x$causes.test[, 1])
-    }else if(methods::is(x, "nbc")){
+      for (i in 1:length(x$VA)) {
+        if (x$VA[[i]]$CAUSE1 == " ") {
+          output[i, "cause1"] <- "Undetermined"
+          output[i, "lik1"] <- 100
+        } else {
+            probs <- x$VA[[i]]$wholeprob[-(1:3)]
+            # if InterVA5, remove the COMCAT elements (last 6)
+            if (methods::is(x, "interVA5")) probs <- head(probs, -6)
+            top_probs_index <- order(probs, decreasing = TRUE)[1:n_top]
+            n_unique <- length(unique(probs))
+            n_top_i <- ifelse(n_unique - 1 < n_top, n_unique - 1, n_top)
+            cause_col_names <- paste0("cause", 1:n_top_i)
+            prob_col_names <- paste0("lik", 1:n_top_i)
+            top_probs_index_i <- top_probs_index[1:n_top_i]
+            output[i, cause_col_names] <- names(probs[top_probs_index_i])
+            output[i, prob_col_names] <- probs[top_probs_index_i] * 100
+            # do we want to add rows for deaths without results?
+        }
+      }
+  } else if (methods::is(x, "tariff")) {
+      output <- data.frame(ID = as.character(x$causes.test[, 1]),
+                           cause = x$causes.test[, 2])
+  } else if (methods::is(x, "nbc")) {
       if (!isTRUE(requireNamespace("nbc4va", quietly = TRUE))) {
         stop("You need to install the packages 'nbc4va'. Please run in your R terminal:\n install.packages('nbc4va')")
       }
-      pick <-  nbc4va::topCOD.nbc(x)[, 2]
-      id <-  nbc4va::topCOD.nbc(x)[, 1]
-    }
+      output <- data.frame(CaseID = x$prob$CaseID)
+      for (i in 1:n_top) {
+        output[[paste0("cause", i)]] <- ""
+        output[[paste0("prob", i)]] <- NA_real_
+      }
+      probs <- x$prob[, names(x$prob) != "CaseID"]
+      top_probs_index <- apply(probs, 1, order, decreasing = TRUE)[1:n_top,]
+      n_unique <- apply(probs, 1, function(x) length(unique(x)))
 
-    return(data.frame(ID = id, cause = pick))
+      for (i in 1:nrow(probs)) {
+        n_top_i <- ifelse(n_unique[i] - 1 < n_top, n_unique[i] - 1, n_top)
+        if (n_top_i == 0) {
+          output[i, "cause1"] <- "Undetermined"
+        } else {
+            cause_col_names <- paste0("cause", 1:n_top_i)
+            prob_col_names <- paste0("prob", 1:n_top_i)
+            top_probs_index_i <- top_probs_index[1:n_top_i, i]
+            output[i, cause_col_names] <- colnames(probs)[top_probs_index_i]
+            output[i, prob_col_names] <- probs[i, top_probs_index_i]
+        }
+      }
+  }
+
+  return(output)
 }
 
 #' Extract individual distribution of cause of death
@@ -259,46 +284,3 @@ getIndivProb <- function(x, CI = NULL, ...){
     return(probs)
 }
 
-#' Calculate Overall chance-corrected concordance (CCC)
-#' 
-#' Denote the cause-specific accuracy for the j-th cause to be (# of deaths correctly assigned to cause j) / (# of death due to cause j). For causes 1, 2, ..., C, the cause-specific CCC is computed for the j-th cause is defined to be (j-th cause-specific accuracy - 1 / C) / (1 - 1 / C) and the overall CCC is the average of each cause-specific CCC.
-#' 
-#' 
-#' @param cod a data frame of estimated cause of death. The first column is the ID and the second column is the estimated cause.
-#' @param truth a data frame of true causes of death. The first column is the ID and the second column is the estimated cause.
-#' @param C the number of possible causes to assign. If unspecified, the number of unique causes in cod and truth will be used.
-#' 
-#' @export getCCC
-#' 
-#' @examples
-#' est <- data.frame(ID = c(1, 2, 3), cod = c("C1", "C2", "C1"))
-#' truth <- data.frame(ID = c(1, 2, 3), cod = c("C1", "C3", "C3"))
-#' # If there are only three causes
-#' getCCC(est, truth)
-#' # If there are 20 causes that can be assigned
-#' getCCC(est, truth, C = 20)
-#' 
-getCCC <- function(cod, truth, C = NULL){
-
-  order1 <- match(cod[,1], truth[,1])
-  if(is.na(sum(order1))){stop("Exist IDs in estimated COD but not in the true COD")}
-  order2 <- match(truth[,1], cod[,1])
-  if(is.na(sum(order2))){stop("Exist IDs in true COD but not in the estimated COD")}
-  truth <- truth[order1, ]
-
-  cod <- as.character(cod[, 2])
-  truth <- as.character(truth[, 2])
-  if(is.null(C)) C <- length(unique(c(truth, cod)))
-  cccj <- rep(NA, C)
-  correct <- cod[which(cod == truth)]
-  N <- length(truth)
-
-  for(i in 1:length(unique(truth))){
-    c <- sort(unique(truth))[i]
-    if(length(which(truth == c)) == 0) next
-    cccj[i] <- length(which(correct == c))/length(which(truth == c))
-    cccj[i] <- (cccj[i] - 1/C) / (1 - 1/C)
-  }
-  ccc <- mean(cccj, na.rm = TRUE)
-  return(ccc)
-}
