@@ -2,21 +2,24 @@
 % Please edit documentation in R/CSMF.r
 \name{getTopCOD}
 \alias{getTopCOD}
-\title{Extract the most likely cause of death}
+\title{Extract the most likely cause(s) of death}
 \usage{
-getTopCOD(x, interVA.rule = TRUE)
+getTopCOD(x, interVA.rule = TRUE, n = 1)
 }
 \arguments{
 \item{x}{a fitted object from \code{codeVA}.}
 
 \item{interVA.rule}{Logical indicator for \code{interVA} object only. If TRUE, 
-only the InterVA reported first cause is extracted.}
+only the InterVA reported first cause is extracted (and the n parameter is ignored).}
+
+\item{n}{Number of top causes to include}
 }
 \value{
-a data frame of ID and most likely cause assignment.
+a data frame of ID, most likely cause assignment(s), and corresponding
+probability (for \code{insilico}) or indicator of how likely the cause is (for \code{interVA})
 }
 \description{
-Extract the most likely cause of death
+Extract the most likely cause(s) of death
 }
 \examples{
 data(RandomVA1)

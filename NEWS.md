@@ -1,9 +1,10 @@
 # openVA - changes
-Version 1.0.14 (2022-02-16)
+Version 1.0.14 (2022-02-17)
 ==========================
 + Minor code improvements checking the input data format.
 + Improved `getCSMF_accuracy()` function with stricter input
 + New function to compute overall chance-corrected concordance `getCCC()`
++ Updated `getTopCOD` function with parameter to return top n causes and correspoonding probabilities (or values for how likely the cause is for InterVA)
 
 Version 1.0.13 (2021-09-16)
 ==========================
