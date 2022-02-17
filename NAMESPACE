@@ -3,6 +3,7 @@
 export(ConvertData)
 export(ConvertData.phmrc)
 export(codeVA)
+export(getCCC)
 export(getCSMF)
 export(getCSMF_accuracy)
 export(getIndivProb)

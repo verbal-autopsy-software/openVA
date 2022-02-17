@@ -11,7 +11,7 @@ getCSMF_accuracy(csmf, truth, undet = NULL)
 
 \item{truth}{a CSMF vector of the true CSMF.}
 
-\item{undet}{name of the category denoting undetermined causes. Default to be NULL.}
+\item{undet}{name of the category denoting undetermined causes. Default to be NULL. If undetermined cause is present, it will be removed and the rest of the CSMF will be re-normalized to sum to 1.}
 }
 \value{
 a number (or vector if input is InSilicoVA fitted object) of CSMF accuracy as 1 - sum(abs(CSMF - CSMF_true)) / (2 * (1 - min(CSMF_true))).
@@ -22,7 +22,10 @@ Calculate CSMF accuracy
 \examples{
 csmf1 <- c(0.2, 0.3, 0.5)
 csmf0 <- c(0.3, 0.3, 0.4)
-acc <- getCSMF_accuracy(csmf1, csmf0)
+names(csmf0) <- names(csmf1) <- c("c1", "c2", "c3")
+getCSMF_accuracy(csmf1, csmf0)
+getCSMF_accuracy(csmf1, rev(csmf0))
+
 
 
 }
