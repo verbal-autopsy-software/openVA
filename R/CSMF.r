@@ -123,9 +123,12 @@ getCSMF_accuracy <- function(csmf, truth, undet = NULL){
 #' Extract the most likely cause(s) of death
 #'
 #' @param x a fitted object from \code{codeVA}.
-#' @param interVA.rule Logical indicator for \code{interVA} object only. If TRUE, 
-#' only the InterVA reported first cause is extracted (and the n parameter is ignored).
-#' @param n Number of top causes to include
+#' @param interVA.rule Logical indicator for \code{interVA} object only. If
+#' TRUE and (the parameter) n <= 3, then the InterVA thresholds are
+#' used to determine the top causes.
+#' 
+#' @param n Number of top causes to include (if n > 3, then the parameter interVA.rule is
+#' treated as FALSE).
 #'
 #' @return a data frame of ID, most likely cause assignment(s), and corresponding
 #' probability (for \code{insilico}) or indicator of how likely the cause is (for \code{interVA})
@@ -137,6 +140,43 @@ getCSMF_accuracy <- function(csmf, truth, undet = NULL){
 #' fit <- codeVA(RandomVA1[1:100, ], data.type = "WHO", model = "InterVA", 
 #'                   version = "4.02", HIV = "h", Malaria = "l", write=FALSE)
 #' getTopCOD(fit)
+#' \dontrun{
+#' library(openVA)
+#' 
+#' # InterVA4 Example
+#' data(SampleInput)
+#' fit_interva <- codeVA(SampleInput, data.type = "WHO2012", model = "InterVA",
+#'                       version = "4.03", HIV = "l", Malaria = "l", write = FALSE)
+#' getTopCOD(fit_interva, n = 3)
+#' getTopCOD(fit_interva, interVA.rule = FALSE, n = 3)
+#'
+#' # InterVA5 & Example
+#' data(RandomVA5)
+#' fit_interva5 <- codeVA(RandomVA5[1:50,], data.type = "WHO2016", model = "InterVA",
+#'                        version = "5", HIV = "l", Malaria = "l", write = FALSE)
+#' getTopCOD(fit_interva5, n = 5)
+#'
+#' # InSilicoVA Example
+#' fit_insilico <- codeVA(RandomVA5[1:100,], data.type = "WHO2016")
+#' getTopCOD(fit_insilico, n = 8)
+#'
+#' # Tariff Example (only top cause is returned)
+#' data(RandomVA3)
+#' test <- RandomVA3[1:200, ]
+#' train <- RandomVA3[201:400, ]
+#' allcauses <- unique(train$cause)
+#' fit_tariff <- tariff(causes.train = "cause", symps.train = train, 
+#'                      symps.test = test, causes.table = allcauses)
+#' getTopCOD(fit_tariff)
+#'
+#' # NBC Example
+#' library(nbc4va)
+#' data(nbc4vaData)
+#' train <- nbc4vaData[1:50, ]
+#' test <- nbc4vaData[51:100, ]
+#' fit_nbc <- nbc(train, test, known=TRUE)
+#' getTopCOD(fit_nbc, n = 3)
+#' }
 #' 
 getTopCOD <- function(x, interVA.rule = TRUE, n = 1){
   
@@ -188,13 +228,18 @@ getTopCOD <- function(x, interVA.rule = TRUE, n = 1){
             output[[paste0("lik", i)]] <- NA_real_
           }
       }
-      if (interVA.rule) { 
-        n_top <- 1
-      }
       for (i in 1:length(x$VA)) {
-        if (x$VA[[i]]$CAUSE1 == " ") {
-          output[i, "cause1"] <- "Undetermined"
-          output[i, "lik1"] <- 100
+        if (interVA.rule & n_top <=3) {
+          cause_col_names <- paste0("cause", 1:n_top)
+          prob_col_names <- paste0("cause", 1:n_top)
+          results_col_names <- paste0("CAUSE", 1:n_top)
+          results_prob_names <- paste0("LIK", 1:n_top)
+          output[i, cause_col_names] <- x$VA[[i]][results_col_names]
+          output[i, prob_col_names] <- x$VA[[i]][results_prob_names]
+          if (x$VA[[i]]$CAUSE1 == " ") {
+              output[i, "cause1"] <- "Undetermined"
+              output[i, "lik1"] <- 100
+          }
         } else {
             probs <- x$VA[[i]]$wholeprob[-(1:3)]
             # if InterVA5, remove the COMCAT elements (last 6)

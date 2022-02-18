@@ -9,10 +9,12 @@ getTopCOD(x, interVA.rule = TRUE, n = 1)
 \arguments{
 \item{x}{a fitted object from \code{codeVA}.}
 
-\item{interVA.rule}{Logical indicator for \code{interVA} object only. If TRUE, 
-only the InterVA reported first cause is extracted (and the n parameter is ignored).}
+\item{interVA.rule}{Logical indicator for \code{interVA} object only. If
+TRUE and (the parameter) n <= 3, then the InterVA thresholds are
+used to determine the top causes.}
 
-\item{n}{Number of top causes to include}
+\item{n}{Number of top causes to include (if n > 3, then the parameter interVA.rule is
+treated as FALSE).}
 }
 \value{
 a data frame of ID, most likely cause assignment(s), and corresponding
@@ -27,5 +29,41 @@ data(RandomVA1)
 fit <- codeVA(RandomVA1[1:100, ], data.type = "WHO", model = "InterVA", 
                   version = "4.02", HIV = "h", Malaria = "l", write=FALSE)
 getTopCOD(fit)
+\dontrun{
+library(openVA)
+
+# InterVA4 Example
+data(SampleInput)
+fit_interva <- codeVA(SampleInput, data.type = "WHO2012", model = "InterVA",
+                      version = "4.03", HIV = "l", Malaria = "l", write = FALSE)
+getTopCOD(fit_interva, n = 4)
+
+# InterVA5 & Example
+data(RandomVA5)
+fit_interva5 <- codeVA(RandomVA5[1:50,], data.type = "WHO2016", model = "InterVA",
+                       version = "5", HIV = "l", Malaria = "l", write = FALSE)
+getTopCOD(fit_interva5, n = 5)
+
+# InSilicoVA Example
+fit_insilico <- codeVA(RandomVA5[1:100,], data.type = "WHO2016")
+getTopCOD(fit_insilico, n = 8)
+
+# Tariff Example (only top cause is returned)
+data(RandomVA3)
+test <- RandomVA3[1:200, ]
+train <- RandomVA3[201:400, ]
+allcauses <- unique(train$cause)
+fit_tariff <- tariff(causes.train = "cause", symps.train = train, 
+                     symps.test = test, causes.table = allcauses)
+getTopCOD(fit_tariff)
+
+# NBC Example
+library(nbc4va)
+data(nbc4vaData)
+train <- nbc4vaData[1:50, ]
+test <- nbc4vaData[51:100, ]
+fit_nbc <- nbc(train, test, known=TRUE)
+getTopCOD(fit_nbc, n = 3)
+}
 
 }
