@@ -126,9 +126,10 @@ getCSMF_accuracy <- function(csmf, truth, undet = NULL){
 #' @param interVA.rule Logical indicator for \code{interVA} object only. If
 #' TRUE and (the parameter) n <= 3, then the InterVA thresholds are
 #' used to determine the top causes.
-#' 
 #' @param n Number of top causes to include (if n > 3, then the parameter interVA.rule is
 #' treated as FALSE).
+#' @param include.prob Logical indicator for including the probabilities (for \code{insilico})
+#' or indicator of how likely the cause is (for \code{interVA}) in the results
 #'
 #' @return a data frame of ID, most likely cause assignment(s), and corresponding
 #' probability (for \code{insilico}) or indicator of how likely the cause is (for \code{interVA})
@@ -155,10 +156,14 @@ getCSMF_accuracy <- function(csmf, truth, undet = NULL){
 #' fit_interva5 <- codeVA(RandomVA5[1:50,], data.type = "WHO2016", model = "InterVA",
 #'                        version = "5", HIV = "l", Malaria = "l", write = FALSE)
 #' getTopCOD(fit_interva5, n = 5)
+#' getTopCOD(fit_interva5, n = 5, include.prob = TRUE)
 #'
 #' # InSilicoVA Example
+#' data(RandomVA5)
 #' fit_insilico <- codeVA(RandomVA5[1:100,], data.type = "WHO2016")
+#' getTopCOD(fit_insilico, n = 1)
 #' getTopCOD(fit_insilico, n = 8)
+#' 
 #'
 #' # Tariff Example (only top cause is returned)
 #' data(RandomVA3)
@@ -178,72 +183,75 @@ getCSMF_accuracy <- function(csmf, truth, undet = NULL){
 #' getTopCOD(fit_nbc, n = 3)
 #' }
 #' 
-getTopCOD <- function(x, interVA.rule = TRUE, n = 1){
+getTopCOD <- function(x, interVA.rule = TRUE, n = 1, include.prob = FALSE){
   
-  if (!is.numeric(n)) {
-    n_top <- 1
+  if (!is.numeric(n) | n < 1 | is.na(n)) {
+    n <- 1
   }
   n_top <- round(n)
+  
 
   if (methods::is(x, "insilico")) {
     probs <- x$indiv.prob
 
     output <- data.frame(ID = row.names(probs))
     if (n_top == 1) {
-      output$cause = ""
-      output$prob = 0.0
+      cause_col_names <- "cause1"
+      probs_col_names <- "prob1"
+      output[cause_col_names] = colnames(probs)[apply(probs, 1, which.max)]
+      output[probs_col_names] = apply(probs, 1, max)
     } else {
-      for (i in 1:n_top) {
-        output[[paste0("cause", i)]] <- ""
-        output[[paste0("prob", i)]] <- NA_real_
+        n_top <- ifelse(n_top > ncol(probs), ncol(probs), n_top)
+        for (i in 1:n_top) {
+          output[[paste0("cause", i)]] <- ""
+          output[[paste0("prob", i)]] <- NA_real_
+        }
+        top_probs_index <- apply(probs, 1, order, decreasing = TRUE)[1:n_top,]
+        n_unique <- apply(probs, 1, function(x) length(unique(x)))
+
+        for (i in 1:nrow(probs)) {
+          n_top_i <- ifelse(n_unique[i] - 1 < n_top, n_unique[i] - 1, n_top)
+          cause_col_names <- paste0("cause", 1:n_top_i)
+          prob_col_names <- paste0("prob", 1:n_top_i)
+          top_probs_index_i <- top_probs_index[1:n_top_i, i]
+          output[i, cause_col_names] <- names(probs[i, top_probs_index_i])
+          output[i, prob_col_names] <- probs[i, top_probs_index_i]
         }
     }
-    top_probs_index <- apply(probs, 1, order, decreasing = TRUE)[1:n_top,]
-    n_unique <- apply(probs, 1, function(x) length(unique(x)))
-
-    for (i in 1:nrow(probs)) {
-      n_top_i <- ifelse(n_unique[i] - 1 < n_top, n_unique[i] - 1, n_top)
-      cause_col_names <- paste0("cause", 1:n_top_i)
-      prob_col_names <- paste0("prob", 1:n_top_i)
-      top_probs_index_i <- top_probs_index[1:n_top_i, i]
-      output[i, cause_col_names] <- names(probs[i, top_probs_index_i])
-      output[i, prob_col_names] <- probs[i, top_probs_index_i]
-    }
-
     # add possibility of no possible COD
     if (sum(apply(probs, 1, max) == 0) > 0) {
-      cause_col_names <- paste0("cause", 1:n_top)
-      prob_col_names <- paste0("prob", 1:n_top)
-      output[which(apply(probs, 1, max) == 0), cause_col_names] <- "Undetermined"
-      output[which(apply(probs, 1, max) == 0), prob_col_names] <- NA_real_
+        cause_col_names <- paste0("cause", 1:n_top)
+        prob_col_names <- paste0("prob", 1:n_top)
+        output[which(apply(probs, 1, max) == 0), cause_col_names] <- "Undetermined"
+        output[which(apply(probs, 1, max) == 0), prob_col_names] <- NA_real_
     }
   } else if (methods::is(x, "interVA") | methods::is(x, "interVA5")) {
+      preg_comcat_cols <- c("Not pregnant or recently delivered",
+                            "Pregnancy ended within 6 weeks of death",
+                            "Pregnant at death",
+                            "Culture", "Emergency", "Health systems",
+                            "Inevitable", "Knowledge", "Resources")
+      index_cod <- !(names(x$VA[[1]]$wholeprob) %in% preg_comcat_cols)
+      n_top <- ifelse(n_top > sum(index_cod), sum(index_cod), n_top)
       output <- data.frame(ID = x$ID)
-      if (n_top == 1) {
-        output$cause = ""
-        output$prob = 0.0
-      } else {
-          for (i in 1:n_top) {
-            output[[paste0("cause", i)]] <- ""
-            output[[paste0("lik", i)]] <- NA_real_
-          }
+      for (i in 1:n_top) {
+        output[[paste0("cause", i)]] <- ""
+        output[[paste0("lik", i)]] <- NA_real_
       }
       for (i in 1:length(x$VA)) {
         if (interVA.rule & n_top <=3) {
           cause_col_names <- paste0("cause", 1:n_top)
-          prob_col_names <- paste0("cause", 1:n_top)
+          prob_col_names <- paste0("lik", 1:n_top)
           results_col_names <- paste0("CAUSE", 1:n_top)
           results_prob_names <- paste0("LIK", 1:n_top)
           output[i, cause_col_names] <- x$VA[[i]][results_col_names]
-          output[i, prob_col_names] <- x$VA[[i]][results_prob_names]
+          output[i, prob_col_names] <- as.numeric(x$VA[[i]][results_prob_names])/100
           if (x$VA[[i]]$CAUSE1 == " ") {
               output[i, "cause1"] <- "Undetermined"
-              output[i, "lik1"] <- 100
+              output[i, "lik1"] <- 1.00
           }
         } else {
-            probs <- x$VA[[i]]$wholeprob[-(1:3)]
-            # if InterVA5, remove the COMCAT elements (last 6)
-            if (methods::is(x, "interVA5")) probs <- utils::head(probs, -6)
+            probs <- x$VA[[i]]$wholeprob[index_cod]
             top_probs_index <- order(probs, decreasing = TRUE)[1:n_top]
             n_unique <- length(unique(probs))
             n_top_i <- ifelse(n_unique - 1 < n_top, n_unique - 1, n_top)
@@ -251,17 +259,20 @@ getTopCOD <- function(x, interVA.rule = TRUE, n = 1){
             prob_col_names <- paste0("lik", 1:n_top_i)
             top_probs_index_i <- top_probs_index[1:n_top_i]
             output[i, cause_col_names] <- names(probs[top_probs_index_i])
-            output[i, prob_col_names] <- probs[top_probs_index_i] * 100
+            output[i, prob_col_names] <- probs[top_probs_index_i]
         }
       }
   } else if (methods::is(x, "tariff")) {
+      n_top <- 1
       output <- data.frame(ID = as.character(x$causes.test[, 1]),
-                           cause = x$causes.test[, 2])
+                           cause1 = x$causes.test[, 2])
   } else if (methods::is(x, "nbc")) {
       if (!isTRUE(requireNamespace("nbc4va", quietly = TRUE))) {
         stop("You need to install the packages 'nbc4va'. Please run in your R terminal:\n install.packages('nbc4va')")
       }
-      output <- data.frame(CaseID = x$prob$CaseID)
+      output <- data.frame(ID = x$prob$CaseID)
+      n_cod <- ncol(x$prob) - 1
+      n_top <- ifelse(n_top > n_cod, n_cod, n_top) 
       for (i in 1:n_top) {
         output[[paste0("cause", i)]] <- ""
         output[[paste0("prob", i)]] <- NA_real_
@@ -273,15 +284,25 @@ getTopCOD <- function(x, interVA.rule = TRUE, n = 1){
       for (i in 1:nrow(probs)) {
         n_top_i <- ifelse(n_unique[i] - 1 < n_top, n_unique[i] - 1, n_top)
         if (n_top_i == 0) {
-          output[i, "cause1"] <- "Undetermined"
+          cause_col_names <- "cause1"
+          output[i, cause_col_names] <- "Undetermined"
         } else {
             cause_col_names <- paste0("cause", 1:n_top_i)
             prob_col_names <- paste0("prob", 1:n_top_i)
-            top_probs_index_i <- top_probs_index[1:n_top_i, i]
+            if (is.null(dim(top_probs_index))) {
+              top_probs_index_i <- top_probs_index[i]
+            } else {
+                top_probs_index_i <- top_probs_index[1:n_top_i, i]
+            }
             output[i, cause_col_names] <- colnames(probs)[top_probs_index_i]
             output[i, prob_col_names] <- probs[i, top_probs_index_i]
         }
       }
+  }
+  
+  if (!include.prob) {
+    cause_col_names <- paste0("cause", 1:n_top)
+    output <- output[, c("ID", cause_col_names)]
   }
 
   return(output)

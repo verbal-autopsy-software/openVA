@@ -4,7 +4,7 @@
 \alias{getTopCOD}
 \title{Extract the most likely cause(s) of death}
 \usage{
-getTopCOD(x, interVA.rule = TRUE, n = 1)
+getTopCOD(x, interVA.rule = TRUE, n = 1, include.prob = FALSE)
 }
 \arguments{
 \item{x}{a fitted object from \code{codeVA}.}
@@ -15,6 +15,9 @@ used to determine the top causes.}
 
 \item{n}{Number of top causes to include (if n > 3, then the parameter interVA.rule is
 treated as FALSE).}
+
+\item{include.prob}{Logical indicator for including the probabilities (for \code{insilico})
+or indicator of how likely the cause is (for \code{interVA}) in the results}
 }
 \value{
 a data frame of ID, most likely cause assignment(s), and corresponding
@@ -36,17 +39,22 @@ library(openVA)
 data(SampleInput)
 fit_interva <- codeVA(SampleInput, data.type = "WHO2012", model = "InterVA",
                       version = "4.03", HIV = "l", Malaria = "l", write = FALSE)
-getTopCOD(fit_interva, n = 4)
+getTopCOD(fit_interva, n = 3)
+getTopCOD(fit_interva, interVA.rule = FALSE, n = 3)
 
 # InterVA5 & Example
 data(RandomVA5)
 fit_interva5 <- codeVA(RandomVA5[1:50,], data.type = "WHO2016", model = "InterVA",
                        version = "5", HIV = "l", Malaria = "l", write = FALSE)
 getTopCOD(fit_interva5, n = 5)
+getTopCOD(fit_interva5, n = 5, include.prob = TRUE)
 
 # InSilicoVA Example
+data(RandomVA5)
 fit_insilico <- codeVA(RandomVA5[1:100,], data.type = "WHO2016")
+getTopCOD(fit_insilico, n = 1)
 getTopCOD(fit_insilico, n = 8)
+
 
 # Tariff Example (only top cause is returned)
 data(RandomVA3)
