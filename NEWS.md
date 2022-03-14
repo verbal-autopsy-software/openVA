@@ -1,5 +1,5 @@
 # openVA - changes
-Version 1.0.14 (2022-02-17)
+Version 1.0.14 (2022-03-11)
 ==========================
 + Minor code improvements checking the input data format.
 + Improved `getCSMF_accuracy()` function with stricter input

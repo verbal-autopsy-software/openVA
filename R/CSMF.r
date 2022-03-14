@@ -148,21 +148,31 @@ getCSMF_accuracy <- function(csmf, truth, undet = NULL){
 #' data(SampleInput)
 #' fit_interva <- codeVA(SampleInput, data.type = "WHO2012", model = "InterVA",
 #'                       version = "4.03", HIV = "l", Malaria = "l", write = FALSE)
+#' getTopCOD(fit_interva, n = 1)
 #' getTopCOD(fit_interva, n = 3)
+#' getTopCOD(fit_interva, n = 3, include.prob = TRUE)
 #' getTopCOD(fit_interva, interVA.rule = FALSE, n = 3)
+#' getTopCOD(fit_interva, n = 5)
+#' getTopCOD(fit_interva, n = 5, include.prob = TRUE)
 #'
 #' # InterVA5 & Example
 #' data(RandomVA5)
 #' fit_interva5 <- codeVA(RandomVA5[1:50,], data.type = "WHO2016", model = "InterVA",
 #'                        version = "5", HIV = "l", Malaria = "l", write = FALSE)
+#' getTopCOD(fit_interva5, n = 1)
+#' getTopCOD(fit_interva5, n = 3)
+#' getTopCOD(fit_interva5, n = 3, include.prob = TRUE)
+#' getTopCOD(fit_interva5, interVA.rule = FALSE, n = 3)
 #' getTopCOD(fit_interva5, n = 5)
 #' getTopCOD(fit_interva5, n = 5, include.prob = TRUE)
 #'
 #' # InSilicoVA Example
 #' data(RandomVA5)
-#' fit_insilico <- codeVA(RandomVA5[1:100,], data.type = "WHO2016")
+#' fit_insilico <- codeVA(RandomVA5[1:100,], data.type = "WHO2016", 
+#'                        auto.length = FALSE)
 #' getTopCOD(fit_insilico, n = 1)
-#' getTopCOD(fit_insilico, n = 8)
+#' getTopCOD(fit_insilico, n = 3)
+#' getTopCOD(fit_insilico, n = 3, include.prob = TRUE)
 #' 
 #'
 #' # Tariff Example (only top cause is returned)
@@ -172,7 +182,7 @@ getCSMF_accuracy <- function(csmf, truth, undet = NULL){
 #' allcauses <- unique(train$cause)
 #' fit_tariff <- tariff(causes.train = "cause", symps.train = train, 
 #'                      symps.test = test, causes.table = allcauses)
-#' getTopCOD(fit_tariff)
+#' getTopCOD(fit_tariff, n = 1)
 #'
 #' # NBC Example
 #' library(nbc4va)
@@ -180,7 +190,9 @@ getCSMF_accuracy <- function(csmf, truth, undet = NULL){
 #' train <- nbc4vaData[1:50, ]
 #' test <- nbc4vaData[51:100, ]
 #' fit_nbc <- nbc(train, test, known=TRUE)
+#' getTopCOD(fit_nbc, n = 1)
 #' getTopCOD(fit_nbc, n = 3)
+#' getTopCOD(fit_nbc, n = 3, include.prob = TRUE)
 #' }
 #' 
 getTopCOD <- function(x, interVA.rule = TRUE, n = 1, include.prob = FALSE){
