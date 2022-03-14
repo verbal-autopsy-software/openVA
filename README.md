@@ -1,5 +1,5 @@
 # openVA
-[![R-CMD-check](https://github.com/verbal-autopsy-software/VerbalAutopsy/workflows/R-CMD-check/badge.svg)](https://github.com/verbal-autopsy-software/VerbalAutopsy/actions) [![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version/openVA)](https://cran.r-project.org/package=openVA)  [![](https://cranlogs.r-pkg.org/badges/openVA)](https://cran.r-project.org/package=openVA) [![](https://cranlogs.r-pkg.org/badges/grand-total/openVA?color=orange)](https://cran.r-project.org/package=openVA)
+[![R-CMD-check](https://github.com/verbal-autopsy-software/openVA/workflows/R-CMD-check/badge.svg)](https://github.com/verbal-autopsy-software/openVA/actions) [![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version/openVA)](https://cran.r-project.org/package=openVA)  [![](https://cranlogs.r-pkg.org/badges/openVA)](https://cran.r-project.org/package=openVA) [![](https://cranlogs.r-pkg.org/badges/grand-total/openVA?color=orange)](https://cran.r-project.org/package=openVA)
 
 Check out the package and team website for more details and documentations: [openVA.net](https://openva.net/)
 
