@@ -1,13 +1,13 @@
 # openVA
 [![R-CMD-check](https://github.com/richardli/VerbalAutopsy/workflows/R-CMD-check/badge.svg)](https://github.com/richardli/VerbalAutopsy/actions) [![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version/openVA)](https://cran.r-project.org/package=openVA)  [![](https://cranlogs.r-pkg.org/badges/openVA)](https://cran.r-project.org/package=openVA) [![](https://cranlogs.r-pkg.org/badges/grand-total/openVA?color=orange)](https://cran.r-project.org/package=openVA)
 
-Check out the package and team website for more details and documentations: [openVA.net](http://openva.net/)
+Check out the package and team website for more details and documentations: [openVA.net](https://openva.net/)
 
 For installation, it might be useful to check out this [installation guide](https://github.com/richardli/openVA/blob/master/Installation_guide.md)
 
 ## What's new
 - [CRAN version](https://cran.r-project.org/web/packages/openVA/news/news.html)
-- [Current developer version](openVA/NEWS.md)
+- [Current developer version](https://github.com/verbal-autopsy-software/openVA/blob/master/NEWS.md)
 
 
 ## Installation instructions
@@ -23,7 +23,7 @@ Users typically need to take no specific action regarding the dependencies, sinc
 As the name suggests, to properly load the package **rJava**, you will need two key ingredients: _R_, and _Java_. Here is how you can make sure you have the right combination of the two:
  
 #### Check R environment
-1. If you do not already have it, install from [CRAN](http://cran.r-project.org/). Follow the instructions at the link to choose a mirror that will take you to the download page. After download, double click the file to install.
+1. If you do not already have it, install from [CRAN](https://cran.r-project.org/). Follow the instructions at the link to choose a mirror that will take you to the download page. After download, double click the file to install.
 2. Open R. On the welcome message, there is a line starting with “Platform” and ending with “(32-bit)” or “(64-bit)”. It is very important to know which version (32-bit or 64-bit) of R you use, since the Java JDK should have the same version. 
 3. Sometimes multiple versions of R could be installed on the same machine, so you should check the version you wish to use for data analysis. For example, if you prefer using RStudio to run the codes, you should check the default R version of RStudio by reading the welcome message for RStudio, instead of, say, the R version when opening from command line.
 
@@ -35,7 +35,7 @@ As the name suggests, to properly load the package **rJava**, you will need two 
 
 ### 3. Misc suggestions
 1. For users not familiar with R envrionment, see [the official introduction](https://www.r-project.org/about.html).
-2. Many people find using R from Rstudio to be more convenient. Rstudio could be downloaded from [its website](https://www.rstudio.com/products/rstudio/download3/). 
+2. Many people find using R from Rstudio to be more convenient. Rstudio could be downloaded from [its website](https://www.rstudio.com/products/rstudio/). 
 
 
 ### 4. Errors and solutions
@@ -49,7 +49,7 @@ Here is the things you might see down the rabbit hole - One thing omitted in the
 install.packages('rJava', type='source')
 ```
 
-1. Fail to load rJava on Mac OSX (El Capitan 10.11): [original post](http://stackoverflow.com/questions/35179151/cannot-load-r-xlsx-package-on-mac-os-10-11)
+1. Fail to load rJava on Mac OSX (El Capitan 10.11): [original post](https://stackoverflow.com/questions/35179151/cannot-load-r-xlsx-package-on-mac-os-10-11)
   + Example Error Message:
     
          ```
@@ -72,7 +72,7 @@ install.packages('rJava', type='source')
         library(openVA)
         ```
    
-1. Fail to install rJava (usually from Rstudio): [original post](http://stackoverflow.com/questions/34212378/installation-of-rjava)
+1. Fail to install rJava (usually from Rstudio): [original post](https://stackoverflow.com/questions/34212378/installation-of-rjava)
   + Example Error Message:
     
         ```
@@ -102,7 +102,7 @@ install.packages('rJava', type='source')
     install.packages("https://cran.r-project.org/src/contrib/Archive/rJava/rJava_0.9-9.tar.gz")
     ```
 
-1. Fail to load rJava on Mac: [original post](http://stackoverflow.com/questions/30738974/rjava-load-error-in-rstudio-r-after-upgrading-to-osx-yosemite)
+1. Fail to load rJava on Mac: [original post](https://stackoverflow.com/questions/30738974/rjava-load-error-in-rstudio-r-after-upgrading-to-osx-yosemite)
   + Example Error Message:
   
   + Solution: This is a common problem whenever your Mac OS gets updated, especially if you use Rstudio. As of OSX El Capitan 10.11, the trick that seems to work for me is to run the following from terminal:
@@ -111,7 +111,7 @@ install.packages('rJava', type='source')
         sudo ln -s $(/usr/libexec/java_home)/jre/lib/server/libjvm.dylib /usr/local/lib
         ```
 
-1. Failure to load rJava on 64-bit Windows: [original post](http://stackoverflow.com/questions/7019912/using-the-rjava-package-on-win7-64-bit-with-r)
+1. Failure to load rJava on 64-bit Windows: [original post](https://stackoverflow.com/questions/7019912/using-the-rjava-package-on-win7-64-bit-with-r)
   + Example Error Message: 
         
         ```
@@ -135,7 +135,7 @@ install.packages('rJava', type='source')
 
   + Solution: (1) Check java path is in the system environmental variable list (on Win 10, click Windows icon and type "environmental"), (2) Try re-install without ``type = "source"``.
   
-1. Failure to install rJava on Linux: [original post](http://stackoverflow.com/questions/3311940/r-rjava-package-install-failing)
+1. Failure to install rJava on Linux: [original post](https://stackoverflow.com/questions/3311940/r-rjava-package-install-failing)
   
   + Example Error Message:
    
@@ -151,10 +151,9 @@ install.packages('rJava', type='source')
           ```
   
 1. More misc error messages and hacks that I have not tried myself:
-  + [OSX + Rstudio 1](http://stackoverflow.com/questions/26948777/how-can-i-make-rjava-use-the-newer-version-of-java-on-osx)
-  + [OSX + Rstudio 2](http://spartanideas.msu.edu/2015/06/27/the-rjava-nightmare/) 
+  + [OSX + Rstudio 1](https://stackoverflow.com/questions/26948777/how-can-i-make-rjava-use-the-newer-version-of-java-on-osx)
+  + [OSX + Rstudio 2](https://spartanideas.msu.edu/2015/06/27/the-rjava-nightmare/) 
   + [OSX + Rstudio 3](https://andrewgoldstone.com/blog/2015/02/03/rjava/)
-  + [OSX + Rstudio 4](http://conjugateprior.org/2014/12/r-java8-osx/)
   + [Windows + registry](https://www.r-bloggers.com/how-to-load-the-rjava-package-after-the-error-java_home-cannot-be-determined-from-the-registry/)
   + [No Java run time in OSX](https://github.com/s-u/rJava/issues/37) (with many useful discussions)
 
