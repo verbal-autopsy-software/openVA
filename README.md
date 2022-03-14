@@ -1,12 +1,11 @@
 # openVA
-[![R-CMD-check](https://github.com/richardli/VerbalAutopsy/workflows/R-CMD-check/badge.svg)](https://github.com/richardli/VerbalAutopsy/actions) [![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version/openVA)](https://cran.r-project.org/package=openVA)  [![](https://cranlogs.r-pkg.org/badges/openVA)](https://cran.r-project.org/package=openVA) [![](https://cranlogs.r-pkg.org/badges/grand-total/openVA?color=orange)](https://cran.r-project.org/package=openVA)
+[![R-CMD-check](https://github.com/verbal-autopsy-software/VerbalAutopsy/workflows/R-CMD-check/badge.svg)](https://github.com/verbal-autopsy-software/VerbalAutopsy/actions) [![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version/openVA)](https://cran.r-project.org/package=openVA)  [![](https://cranlogs.r-pkg.org/badges/openVA)](https://cran.r-project.org/package=openVA) [![](https://cranlogs.r-pkg.org/badges/grand-total/openVA?color=orange)](https://cran.r-project.org/package=openVA)
 
 Check out the package and team website for more details and documentations: [openVA.net](https://openva.net/)
 
-For installation, it might be useful to check out this [installation guide](https://github.com/richardli/openVA/blob/master/Installation_guide.md)
 
 ## What's new
-- [CRAN version](https://cran.r-project.org/web/packages/openVA/news/news.html)
+- [CRAN version](https://cran.r-project.org/package=openVA/news/news.html)
 - [Current developer version](https://github.com/verbal-autopsy-software/openVA/blob/master/NEWS.md)
 
 
@@ -41,7 +40,7 @@ As the name suggests, to properly load the package **rJava**, you will need two 
 ### 4. Errors and solutions
 Here I include some tips of installing and loading **rJava** package that I found to be useful in the past. Some of those here have been fixed in later version so the solutions might be out-dated.   
 
-If you encounter other errors not listed here, or could not resolve the errors following the steps listed, or would like to propose new solutions, you are more than welcome to contact me (Richard Li, lizehang@uw.edu) or submit issue reports to [this Github repository](https://github.com/richardli/openVA/issues). If you know explicitly the errors are caused by rJava, you could also submit issue reports to the [rJava repository](https://github.com/s-u/rJava/issues) directly.
+If you encounter other errors not listed here, or could not resolve the errors following the steps listed, or would like to propose new solutions, you are more than welcome to contact me (Richard Li, lizehang@uw.edu) or submit issue reports to [this Github repository](https://github.com/verbal-autopsy-software/openVA/issues). If you know explicitly the errors are caused by rJava, you could also submit issue reports to the [rJava repository](https://github.com/s-u/rJava/issues) directly.
 
 Here is the things you might see down the rabbit hole - One thing omitted in the tricks is that typically for most of the tricks below (for Mac and Linux system especially, I found Windows machine usually does not need this), at the end, it requires another step of re-compiling rJava from source, i.e., adding the ```type='source'``` as below:
 
@@ -154,7 +153,6 @@ install.packages('rJava', type='source')
   + [OSX + Rstudio 1](https://stackoverflow.com/questions/26948777/how-can-i-make-rjava-use-the-newer-version-of-java-on-osx)
   + [OSX + Rstudio 2](https://spartanideas.msu.edu/2015/06/27/the-rjava-nightmare/) 
   + [OSX + Rstudio 3](https://andrewgoldstone.com/blog/2015/02/03/rjava/)
-  + [Windows + registry](https://www.r-bloggers.com/how-to-load-the-rjava-package-after-the-error-java_home-cannot-be-determined-from-the-registry/)
   + [No Java run time in OSX](https://github.com/s-u/rJava/issues/37) (with many useful discussions)
 
 
