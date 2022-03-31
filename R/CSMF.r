@@ -201,8 +201,6 @@ getTopCOD <- function(x, interVA.rule = TRUE, n = 1, include.prob = FALSE){
     n <- 1
   }
   n_top <- round(n)
-  
-
   if (methods::is(x, "insilico")) {
     probs <- x$indiv.prob
 
@@ -213,10 +211,8 @@ getTopCOD <- function(x, interVA.rule = TRUE, n = 1, include.prob = FALSE){
       output[cause_col_names] = colnames(probs)[apply(probs, 1, which.max)]
       output[probs_col_names] = apply(probs, 1, max)
       n_max <- apply(probs, 1, function(x) sum(x == max(x)))
-      if (any(n_max) > 1) {
-          warning(paste("There are ", sum(n_max > 1),
-                        "ties (i.e., multiple causes have the same probability.",
-                        "This can be seen by increasing the argument n."))
+      if (any(n_max > 1)) {
+          warning("There are ties (i.e., multiple causes have the same max probability. \n  This can be seen by increasing the argument n.")
       }
     } else {
         n_top <- ifelse(n_top > ncol(probs), ncol(probs), n_top)
