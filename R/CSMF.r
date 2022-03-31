@@ -212,6 +212,12 @@ getTopCOD <- function(x, interVA.rule = TRUE, n = 1, include.prob = FALSE){
       probs_col_names <- "prob1"
       output[cause_col_names] = colnames(probs)[apply(probs, 1, which.max)]
       output[probs_col_names] = apply(probs, 1, max)
+      n_max <- apply(probs, 1, function(x) sum(x == max(x)))
+      if (any(n_max) > 1) {
+          warning(paste("There are ", sum(n_max > 1),
+                        "ties (i.e., multiple causes have the same probability.",
+                        "This can be seen by increasing the argument n."))
+      }
     } else {
         n_top <- ifelse(n_top > ncol(probs), ncol(probs), n_top)
         for (i in 1:n_top) {
@@ -219,10 +225,12 @@ getTopCOD <- function(x, interVA.rule = TRUE, n = 1, include.prob = FALSE){
           output[[paste0("prob", i)]] <- NA_real_
         }
         top_probs_index <- apply(probs, 1, order, decreasing = TRUE)[1:n_top,]
-        n_unique <- apply(probs, 1, function(x) length(unique(x)))
+        ## n_unique <- apply(probs, 1, function(x) length(unique(x)))
+        n_non_zero <- apply(probs, 1, function(x) sum(x > 0))
 
         for (i in 1:nrow(probs)) {
-          n_top_i <- ifelse(n_unique[i] - 1 < n_top, n_unique[i] - 1, n_top)
+          ## n_top_i <- ifelse(n_unique[i] - 1 < n_top, n_unique[i] - 1, n_top)
+          n_top_i <- ifelse(n_non_zero[i] < n_top, n_non_zero[i], n_top)
           cause_col_names <- paste0("cause", 1:n_top_i)
           prob_col_names <- paste0("prob", 1:n_top_i)
           top_probs_index_i <- top_probs_index[1:n_top_i, i]
