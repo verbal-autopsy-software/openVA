@@ -1,4 +1,9 @@
 # openVA - changes
+
+Version 1.0.15 (2022-08-02)
+==========================
++ Minor bug fixes 
+
 Version 1.0.14 (2022-03-11)
 ==========================
 + Minor code improvements checking the input data format.

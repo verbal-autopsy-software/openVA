@@ -1,8 +1,8 @@
 Package: openVA
 Type: Package
 Title: Automated Method for Verbal Autopsy
-Version: 1.0.14
-Date: 2022-03-11
+Version: 1.0.15
+Date: 2022-08-02
 Author: Zehang Richard Li, Tyler McCormick, Sam Clark
 Maintainer: Zehang Richard Li <lizehang@gmail.com>
 Depends: R (>= 3.1)
@@ -14,4 +14,4 @@ Description: Implements multiple existing open-source algorithms for coding caus
 License: GPL-2
 URL: https://github.com/verbal-autopsy-software/openVA
 BugReports: https://github.com/verbal-autopsy-software/openVA/issues
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.0
