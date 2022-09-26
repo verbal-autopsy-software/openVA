@@ -69,7 +69,7 @@ and white.}
 \item{\dots}{Not used.}
 }
 \description{
-Produce bar plot of the CSMFs for a fitted \code{"insilico"} object in broader groups.
+Produce bar plot of the CSMFs for a fitted object in broader groups. This function extends the stackplot() function in the InSilicoVA package to allow for the same visualization for results from InterVA, NBC, and Tariff algorithms.
 }
 \examples{
 \donttest{
@@ -97,8 +97,13 @@ stackplotVA(fit3, grouping = SampleCategory, type = "dodge",
             ylim = c(0, 1), title = "Tariff")
 }
 }
+\seealso{
+Other visualization: 
+\code{\link{plotVA}()}
+}
 \author{
 Zehang Li, Tyler McCormick, Sam Clark
 
 Maintainer: Zehang Li <lizehang@uw.edu>
 }
+\concept{visualization}

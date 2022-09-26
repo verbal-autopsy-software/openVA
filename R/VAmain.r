@@ -7,7 +7,7 @@
 #'   {InterVA-4 input format using WHO 2012 questionnaire. For example see \code{data(RandomVA1)}. The first column should be death ID.}
 #' \item{\code{WHO2016}: }
 #'    {InterVA-5 input format using WHO 2016 questionnaire. For example see \code{data(RandomVA5)}. The first column should be death ID.} 
-#' \item{\code{PHMRC}: }{PHMRC data format. For example see \code{\link{ConvertData.phmrc}}} 
+#' \item{\code{PHMRC}: }{PHMRC data format. The raw PHMRC long format data will be processed internally following the steps described in McComirck et al. (2016). For example see \code{\link{ConvertData.phmrc}}} 
 #' \item{\code{customized}: }{Any dichotomized dataset with ``Y`` denote ``presence'', ``'' denote ``absence'', and ``.'' denote ``missing''. The first column should be death ID.}}
 #' @param data.train Training data with the same columns as \code{data}, except for an additional column specifying cause-of-death label. It is not used if \code{data.type} is ``WHO'' and \code{model} is ``InterVA'' or ``InSilicoVA''.  The first column also has to be death ID for ``WHO'' and ``customized'' types.
 #' @param causes.train the column name of the cause-of-death assignment label in training data.
@@ -23,11 +23,11 @@
 #' \itemize{
 #' \item{\code{quantile}: }{the rankings of the P(S|C) are obtained by matching the same quantile distributions in the default InterVA P(S|C)}\item{\code{fixed}: }{P(S|C) are matched to the closest values in the default InterVA P(S|C) table.} \item{\code{empirical}: }{no ranking is calculated, but use the empirical conditional probabilities directly, which will force \code{updateCondProb} to be FALSE for InSilicoVA algorithm.}  
 #'}
-#' @param ... other arguments passed to \code{\link[InSilicoVA]{insilico}}, \code{\link[InterVA4]{InterVA}}, \code{\link{interVA.train}}, \code{\link[Tariff]{tariff}}, and nbc function in the nbc4va package. See respective package documents for details. 
+#' @param ... other arguments passed to \code{\link[InSilicoVA]{insilico}}, \code{\link[InterVA4]{InterVA}}, \code{\link{interVA_train}}, \code{\link[Tariff]{tariff}}, and nbc function in the nbc4va package. See respective package documents for details. 
 #'
 #' @return a fitted object
 #' @export codeVA
-#' @seealso \code{\link[InSilicoVA]{insilico}}, \code{\link[InterVA4]{InterVA}}, \code{\link{interVA.train}}, \code{\link[Tariff]{tariff}}, and nbc function in the nbc4va package.
+#' @seealso \code{\link[InSilicoVA]{insilico}}, \code{\link[InterVA4]{InterVA}}, \code{\link{interVA_train}}, \code{\link[Tariff]{tariff}}, and nbc function in the nbc4va package.
 #' @importFrom graphics plot
 #' @importFrom stats aggregate median quantile reorder
 #' @importFrom utils data
@@ -63,16 +63,19 @@
 #' }
 
 
-codeVA <- function(data, data.type = c("WHO2012", "WHO2016", "PHMRC", "customize")[1], 
+codeVA <- function(data, 
+                  data.type = c("WHO2012", "WHO2016", "PHMRC", "customize")[1], 
                   data.train = NULL, 
                   causes.train = NULL, 
                   causes.table = NULL,
                   model = c("InSilicoVA", "InterVA", "Tariff", "NBC")[1],
                   Nchain = 1, Nsim=10000, 
-                  version = c("4.02", "4.03", "5")[2], HIV = "h", Malaria = "h", 
+                  version = c("4.02", "4.03", "5")[2], 
+                  HIV = "h", Malaria = "h", 
                   phmrc.type = c("adult", "child", "neonate")[1], 
                   convert.type = c("quantile", "fixed", "empirical")[1],
                   ...){
+
 
   version <- as.character(version)
   if(version=="5.0") version <- "5"
@@ -210,7 +213,7 @@ codeVA <- function(data, data.type = c("WHO2012", "WHO2016", "PHMRC", "customize
         }
         fit <- InterVA5::InterVA5(Input = data, HIV = HIV, Malaria = Malaria, ...)
     }else if(data.type == 'PHMRC'|| data.type == "customize"){
-        fit <- interVA.train(data = data, 
+        fit <- interVA_train(data = data, 
                              train=data.train, 
                              causes.train = causes.train, 
                              causes.table = causes.table, 
@@ -261,10 +264,7 @@ codeVA <- function(data, data.type = c("WHO2012", "WHO2016", "PHMRC", "customize
     }
     data.train[, 1] <- as.character(data.train[, 1])
     data[, 1] <- as.character(data[, 1])
-    # fit <- nbc(train = data.train, 
-    #            test = data, 
-    #            known = known.nbc)
-
+  
     # update with NBC's official wrapper function
     fit <- nbc4va::ova2nbc(data.train, data, causes.train)
 
@@ -297,6 +297,7 @@ codeVA <- function(data, data.type = c("WHO2012", "WHO2016", "PHMRC", "customize
 #' @export plotVA
 #' @seealso \code{\link[InSilicoVA]{plot.insilico}}, \code{\link[Tariff]{plot.tariff}}, 
 #' \code{\link[InterVA4]{CSMF}}
+#' @family visualization
 #' @examples
 #' \donttest{
 #' data(RandomVA3)

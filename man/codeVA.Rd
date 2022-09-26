@@ -30,7 +30,7 @@ codeVA(
   {InterVA-4 input format using WHO 2012 questionnaire. For example see \code{data(RandomVA1)}. The first column should be death ID.}
 \item{\code{WHO2016}: }
    {InterVA-5 input format using WHO 2016 questionnaire. For example see \code{data(RandomVA5)}. The first column should be death ID.} 
-\item{\code{PHMRC}: }{PHMRC data format. For example see \code{\link{ConvertData.phmrc}}} 
+\item{\code{PHMRC}: }{PHMRC data format. The raw PHMRC long format data will be processed internally following the steps described in McComirck et al. (2016). For example see \code{\link{ConvertData.phmrc}}} 
 \item{\code{customized}: }{Any dichotomized dataset with ``Y`` denote ``presence'', ``'' denote ``absence'', and ``.'' denote ``missing''. The first column should be death ID.}}}
 
 \item{data.train}{Training data with the same columns as \code{data}, except for an additional column specifying cause-of-death label. It is not used if \code{data.type} is ``WHO'' and \code{model} is ``InterVA'' or ``InSilicoVA''.  The first column also has to be death ID for ``WHO'' and ``customized'' types.}
@@ -58,7 +58,7 @@ codeVA(
 \item{\code{quantile}: }{the rankings of the P(S|C) are obtained by matching the same quantile distributions in the default InterVA P(S|C)}\item{\code{fixed}: }{P(S|C) are matched to the closest values in the default InterVA P(S|C) table.} \item{\code{empirical}: }{no ranking is calculated, but use the empirical conditional probabilities directly, which will force \code{updateCondProb} to be FALSE for InSilicoVA algorithm.}  
 }}
 
-\item{...}{other arguments passed to \code{\link[InSilicoVA]{insilico}}, \code{\link[InterVA4]{InterVA}}, \code{\link{interVA.train}}, \code{\link[Tariff]{tariff}}, and nbc function in the nbc4va package. See respective package documents for details.}
+\item{...}{other arguments passed to \code{\link[InSilicoVA]{insilico}}, \code{\link[InterVA4]{InterVA}}, \code{\link{interVA_train}}, \code{\link[Tariff]{tariff}}, and nbc function in the nbc4va package. See respective package documents for details.}
 }
 \value{
 a fitted object
@@ -101,7 +101,7 @@ http://www.interva.net/
 Miasnikof P, Giannakeas V, Gomes M, Aleksandrowicz L, Shestopaloff AY, Alam D, Tollman S, Samarikhalaj, Jha P. \emph{Naive Bayes classifiers for verbal autopsies: comparison to physician-based classification for 21,000 child and adult deaths.} \emph{BMC Medicine. 2015;13:286.}
 }
 \seealso{
-\code{\link[InSilicoVA]{insilico}}, \code{\link[InterVA4]{InterVA}}, \code{\link{interVA.train}}, \code{\link[Tariff]{tariff}}, and nbc function in the nbc4va package.
+\code{\link[InSilicoVA]{insilico}}, \code{\link[InterVA4]{InterVA}}, \code{\link{interVA_train}}, \code{\link[Tariff]{tariff}}, and nbc function in the nbc4va package.
 }
 \keyword{InSilicoVA}
 \keyword{InterVA4}

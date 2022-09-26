@@ -4,11 +4,11 @@
 #' This will check to see if all openVA packages (and optionally, their
 #' dependencies) are up-to-date, and will install after an interactive
 #' confirmation.
+#' @family package status 
 #' @importFrom utils available.packages
 #' @importFrom utils compareVersion
 #' @importFrom tools package_dependencies
 #' @importFrom utils packageVersion
-#' @importFrom cli cat_line
 #' @importFrom cli rule
 #' @importFrom cli symbol
 #' @importFrom crayon green 
@@ -38,7 +38,7 @@ openVA_update <- function() {
   behind <- behind[behind == TRUE]
 
   if (sum(behind) == 0) {
-    cli::cat_line("All required openVA packages up-to-date. Run openVA_status() for a complete list of suggested packages.")
+    message("All required openVA packages up-to-date. Run openVA_status() for a complete list of suggested packages.")
     return(invisible())
   }
 
@@ -46,11 +46,11 @@ openVA_update <- function() {
   # cli::cat_line()
   # cli::cat_bullet(format(behind$package), " (", behind$local, " -> ", behind$cran, ")")
 
-  cli::cat_line()
-  cli::cat_line("Start a clean R session then run:")
-
-  pkg_str <- paste0(deparse(names(behind)), collapse = "\n")
-  cli::cat_line("install.packages(", pkg_str, ")")
+  message("Start a clean R session then run:")
+  need <- names(cran_version)[behind]
+  for(i in 1:length(need)) need[i] <- paste0("'", need[i], "'")
+  pkg_str <- paste0(need, collapse = ", ")
+  message(paste0("install.packages(c(", pkg_str, "))"))
 
   invisible()
 }
@@ -62,7 +62,7 @@ openVA_update <- function() {
 #' This will print the current versions of all openVA packages (and optionally, their
 #' dependencies) are up-to-date, and will install after an interactive
 #' confirmation.
- 
+#' @family package status 
 #'  
 #' @export
 #' @examples

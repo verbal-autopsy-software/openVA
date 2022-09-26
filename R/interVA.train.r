@@ -16,7 +16,7 @@
 #'
 #' @return fitted \code{interVA} object
 #' @importFrom InSilicoVA extract.prob
-#' @export interVA.train
+#' @export interVA_train
 #' @references Tyler H. McCormick, Zehang R. Li, Clara Calvert, Amelia C.
 #' Crampin, Kathleen Kahn and Samuel J. Clark (2016) \emph{Probabilistic
 #' cause-of-death assignment using verbal autopsies.}
@@ -29,10 +29,10 @@
 #' data(RandomVA3)
 #' test <- RandomVA3[1:200, ]
 #' train <- RandomVA3[201:400, ]
-#' out <- interVA.train(data = test, train = train, causes.train = "cause", 
+#' out <- interVA_train(data = test, train = train, causes.train = "cause", 
 #'                      prior = "train", type = "quantile")
 #' }
-interVA.train <- function(data, train, causes.train, causes.table = NULL, thre = 0.95, type = c("quantile", "fixed", "empirical")[1], prior = c("uniform", "train")[1],  ...){
+interVA_train <- function(data, train, causes.train, causes.table = NULL, thre = 0.95, type = c("quantile", "fixed", "empirical")[1], prior = c("uniform", "train")[1],  ...){
 
 	# extract conditional probabilities as in InSilicoVA
 	prob.learn <- extract.prob(train = train, 

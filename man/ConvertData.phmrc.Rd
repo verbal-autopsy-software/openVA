@@ -68,3 +68,8 @@ head(clean2$output.test[, 1:20])
 \references{
 James, S. L., Flaxman, A. D., Murray, C. J., & Population Health Metrics Research Consortium. (2011). \emph{Performance of the Tariff Method: validation of a simple additive algorithm for analysis of verbal autopsies. } \emph{Population Health Metrics, 9(1), 1-16.}
 }
+\seealso{
+Other data conversion: 
+\code{\link{ConvertData}()}
+}
+\concept{data conversion}

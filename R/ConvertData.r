@@ -5,6 +5,7 @@
 #' @param noLabel The value(s) coding "No" in the input matrix.
 #' @param missLabel The value(s) coding "Missing" in the input matrix.
 #' @param data.type The coding scheme of the output. This can be either "WHO2012" or "WHO2016".
+#' @family data conversion
 #'
 #' @return a data frame coded as follows. For WHO2012 scheme: "Y" for yes, "" for No, and "." for missing. For WHO2016 scheme: "y" for yes, "n" for No, and "-" for missing.
 #' @export ConvertData
@@ -104,6 +105,7 @@ getPHMRC_url <- function(type){
 #' @param phmrc.type which data input format it is. The three data formats currently available are "adult", "child", and "neonate".
 #' @param cutoff This determines how the cut-off values are to be set for continuous variables. "default" sets the cut-off values proposed in the original paper published with the dataset. "adapt" sets the cut-off values using the rules described in the original paper, which calculates the cut-off as being two median absolute deviations above the median of the mean durations across causes. However, we are not able to replicate the default cut-offs following this rule. So we suggest users to use this feature with caution.
 #' @param ... not used
+#' @family data conversion
 #'
 #' @return converted dataset with only ID and binary symptoms. Notice that when applying this function to the raw PHMRC data, the returned ID variable corresponds to the row index of the raw PHMRC data (i.e., cleaned data with ID = 10 correspond to the 10th row of the raw dataset), and does not correspond to the "newid" column in the PHMRC data. 
 #' @export ConvertData.phmrc
@@ -148,9 +150,9 @@ ConvertData.phmrc <- function(input, input.test = NULL, cause = NULL, phmrc.type
 	##
 	
 	if(phmrc.type == "adult"){
-		out <- .phmrc_adult_convert(input, input.test, cause = cause, type = cutoff)
+		out <- phmrc_adult_convert(input, input.test, cause = cause, type = cutoff)
 	}else if(phmrc.type == "child"){
-		out <- .phmrc_child_convert(input, input.test, cause = cause, type = cutoff)
+		out <- phmrc_child_convert(input, input.test, cause = cause, type = cutoff)
 		warnings("Child data conversion is experimental.")
 	}else if(phmrc.type == "neonate"){
 		stop("child data conversion still under development...")
@@ -160,7 +162,13 @@ ConvertData.phmrc <- function(input, input.test = NULL, cause = NULL, phmrc.type
 
 }
 
-.phmrc_adult_convert <- function(input, input.test, cause, type = c("default", "adapt")[1]){
+#' Converting PHMRC adult data to binary format
+#' @param input data with known causes
+#' @param input.test test data without known causes
+#' @param cause column name of the cause
+#' @param type type of cutoff for continuous variables
+#' @noRd
+phmrc_adult_convert <- function(input, input.test, cause, type = c("default", "adapt")[1]){
   
   ## take care of cause of death
   if(is.null(cause)){
@@ -226,17 +234,17 @@ ConvertData.phmrc <- function(input, input.test = NULL, cause = NULL, phmrc.type
 	colnames(symps_binary) <- colnames(as.matrix(symps_raw))
 	
 	if(type == "default"){
-		symps_binary <- .toBinary_file9(symps_raw, symps_binary, 
+		symps_binary <- toBinary_file9(symps_raw, symps_binary, 
 			adapt = FALSE, cause = NULL)
 	}else if(type == "adapt"){
-		symps_binary <- .toBinary_file9(symps_raw, symps_binary, 
+		symps_binary <- toBinary_file9(symps_raw, symps_binary, 
 			adapt = TRUE, cause = gs)
 	}else{
 		stop("Unknown cutoff type argument given.")
 	}
 
-	symps_binary <- .toBinary_file10(symps_raw, symps_binary)
-	symps_binary <- .toBinary_unhandeled(symps_raw, symps_binary)
+	symps_binary <- toBinary_file10(symps_raw, symps_binary)
+	symps_binary <- toBinary_unhandeled(symps_raw, symps_binary)
 	
 	
 	# to make sure there's no conflict of notations for "Y", "" and "."
@@ -285,7 +293,14 @@ ConvertData.phmrc <- function(input, input.test = NULL, cause = NULL, phmrc.type
 	return(list(output = out, output.test = out.test))
 }
 
-.phmrc_child_convert <- function(input, input.test, cause, type = c("default", "adapt")[2]) {
+#' Converting PHMRC child data to binary format
+#' @param input data with known causes
+#' @param input.test test data without known causes
+#' @param cause column name of the cause
+#' @param type type of cutoff for continuous variables
+#' 
+#' @noRd
+phmrc_child_convert <- function(input, input.test, cause, type = c("default", "adapt")[2]) {
   cause <- NULL
   type <- "default"
   
@@ -361,17 +376,17 @@ ConvertData.phmrc <- function(input, input.test = NULL, cause = NULL, phmrc.type
   colnames(symps_binary) <- colnames(as.matrix(symps_raw))
   
   if(type == "default"){
-    symps_binary <- .toBinary_file9_child(symps_raw, symps_binary, 
+    symps_binary <- toBinary_file9_child(symps_raw, symps_binary, 
                                           adapt = FALSE, cause = NULL)
   }else if(type == "adapt"){
-    symps_binary <- .toBinary_file9_child(symps_raw, symps_binary, 
+    symps_binary <- toBinary_file9_child(symps_raw, symps_binary, 
                                           adapt = TRUE, cause = gs)
   }else{
     stop("Unknown cutoff argument given")
   }
   
-  symps_binary <- .toBinary_file10_child(symps_raw, symps_binary)
-  symps_binary <- .toBinary_unhandeled_child(symps_raw, symps_binary)
+  symps_binary <- toBinary_file10_child(symps_raw, symps_binary)
+  symps_binary <- toBinary_unhandeled_child(symps_raw, symps_binary)
   
   # to make sure there's no conflict of notations for "Y", "" and "."
   # we use "YesYes", "NoNo", and "MissingMissing" before
@@ -420,12 +435,18 @@ ConvertData.phmrc <- function(input, input.test = NULL, cause = NULL, phmrc.type
   return(list(output = out, output.test = out.test))
 }
 
-## 
-## Function to convert a vector into T/F when there is "don't know"
-##
-## if adaptively chosen, need to know the causes
-##
-.toBinary_cutoff <- function(vec, cut, missLabel = NULL, 
+#' Function to convert a vector into T/F when there is "don't know"
+#' 
+#' The function can adaptively choose the cutoff, but it needs to know the causes
+#' @param vec original numerical vector
+#' @param cut cutoff point
+#' @param cause column name of the cause
+#' @param adapt logical indicator whether to choose cutoff adaptively
+#' @param missLabel character coding of missing symptoms
+#' 
+#'@noRd
+#'
+toBinary_cutoff <- function(vec, cut, missLabel = NULL, 
 							 adapt = FALSE, cause = NULL){
 	if(is.null(missLabel)){
 		missLabel <- c("Don't Know", "Refused to Answer")
@@ -455,10 +476,17 @@ ConvertData.phmrc <- function(input, input.test = NULL, cause = NULL, phmrc.type
 	return(vec)
 }
 
-##
-## Function to reformulate matrix based on Additional File 10
-##
-.toBinary_file9 <- function(symps_raw, symps, missLabel = NULL, adapt = FALSE, cause = NULL){
+
+#' Function to reformulate matrix based on Additional File 10
+#' 
+#' @param symps_raw raw symptom data frame
+#' @param symps new symptom data frame
+#' @param cause column name of the cause
+#' @param adapt logical indicator whether to choose cutoff adaptively
+#' @param missLabel character coding of missing symptoms
+#'@noRd
+#'
+toBinary_file9 <- function(symps_raw, symps, missLabel = NULL, adapt = FALSE, cause = NULL){
 ##########################################################
 ## The comments are the transforming rule for the symptoms
 ##	
@@ -470,120 +498,130 @@ ConvertData.phmrc <- function(input, input.test = NULL, cause = NULL, phmrc.type
 ###########################################################	
 # For how long was [name] ill before s/he died? [days]	
 	# 528.8
-	symps$a2_01 <- .toBinary_cutoff(symps_raw$a2_01, 528.8, missLabel, adapt, cause)
+	symps$a2_01 <- toBinary_cutoff(symps_raw$a2_01, 528.8, missLabel, adapt, cause)
 
 # How many days did the fever last? [days]	
 	# 8.8
-	symps$a2_03 <- .toBinary_cutoff(symps_raw$a2_03, 8.8, missLabel, adapt, cause)
+	symps$a2_03 <- toBinary_cutoff(symps_raw$a2_03, 8.8, missLabel, adapt, cause)
 
 # How many days did [name] have the rash? [days]	
 	# 3.1
-	symps$a2_08 <- .toBinary_cutoff(symps_raw$a2_08, 3.1, missLabel, adapt, cause)
+	symps$a2_08 <- toBinary_cutoff(symps_raw$a2_08, 3.1, missLabel, adapt, cause)
 
 # For how many days did the ulcer ooze pus? [days]	
 	# 0.3
-	symps$a2_15 <- .toBinary_cutoff(symps_raw$a2_15, 0.3, missLabel, adapt, cause)
+	symps$a2_15 <- toBinary_cutoff(symps_raw$a2_15, 0.3, missLabel, adapt, cause)
 
 # For how long did [name] have the yellow discoloration? [days]	
 	# 54.1
-	symps$a2_22 <- .toBinary_cutoff(symps_raw$a2_22, 54.1, missLabel, adapt, cause) 
+	symps$a2_22 <- toBinary_cutoff(symps_raw$a2_22, 54.1, missLabel, adapt, cause) 
 
 # For how long did [name] have ankle swelling? [days]	
 	# 55.2
-	symps$a2_24 <-  .toBinary_cutoff(symps_raw$a2_24, 55.2, missLabel, adapt, cause) 
+	symps$a2_24 <-  toBinary_cutoff(symps_raw$a2_24, 55.2, missLabel, adapt, cause) 
 
 # For how long did [name] have puffiness of the face? [days]	
 	# 36.0
-	symps$a2_26 <-  .toBinary_cutoff(symps_raw$a2_26, 36, missLabel, adapt, cause)
+	symps$a2_26 <-  toBinary_cutoff(symps_raw$a2_26, 36, missLabel, adapt, cause)
 
 # For how long did [name] have puffiness all over his/her body? [days]	
 	# 20.3
-	symps$a2_28 <-  .toBinary_cutoff(symps_raw$a2_28, 20.3, missLabel, adapt, cause)
+	symps$a2_28 <-  toBinary_cutoff(symps_raw$a2_28, 20.3, missLabel, adapt, cause)
 
 # For how long did [name] have a cough? [days]	
 	# 107.0
-	symps$a2_33 <-  .toBinary_cutoff(symps_raw$a2_33, 107, missLabel, adapt, cause)
+	symps$a2_33 <-  toBinary_cutoff(symps_raw$a2_33, 107, missLabel, adapt, cause)
 
 # For how long did [name] have difficulty breathing? [days]	
 	# 100.3
-	symps$a2_37 <-  .toBinary_cutoff(symps_raw$a2_37, 100.3, missLabel, adapt, cause)
+	symps$a2_37 <-  toBinary_cutoff(symps_raw$a2_37, 100.3, missLabel, adapt, cause)
 
 # For how long did [name] have fast breathing? [days]	
 	# 43.0
-	symps$a2_41 <-  .toBinary_cutoff(symps_raw$a2_41, 43, missLabel, adapt, cause)
+	symps$a2_41 <-  toBinary_cutoff(symps_raw$a2_41, 43, missLabel, adapt, cause)
 
 # For how long before death did [name] have loose or liquid stools? [days]	
 	# 4.9
-	symps$a2_48 <-  .toBinary_cutoff(symps_raw$a2_48, 4.9, missLabel, adapt, cause)
+	symps$a2_48 <-  toBinary_cutoff(symps_raw$a2_48, 4.9, missLabel, adapt, cause)
 
 # For how long before death did [name] vomit? [days]	
 	# 3.2
-	symps$a2_54 <-  .toBinary_cutoff(symps_raw$a2_54, 3.2, missLabel, adapt, cause)
+	symps$a2_54 <-  toBinary_cutoff(symps_raw$a2_54, 3.2, missLabel, adapt, cause)
 
 # For how long before death did [name] have difficulty swallowing? [days]	
 	# 55.2
-	symps$a2_58 <-  .toBinary_cutoff(symps_raw$a2_58, 55.2, missLabel, adapt, cause)
+	symps$a2_58 <-  toBinary_cutoff(symps_raw$a2_58, 55.2, missLabel, adapt, cause)
 
 # For how long before death did [name] have belly pain? [days]	
 	# 16.7
-	symps$a2_62 <- .toBinary_cutoff(symps_raw$a2_62, 16.7, missLabel, adapt, cause) 
+	symps$a2_62 <- toBinary_cutoff(symps_raw$a2_62, 16.7, missLabel, adapt, cause) 
 
 # For how long before death did [name] have a protruding belly? [days]	
 	# 45.4
-	symps$a2_65 <-  .toBinary_cutoff(symps_raw$a2_65, 45.4, missLabel, adapt, cause)
+	symps$a2_65 <-  toBinary_cutoff(symps_raw$a2_65, 45.4, missLabel, adapt, cause)
 
 # For how long before death did [name] have a mass in the belly [days]	
 	# 34.4
-	symps$a2_68 <-  .toBinary_cutoff(symps_raw$a2_68, 34.4, missLabel, adapt, cause)
+	symps$a2_68 <-  toBinary_cutoff(symps_raw$a2_68, 34.4, missLabel, adapt, cause)
 
 # For how long before death did [name] have headaches? [days]	
 	# 3.2
-	symps$a2_70 <-  .toBinary_cutoff(symps_raw$a2_70, 3.2, missLabel, adapt, cause)
+	symps$a2_70 <-  toBinary_cutoff(symps_raw$a2_70, 3.2, missLabel, adapt, cause)
 
 # For how long before death did [name] have stiff neck? [days]	
 	# 2.2
-	symps$a2_73 <-  .toBinary_cutoff(symps_raw$a2_73, 2.2, missLabel, adapt, cause)
+	symps$a2_73 <-  toBinary_cutoff(symps_raw$a2_73, 2.2, missLabel, adapt, cause)
 
 # For how long did the period of loss of consciousness last? [days]	
 	# 1.1
-	symps$a2_76 <- .toBinary_cutoff(symps_raw$a2_76, 1.1, missLabel, adapt, cause) 
+	symps$a2_76 <- toBinary_cutoff(symps_raw$a2_76, 1.1, missLabel, adapt, cause) 
 
 # For how long did the period of confusion last? [days]	
 	# 7.8
-	symps$a2_79 <- .toBinary_cutoff(symps_raw$a2_79, 7.8, missLabel, adapt, cause) 
+	symps$a2_79 <- toBinary_cutoff(symps_raw$a2_79, 7.8, missLabel, adapt, cause) 
 
 # For how long before death did the convulsions last? [days]	
 	# 0.0
-	symps$a2_83 <-  .toBinary_cutoff(symps_raw$a2_83, 0.0, missLabel, adapt, cause)
+	symps$a2_83 <-  toBinary_cutoff(symps_raw$a2_83, 0.0, missLabel, adapt, cause)
 
 # For how long before death did [name] have paralysis? [days]	
 	# 20.4
-	symps$a2_86 <-  .toBinary_cutoff(symps_raw$a2_86, 20.4, missLabel, adapt, cause)
+	symps$a2_86 <-  toBinary_cutoff(symps_raw$a2_86, 20.4, missLabel, adapt, cause)
 
 # For how many weeks was her period overdue? [days]	
 	# 2.9
-	symps$a3_08 <- .toBinary_cutoff(symps_raw$a3_08, 2.9, missLabel, adapt, cause) 
+	symps$a3_08 <- toBinary_cutoff(symps_raw$a3_08, 2.9, missLabel, adapt, cause) 
 
 # How much pipe/chewing tobacco did [name] use daily?	
 	# 1.2
-	symps$a4_03 <-  .toBinary_cutoff(symps_raw$a4_03, 1.2, missLabel, adapt, cause)
+	symps$a4_03 <-  toBinary_cutoff(symps_raw$a4_03, 1.2, missLabel, adapt, cause)
 
 # How many cigarettes did [name] smoke daily?	
 	# 4.2
-	symps$a4_04 <-  .toBinary_cutoff(symps_raw$a4_03, 4.2, missLabel, adapt, cause)
+	symps$a4_04 <-  toBinary_cutoff(symps_raw$a4_03, 4.2, missLabel, adapt, cause)
 
 # How long did [name] survive after the injury? [days]	
 	# 8.5
-	symps$a5_04 <-  .toBinary_cutoff(symps_raw$a5_04, 8.5, missLabel, adapt, cause)
+	symps$a5_04 <-  toBinary_cutoff(symps_raw$a5_04, 8.5, missLabel, adapt, cause)
 
 # Age [years]	
 	# 67.6
-	symps$g1_07a <- .toBinary_cutoff(symps_raw$g1_07a, 67.6, missLabel, adapt, cause)
+	symps$g1_07a <- toBinary_cutoff(symps_raw$g1_07a, 67.6, missLabel, adapt, cause)
 
 	return(symps)
 }
 
-.toBinary_file9_child <- function(symps_raw, symps, missLabel = NULL, adapt = FALSE, cause = NULL){
+
+#' Function to reformulate child matrix based on Additional File 9
+#' 
+#' @param symps_raw raw symptom data frame
+#' @param symps new symptom data frame
+#' @param cause column name of the cause
+#' @param adapt logical indicator whether to choose cutoff adaptively
+#' @param missLabel character coding of missing symptoms
+#'@noRd
+#'
+toBinary_file9_child <- function(symps_raw, symps, missLabel = NULL, adapt = FALSE, cause = NULL){
   ##########################################################
   ## The comments are the transforming rule for the symptoms
   ##	
@@ -595,74 +633,79 @@ ConvertData.phmrc <- function(input, input.test = NULL, cause = NULL, phmrc.type
   ###########################################################	
   # How long after delivery did the  mother die? [days]	
   # 21.4
-  symps$c1_05 <- .toBinary_cutoff(symps_raw$c1_05, 21.4, missLabel, adapt, cause)
+  symps$c1_05 <- toBinary_cutoff(symps_raw$c1_05, 21.4, missLabel, adapt, cause)
   
   # What was the weight of the deceased at birth? [grams]
   # 2623
-  symps$c1_08b <- .toBinary_cutoff(symps_raw$c1_08b, 2623, missLabel, adapt, cause)
+  symps$c1_08b <- toBinary_cutoff(symps_raw$c1_08b, 2623, missLabel, adapt, cause)
   
   # How old was the deceased when the fatal illness started [days]	
   # 1574.3
-  symps$c1_20 <- .toBinary_cutoff(symps_raw$c1_20, 1574.3, missLabel, adapt, cause)
+  symps$c1_20 <- toBinary_cutoff(symps_raw$c1_20, 1574.3, missLabel, adapt, cause)
   
   # How long did the illness last? [days]
   # 63.4
-  symps$c1_21 <- .toBinary_cutoff(symps_raw$c1_21, 63.4, missLabel, adapt, cause)
+  symps$c1_21 <- toBinary_cutoff(symps_raw$c1_21, 63.4, missLabel, adapt, cause)
   
   # How old was the deceased at the time of death? [days]
   # 1618.6
-  symps$c1_25 <- .toBinary_cutoff(symps_raw$c1_25, 1618.6, missLabel, adapt, cause)
+  symps$c1_25 <- toBinary_cutoff(symps_raw$c1_25, 1618.6, missLabel, adapt, cause)
   
   # How many days did the fever last? [days]
   # 337.3
-  symps$c4_02 <- .toBinary_cutoff(symps_raw$c4_02, 337.3, missLabel, adapt, cause)
+  symps$c4_02 <- toBinary_cutoff(symps_raw$c4_02, 337.3, missLabel, adapt, cause)
   
   # How many days before death did the frequest loose or liquid stools start?
   # [days]
   # 99.9
-  symps$c4_08 <- .toBinary_cutoff(symps_raw$c4_08, 99.9, missLabel, adapt, cause)
+  symps$c4_08 <- toBinary_cutoff(symps_raw$c4_08, 99.9, missLabel, adapt, cause)
   
   
   # How many days before death did the frequest loose or liquid stools stop?
   # [days]
   # 15.6
-  symps$c4_10 <- .toBinary_cutoff(symps_raw$c4_10, 15.6, missLabel, adapt, cause)
+  symps$c4_10 <- toBinary_cutoff(symps_raw$c4_10, 15.6, missLabel, adapt, cause)
   
   # How many days did the cough last? [days] 
   # 5.7
-  symps$c4_13 <- .toBinary_cutoff(symps_raw$c4_13, 5.7, missLabel, adapt, cause)
+  symps$c4_13 <- toBinary_cutoff(symps_raw$c4_13, 5.7, missLabel, adapt, cause)
   
   # How many days did the difficult breathing last? [days]
   # 9.1
-  symps$c4_17 <- .toBinary_cutoff(symps_raw$c4_17, 9.1, missLabel, adapt, cause)
+  symps$c4_17 <- toBinary_cutoff(symps_raw$c4_17, 9.1, missLabel, adapt, cause)
   
   # How many days did the fast breathing last? [days]
   # 1.5
-  symps$c4_19 <- .toBinary_cutoff(symps_raw$c4_19, 1.5, missLabel, adapt, cause)
+  symps$c4_19 <- toBinary_cutoff(symps_raw$c4_19, 1.5, missLabel, adapt, cause)
   
   # How many days did the rash last? [days]
   # 1.1
-  symps$c4_33 <- .toBinary_cutoff(symps_raw$c4_33, 1.1, missLabel, adapt, cause)
+  symps$c4_33 <- toBinary_cutoff(symps_raw$c4_33, 1.1, missLabel, adapt, cause)
   
   # How long did the swelling last? [days]
   # 2.2
-  symps$c4_37 <- .toBinary_cutoff(symps_raw$c4_37, 2.2, missLabel, adapt, cause)
+  symps$c4_37 <- toBinary_cutoff(symps_raw$c4_37, 2.2, missLabel, adapt, cause)
   
   # How long did the decendent survive after the injury or accident? [days]
   # 0.6
-  symps$c4_49 <- .toBinary_cutoff(symps_raw$c4_49, .6, missLabel, adapt, cause)
+  symps$c4_49 <- toBinary_cutoff(symps_raw$c4_49, .6, missLabel, adapt, cause)
   
   # Age [years] (short duration cutoff)
   # 2.4
-  symps$g1_07a <- .toBinary_cutoff(symps_raw$g1_07a, 2.4, missLabel, adapt, cause)
+  symps$g1_07a <- toBinary_cutoff(symps_raw$g1_07a, 2.4, missLabel, adapt, cause)
   
   return(symps)
 }
 
-## 
-## Function to map a vector into Y/N/. by customized grouping
-##
-.toBinary_group <- function(vec, gtrue, gfalse, gna){
+#' Function to map a vector into Y/N/. by customized grouping
+#' 
+#' @param vec raw symptom data frame
+#' @param gtrue value for present symptoms
+#' @param gfalse value for absent symptoms
+#' @param gna  value for missing symptoms  
+#'@noRd
+#'
+toBinary_group <- function(vec, gtrue, gfalse, gna){
 	vec <- as.character(vec)
 	for(i in gtrue){
 		vec[which(vec == i)] <- "YesYes"
@@ -676,10 +719,19 @@ ConvertData.phmrc <- function(input, input.test = NULL, cause = NULL, phmrc.type
 	return(vec)
 }
 
-## 
-## Function to map two vector into Y/N/. by customized grouping
-##
-.toBinary_group2 <- function(vec1, vec2, gtrue, gfalse, gna){
+
+#' Function to map two vectors into Y/N/. by customized grouping
+#' 
+#' 
+#' @param vec1 first symptom data frame
+#' @param vec2 second symptom data frame. Output is only present if both symptoms present. 
+#' @param gtrue value for present symptoms
+#' @param gfalse value for absent symptoms
+#' @param gna  value for missing symptoms 
+#'@noRd
+#'
+
+toBinary_group2 <- function(vec1, vec2, gtrue, gfalse, gna){
 	vec1 <- as.character(vec1)
 	vec2 <- as.character(vec2)
 	# first set to vec1
@@ -699,10 +751,16 @@ ConvertData.phmrc <- function(input, input.test = NULL, cause = NULL, phmrc.type
 	return(vec1)
 }
 
-##
-## Function to reformulate matrix based on Additional File 10
-##
-.toBinary_file10 <- function(raw, new){
+
+#'  Function to reformulate matrix based on Additional File 10
+#' 
+#' @param raw original data frame
+#' @param new new data frame
+#'@noRd
+#'
+#' 
+#' 
+toBinary_file10 <- function(raw, new){
 ##########################################################
 ## The comments are the transforming rule for the symptoms
 ##	
@@ -718,7 +776,7 @@ ConvertData.phmrc <- function(input, input.test = NULL, cause = NULL, phmrc.type
 # How substantial was the loss of weight?	
 # Slight, Moderate, Large, Don't Know	
 	##  Was there moderate to large weight loss?
-new$a2_19 <- .toBinary_group(raw$a2_19, 
+new$a2_19 <- toBinary_group(raw$a2_19, 
 							c("Moderate", "Large"), 
 							c("Slight"), 
 							c("Don't Know"))
@@ -726,7 +784,7 @@ new$a2_19 <- .toBinary_group(raw$a2_19,
 # How severe was the fever?	
 # Mild, Moderate, Severe, Don't Know	
 	##  Was there a moderate to severe fever?
-new$a2_04 <- .toBinary_group(raw$a2_04, 
+new$a2_04 <- toBinary_group(raw$a2_04, 
 							c("Moderate", "Severe"), 
 							c("Mild"), 
 							c("Don't Know"))
@@ -735,11 +793,11 @@ new$a2_04 <- .toBinary_group(raw$a2_04,
 # Continuous, On and Off, Only at Night
 	##  Was there a continuous fever?
 	##  Was there an on and off fever?
-new$a2_05  <- .toBinary_group(raw$a2_05, 
+new$a2_05  <- toBinary_group(raw$a2_05, 
 							c("Continuous"), 
 							c("On and Off", "Only at Night"), 
 							c("Don't Know"))
-new$a2_05_s1 <- .toBinary_group(raw$a2_05, 
+new$a2_05_s1 <- toBinary_group(raw$a2_05, 
 							c("On and Off"), 
 							c("Continuous", "Only at Night"), 
 							c("Don't Know"))
@@ -749,45 +807,45 @@ new$a2_05_s1 <- .toBinary_group(raw$a2_05,
 	##	Was there a rash on the trunk?
 	##	Was there a rash on the extremities?
 	##	Was there a rash everywhere?
-new$a2_09_1a  <- .toBinary_group2(raw$a2_09_1a, raw$a2_09_2a,
+new$a2_09_1a  <- toBinary_group2(raw$a2_09_1a, raw$a2_09_2a,
 							c("Face"), 
 							c("Trunk", "Extremities", "Everywhere", "Other"), 
 							c("Don't Know"))
-new$a2_09_1a_s1  <- .toBinary_group2(raw$a2_09_1a, raw$a2_09_2a,
+new$a2_09_1a_s1  <- toBinary_group2(raw$a2_09_1a, raw$a2_09_2a,
 							c("Trunk"), 
 							c("Face", "Extremities", "Everywhere", "Other"), 
 							c("Don't Know"))
-new$a2_09_1a_s2  <- .toBinary_group2(raw$a2_09_1a, raw$a2_09_2a,
+new$a2_09_1a_s2  <- toBinary_group2(raw$a2_09_1a, raw$a2_09_2a,
 							c("Extremities"), 
 							c("Trunk", "Face", "Everywhere", "Other"), 
 							c("Don't Know"))
-new$a2_09_1a_s3  <- .toBinary_group2(raw$a2_09_1a, raw$a2_09_2a,
+new$a2_09_1a_s3  <- toBinary_group2(raw$a2_09_1a, raw$a2_09_2a,
 							c("Everywhere"), 
 							c("Trunk", "Extremities", "Face", "Other"), 
 							c("Don't Know"))
-new$a2_09_1b  <- .toBinary_group2(raw$a2_09_1a, raw$a2_09_2a,
+new$a2_09_1b  <- toBinary_group2(raw$a2_09_1a, raw$a2_09_2a,
 							c("Other"), 
 							c("Trunk", "Extremities", "Face", "Everywhere"), 
 							c("Don't Know"))
 new <- new[, -which(colnames(new) == "a2_09_2a")]
 new <- new[, -which(colnames(new) == "a2_09_2b")]
-# new$a2_09_2a  <- .toBinary_group(raw$a2_09_2a, 
+# new$a2_09_2a  <- toBinary_group(raw$a2_09_2a, 
 # 							c("Face"), 
 # 							c("Trunk", "Extremities", "Everywhere", "Other"), 
 # 							c("Don't Know"))
-# new$a2_09_2a_s1  <- .toBinary_group(raw$a2_09_2a, 
+# new$a2_09_2a_s1  <- toBinary_group(raw$a2_09_2a, 
 # 							c("Trunk"), 
 # 							c("Face", "Extremities", "Everywhere", "Other"), 
 # 							c("Don't Know"))
-# new$a2_09_2a_s2  <- .toBinary_group(raw$a2_09_2a, 
+# new$a2_09_2a_s2  <- toBinary_group(raw$a2_09_2a, 
 # 							c("Extremities"), 
 # 							c("Trunk", "Face", "Everywhere", "Other"), 
 # 							c("Don't Know"))
-# new$a2_09_2a_s3  <- .toBinary_group(raw$a2_09_2a, 
+# new$a2_09_2a_s3  <- toBinary_group(raw$a2_09_2a, 
 # 							c("Everywhere"), 
 # 							c("Trunk", "Extremities", "Face", "Other"), 
 # 							c("Don't Know"))
-# new$a2_09_2b  <- .toBinary_group(raw$a2_09_2a, 
+# new$a2_09_2b  <- toBinary_group(raw$a2_09_2a, 
 # 							c("Other"), 
 # 							c("Trunk", "Extremities", "Face", "Everywhere"), 
 # 							c("Don't Know"))
@@ -798,71 +856,56 @@ new <- new[, -which(colnames(new) == "a2_09_2b")]
 	##	Did the breathing difficulty get worse in the sitting position?
 	##	Did the breathing difficulty get worse in the walking position?
 	##	Did the breathing difficulty not get worse in any position?
-new$a2_39_1  <- .toBinary_group2(raw$a2_39_1, raw$a2_39_2,
+new$a2_39_1  <- toBinary_group2(raw$a2_39_1, raw$a2_39_2,
 							c("Lying"), 
 							c("Sitting", "Walking/Exertion", "Didn't matter"), 
 							c("Didn't matter", "Refused to Answer","Don't Know"))
-new$a2_39_1_s1  <- .toBinary_group2(raw$a2_39_1, raw$a2_39_2,
+new$a2_39_1_s1  <- toBinary_group2(raw$a2_39_1, raw$a2_39_2,
 							c("Sitting"), 
 							c("Lying", "Walking/Exertion", "Didn't matter"), 
 							c("Didn't matter", "Refused to Answer","Don't Know"))
-new$a2_39_1_s2  <- .toBinary_group2(raw$a2_39_1, raw$a2_39_2,
+new$a2_39_1_s2  <- toBinary_group2(raw$a2_39_1, raw$a2_39_2,
 							c("Walking/Exertion"), 
 							c("Sitting", "Lying", "Didn't matter"), 
 							c("Didn't matter", "Refused to Answer","Don't Know"))
-new$a2_39_1_s3  <- .toBinary_group2(raw$a2_39_1, raw$a2_39_2,
+new$a2_39_1_s3  <- toBinary_group2(raw$a2_39_1, raw$a2_39_2,
 							c("Didn't matter"), 
 							c("Lying", "Sitting", "Walking/Exertion"), 
 							c("Refused to Answer","Don't Know"))
 new <- new[, -which(colnames(new) == "a2_39_2")]
 
-# new$a2_39_2  <- .toBinary_group(raw$a2_39_2, 
-# 							c("Lying"), 
-# 							c("Sitting", "Walking/Exertion", "Didn't matter"), 
-# 							c("Didn't matter", "Refused to Answer","Don't Know"))
-# new$a2_39_2_s1  <- .toBinary_group(raw$a2_39_2, 
-# 							c("Sitting"), 
-# 							c("Lying", "Walking/Exertion", "Didn't matter"), 
-# 							c("Didn't matter", "Refused to Answer","Don't Know"))
-# new$a2_39_2_s2  <- .toBinary_group(raw$a2_39_2, 
-# 							c("Walking/Exertion"), 
-# 							c("Sitting", "Lying", "Didn't matter"), 
-# 							c("Didn't matter", "Refused to Answer","Don't Know"))
-# new$a2_39_2_s3  <- .toBinary_group(raw$a2_39_2, 
-# 							c("Didn't matter"), 
-# 							c("Lying", "Sitting", "Walking/Exertion"), 
-# 							c("Refused to Answer","Don't Know"))
+
 # Was the breathing difficulty continuous or on and off?	
 # Continuous, On and Off, Don't Know	
 	##  Was the breathing difficulty continuous?
 	##	Was the breathing difficulty on and off?
-new$a2_38  <- .toBinary_group(raw$a2_38, 
+new$a2_38  <- toBinary_group(raw$a2_38, 
 							c("Continuous"), 
 							c("On and Off" ), 
 							c("Don't Know"))
-new$a2_38_s1 <- .toBinary_group(raw$a2_38, 
+new$a2_38_s1 <- toBinary_group(raw$a2_38, 
 							c("On and Off"), 
 							c("Continuous" ), 
 							c("Don't Know"))
 # How long did the pain in the chest last?	
 # <30 minutes, 30 minutes - 24 hours, >24 hours, Refused to Answer, Don't Know	
 	##  Did the pain last more than 24 hours?
-new$a2_44 <- .toBinary_group(raw$a2_44, 
+new$a2_44 <- toBinary_group(raw$a2_44, 
 							c(">24 hr" ), 
 							c("<30 minutes", "0.5-24 hours"), 
 							c("Don't Know", "Refused to Answer"))
 # Where was the pain located?	
 # Upper/middle chest, Lower chest, Left arm, Other, Refused to Answer, Don't know	##   Was there pain located in the chest?
    ##	Was there pain located in the left arm?
-new$a2_46a <- .toBinary_group(raw$a2_46a, 
+new$a2_46a <- toBinary_group(raw$a2_46a, 
 							c("Upper/middle chest", "Lower chest" ), 
 							c("Left Arm", "Other" ), 
 							c("Don't Know", "Refused to Answer"))
-new$a2_46a_s1 <- .toBinary_group(raw$a2_46a, 
+new$a2_46a_s1 <- toBinary_group(raw$a2_46a, 
 							c("Left Arm" ), 
 							c("Upper/middle chest", "Lower chest", "Other"), 
 							c("Don't Know", "Refused to Answer"))
-new$a2_46b <- .toBinary_group(raw$a2_46a, 
+new$a2_46b <- toBinary_group(raw$a2_46a, 
 							c("Other" ), 
 							c("Left Arm", "Upper/middle chest", "Lower chest" ), 
 							c("Don't Know", "Refused to Answer"))
@@ -870,7 +913,7 @@ new$a2_46b <- .toBinary_group(raw$a2_46a,
 # Was there difficulty swallowing liquids, solids, or both?	
 # Liquids, Solids, Both, Refused to Answer, Don't Know	
 	##  Was there difficulty swallowing both solids and liquids?
-new$a2_59 <- .toBinary_group(raw$a2_59, 
+new$a2_59 <- toBinary_group(raw$a2_59, 
 							c("Both" ), 
 							c("Liquids", "Solids"), 
 							c("Don't Know", "Refused to Answer"))
@@ -878,32 +921,32 @@ new$a2_59 <- .toBinary_group(raw$a2_59,
 # Was the pain in the upper or lower belly?	
 # Upper belly, Lower belly, Refused to answer, Don't know	
 	## Was there pain in the lower belly?
-new$a2_63_1 <- .toBinary_group(raw$a2_63_1, 
+new$a2_63_1 <- toBinary_group(raw$a2_63_1, 
 							c("Lower belly" ), 
 							c("Upper belly"), 
 							c("Don't Know", "Refused to Answer"))
-new$a2_63_2 <- .toBinary_group(raw$a2_63_2, 
+new$a2_63_2 <- toBinary_group(raw$a2_63_2, 
 							c("Lower belly" ), 
 							c("Upper belly"), 
 							c("Don't Know", "Refused to Answer"))
 # Was the onset of the headache fast or slow?	
 # Rapid/Fast, Slow, Refused to Answer, Don't Know	
 	##  Was the onset of the headache fast or slow?
-new$a2_71 <- .toBinary_group(raw$a2_71, 
+new$a2_71 <- toBinary_group(raw$a2_71, 
 							c("Rapidly/Fast"), 
 							c("Slow(ly)"), 
 							c("Don't Know", "Refused to Answer"))
 # Did the period of loss of consciousness start suddenly or slowly?	
 # Suddenly, Slowly, Don't Know	
 	##  Was there a sudden loss of consciousness?
-new$a2_75 <- .toBinary_group(raw$a2_75, 
+new$a2_75 <- toBinary_group(raw$a2_75, 
 							c("Suddenly"), 
 							c("Slowly"), 
 							c("Don't Know"))
 # Did the period of confusion start suddenly or slowly?	
 # Suddenly, Slowly, Don't Know	
 	##	Was there a sudden start to a period of confusion?
-new$a2_80 <- .toBinary_group(raw$a2_80, 
+new$a2_80 <- toBinary_group(raw$a2_80, 
 							c("Suddenly"), 
 							c("Slowly"), 
 							c("Don't Know"))
@@ -912,11 +955,11 @@ new$a2_80 <- .toBinary_group(raw$a2_80,
 	##  Did [name] drink moderate-high amounts of alcohol?
 	##	Did [name] drink low amounts of alcohol?
 	# levels: Mild, Moderate, Severe, (Don't Know, Refused to Answer)
-new$a4_06 <- .toBinary_group(raw$a4_06, 
+new$a4_06 <- toBinary_group(raw$a4_06, 
 							c("Moderate", "High"), 
 							c("Low"), 
 							c("Don't Know", "Refused to Answer"))
-new$a4_06_s1 <- .toBinary_group(raw$a4_06, 
+new$a4_06_s1 <- toBinary_group(raw$a4_06, 
 							c("Low"), 
 							c("Moderate", "High"),
 							c("Don't Know", "Refused to Answer"))
@@ -924,7 +967,15 @@ new$a4_06_s1 <- .toBinary_group(raw$a4_06,
  return(new[, order(colnames(new))])
 }
 
-.toBinary_file10_child <- function(raw, new){
+
+#'  Function to reformulate child matrix based on Additional File 10
+#' @param raw original data frame
+#' @param new new data frame
+#'@noRd
+#'
+#' 
+#' 
+toBinary_file10_child <- function(raw, new){
   ##########################################################
   ## The comments are the transforming rule for the symptoms
   ##	
@@ -940,7 +991,7 @@ new$a4_06_s1 <- .toBinary_group(raw$a4_06,
   # Was the deceased a singleton or multiple birth?
   # Singletone, Multiple, Don't Know
   ## Was the deceased a multiple birth?
-  new$c1_01 <- .toBinary_group(raw$c1_01, 
+  new$c1_01 <- toBinary_group(raw$c1_01, 
                                c("Multiple"), 
                                c("Singleton"), 
                                c("Don't Know", ""))
@@ -948,7 +999,7 @@ new$a4_06_s1 <- .toBinary_group(raw$a4_06,
   # Was this the first, second, or later in the birth order?
   # First, Second, Third or More, Don't Know
   ## Was this birth the second or more in the birth order?
-  new$c1_02 <- .toBinary_group(raw$c1_02, 
+  new$c1_02 <- toBinary_group(raw$c1_02, 
                                c("Second", "Third or More"), 
                                c("First"), 
                                c("Don't Know"))
@@ -956,14 +1007,14 @@ new$a4_06_s1 <- .toBinary_group(raw$a4_06,
   # Did the mother die during or after the delivery?
   # During, After, Don't Know
   ## Did the mother die after the delivery?
-  new$c1_04 <- .toBinary_group(raw$c1_04, 
+  new$c1_04 <- toBinary_group(raw$c1_04, 
                                c("After"), 
                                c("During"), 
                                c("Don't Know"))
   # Where was the deceased born?
   # Hospital, Other Health Facility, On Route to Health Facility, Home, Other, Don't Know
   ## Was the deceased born at home or in another non-health facility?
-  new$c1_06a <- .toBinary_group(raw$c1_06a, 
+  new$c1_06a <- toBinary_group(raw$c1_06a, 
                                 c("Home", "Other"), 
                                 c("Hospital", "On Route to Health Facility",
                                   "Other Health Facility"), 
@@ -971,14 +1022,14 @@ new$a4_06_s1 <- .toBinary_group(raw$a4_06,
   # At the time of the delivery, what was the size of the deceased?
   # Very small, smaller than usual, about average, larger than usual, don't know
   ## At the time of the delivery, was the deceased small or very small?
-  new$c1_07 <- .toBinary_group(raw$c1_07, 
+  new$c1_07 <- toBinary_group(raw$c1_07, 
                                c("Very small", "smaller than usual"), 
                                c("About average", "larger than usual"), 
                                c("Don't Know", ""))
   # Where did the deceased die?
   # Hospital, Other Health Facility, On Route to Health Facility, Home, Other, Don't Know
   ## Did the deceased die at home or on route to a health facility?
-  new$c1_22a <- .toBinary_group(raw$c1_22a, 
+  new$c1_22a <- toBinary_group(raw$c1_22a, 
                                 c("Home", "On Route to Health Facility"), 
                                 c("Hospital", "Other",
                                   "Other Health Facility"), 
@@ -986,7 +1037,7 @@ new$a4_06_s1 <- .toBinary_group(raw$a4_06,
   # How severe was the fever?
   # Mild, Moderate, Severe, Don't Know
   ## Was there a severe fever?
-  new$c4_04 <- .toBinary_group(raw$c4_04, 
+  new$c4_04 <- toBinary_group(raw$c4_04, 
                                c("Severe"), 
                                c("Mild", "Moderate"), 
                                c("Don't Know"))
@@ -994,7 +1045,7 @@ new$a4_06_s1 <- .toBinary_group(raw$a4_06,
   # What was the pattern of the fever?
   # Continuous, On and Off, Only at Night
   ## Was the fever on and off or only at night?
-  new$c4_05 <- .toBinary_group(raw$c4_05, 
+  new$c4_05 <- toBinary_group(raw$c4_05, 
                                c("On and Off", "Only at Night"), 
                                c("Continuous"), 
                                c("Don't Know"))
@@ -1002,7 +1053,7 @@ new$a4_06_s1 <- .toBinary_group(raw$a4_06,
   # How many stools did [name] have on the day that loose liquid stools were most frequent?
   # 0-30
   ## Did [name] have 2 or more stools on the day that loose liquid stools were most frequent?
-  new$c4_07b <- .toBinary_group(raw$c4_07b, 
+  new$c4_07b <- toBinary_group(raw$c4_07b, 
                                 2:30, 
                                 0:1, 
                                 NA)
@@ -1010,7 +1061,7 @@ new$a4_06_s1 <- .toBinary_group(raw$a4_06,
   # Where was the rash?
   # Face, Trunk, Extremities, Everywhere, Other, Don't Know
   ## Was there a rash on the face?
-  new$c4_31_1 <- .toBinary_group(raw$c4_31_1, 
+  new$c4_31_1 <- toBinary_group(raw$c4_31_1, 
                                  c("Face"), 
                                  c("Everywhere", "Extremities",
                                    "Other", "Trunk"), 
@@ -1019,7 +1070,7 @@ new$a4_06_s1 <- .toBinary_group(raw$a4_06,
   # Where did the rash start?
   # Face, Trunk, Extremities, Everywhere, Other, Don't Know
   ## Did the rash start on the face?
-  new$c4_32 <- .toBinary_group(raw$c4_32, 
+  new$c4_32 <- toBinary_group(raw$c4_32, 
                                c("Face"), 
                                c("Everywhere", "Extremities",
                                  "Other", "Trunk"), 
@@ -1029,10 +1080,17 @@ new$a4_06_s1 <- .toBinary_group(raw$a4_06,
 
 
 
-##
-## Function to reformulate matrix not specified by any documents
-##
-.toBinary_unhandeled <- function(raw, new){
+
+#'  Function to reformulate matrix not specified by any documents
+#' 
+#' @param raw original data frame
+#' @param new new data frame
+#'@noRd
+#'
+#' 
+#' 
+#' 
+toBinary_unhandeled <- function(raw, new){
 ##########################################################
 ## The comments are the transforming rule for the symptoms
 ##	
@@ -1048,7 +1106,7 @@ new$a4_06_s1 <- .toBinary_group(raw$a4_06,
 # How rapidly did [name] develop the protruding belly?
 #  Don't Know, Rapidly/Fast,     Slow(ly)
 	##  Was it rapid?
-new$a2_66 <- .toBinary_group(raw$a2_66, 
+new$a2_66 <- toBinary_group(raw$a2_66, 
 							c("Rapidly/Fast"), 
 							c("Slow(ly)"), 
 							c("Don't Know"))
@@ -1063,18 +1121,29 @@ new <- new[, -which(colnames(new) == "a3_16")]
 new <- new[, -which(colnames(new) == "a4_02_5b")]
 
 # add sex
-new$g1_05   <- .toBinary_group(raw$g1_05 , 
+new$g1_05   <- toBinary_group(raw$g1_05 , 
 							c("Female"), 
 							c("Male" ), 
 							c("Don't Know", ""))
-new$g1_05_s1  <- .toBinary_group(raw$g1_05 , 
+new$g1_05_s1  <- toBinary_group(raw$g1_05 , 
 							c("Male"), 
 							c("Female" ), 
 							c("Don't Know", ""))
  return(new[, order(colnames(new))])
 }
 
-.toBinary_unhandeled_child <- function(raw, new){
+
+
+#'  Function to reformulate child matrix not specified by any documents
+#' @param raw original data frame
+#' @param new new data frame
+#' 
+#'@noRd
+#'
+#' 
+#' 
+#' 
+toBinary_unhandeled_child <- function(raw, new){
   ##########################################################
   ## The comments are the transforming rule for the symptoms
   ##	
@@ -1106,17 +1175,17 @@ new$g1_05_s1  <- .toBinary_group(raw$g1_05 ,
   # How long before death did unconsciousness start?
   # < 6 hours, 6-23 hours, 24 hours or more, Don't Know
   ## Did unconsciousness start less than 6 hours before death?
-  new$c4_27 <- .toBinary_group(raw$c4_27,
+  new$c4_27 <- toBinary_group(raw$c4_27,
                                c("<6 hours"),
                                c("24 hours or more", "6-23 hours"),
                                c("Don't Know"))
   
   # add sex
-  new$g1_05   <- .toBinary_group(raw$g1_05 , 
+  new$g1_05   <- toBinary_group(raw$g1_05 , 
                                  c("Female"), 
                                  c("Male" ), 
                                  c("Don't Know", ""))
-  new$g1_05_s1  <- .toBinary_group(raw$g1_05 , 
+  new$g1_05_s1  <- toBinary_group(raw$g1_05 , 
                                    c("Male"), 
                                    c("Female" ), 
                                    c("Don't Know", ""))

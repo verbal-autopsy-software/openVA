@@ -29,3 +29,11 @@ getCSMF_accuracy(csmf1, rev(csmf0))
 
 
 }
+\seealso{
+Other output extraction: 
+\code{\link{getCCC}()},
+\code{\link{getCSMF}()},
+\code{\link{getIndivProb}()},
+\code{\link{getTopCOD}()}
+}
+\concept{output extraction}

@@ -44,4 +44,8 @@ plotVA(fit3)
 \seealso{
 \code{\link[InSilicoVA]{plot.insilico}}, \code{\link[Tariff]{plot.tariff}}, 
 \code{\link[InterVA4]{CSMF}}
+
+Other visualization: 
+\code{\link{stackplotVA}()}
 }
+\concept{visualization}

@@ -27,3 +27,11 @@ fit <- codeVA(RandomVA1[1:100, ], data.type = "WHO", model = "InterVA",
 probs <- getIndivProb(fit)
 
 }
+\seealso{
+Other output extraction: 
+\code{\link{getCCC}()},
+\code{\link{getCSMF_accuracy}()},
+\code{\link{getCSMF}()},
+\code{\link{getTopCOD}()}
+}
+\concept{output extraction}

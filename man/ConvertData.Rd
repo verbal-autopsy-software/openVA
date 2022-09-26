@@ -45,3 +45,8 @@ new <- ConvertData(x, yesLabel = "Yes", noLabel = "No",
 new
 }
 }
+\seealso{
+Other data conversion: 
+\code{\link{ConvertData.phmrc}()}
+}
+\concept{data conversion}

@@ -9,6 +9,7 @@
 #'
 #' @return a vector or matrix of CSMF for all causes.
 #' @export getCSMF
+#' @family output extraction
 #'
 #' @examples
 #' \dontrun{
@@ -60,7 +61,7 @@ getCSMF <- function(x, CI = 0.95, interVA.rule = TRUE){
 #'
 #' @return a number (or vector if input is InSilicoVA fitted object) of CSMF accuracy as 1 - sum(abs(CSMF - CSMF_true)) / (2 * (1 - min(CSMF_true))).
 #' @export getCSMF_accuracy
-#'
+#' @family output extraction
 #' @examples
 #' csmf1 <- c(0.2, 0.3, 0.5)
 #' csmf0 <- c(0.3, 0.3, 0.4)
@@ -134,7 +135,7 @@ getCSMF_accuracy <- function(csmf, truth, undet = NULL){
 #' @return a data frame of ID, most likely cause assignment(s), and corresponding
 #' probability (for \code{insilico}) or indicator of how likely the cause is (for \code{interVA})
 #' @export getTopCOD
-#'
+#' @family output extraction
 #' @examples
 #' data(RandomVA1)
 #' # for illustration, only use interVA on 100 deaths
@@ -333,7 +334,7 @@ getTopCOD <- function(x, interVA.rule = TRUE, n = 1, include.prob = FALSE){
 #'
 #' @return a data frame of COD distribution for each individual specified by row names.
 #' @export getIndivProb
-#'
+#' @family output extraction
 #' @examples
 #' data(RandomVA1)
 #' # for illustration, only use interVA on 100 deaths
@@ -394,7 +395,7 @@ getIndivProb <- function(x, CI = NULL, ...){
 #' @param C the number of possible causes to assign. If unspecified, the number of unique causes in cod and truth will be used.
 #' 
 #' @export getCCC
-#' 
+#' @family output extraction
 #' @examples
 #' est <- data.frame(ID = c(1, 2, 3), cod = c("C1", "C2", "C1"))
 #' truth <- data.frame(ID = c(1, 2, 3), cod = c("C1", "C3", "C3"))

@@ -75,9 +75,6 @@ openVA_attach <- function() {
     info <- paste0(packages[col1], "     ", packages[-col1])
     message(paste(info, collapse = "\n"))
     message(paste0("If you need to use these methods, you may need to load or install the packages: ", paste0(notcore_install, collapse=", "), "."))
-    # message(paste0("You can run in your R terminal:"))
-    # message(paste0("library('", notcore_install, "')\n"))
-    # message(paste0("If you need to use these methods, you may need to load or install the packages: ", paste0(notcore_install, collapse=", "), ".\nYou can run in your R terminal:\n install.packages(c('", paste0(notcore_install, collapse="', '"), "'))"))
   }
 
   invisible()

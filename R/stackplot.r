@@ -1,6 +1,6 @@
 #' plot grouped CSMF from a "insilico" object
 #' 
-#' Produce bar plot of the CSMFs for a fitted \code{"insilico"} object in broader groups.
+#' Produce bar plot of the CSMFs for a fitted object in broader groups. This function extends the stackplot() function in the InSilicoVA package to allow for the same visualization for results from InterVA, NBC, and Tariff algorithms.
 #' 
 #' 
 #' @param x one or a list of fitted object from \code{codeVA} function
@@ -28,8 +28,10 @@
 #' @author Zehang Li, Tyler McCormick, Sam Clark
 #' 
 #' Maintainer: Zehang Li <lizehang@@uw.edu>
-#' @importFrom ggplot2 ggplot aes geom_bar position_dodge geom_errorbar ggtitle coord_flip theme_bw theme element_text scale_fill_grey
-#' @examples
+#' @importFrom ggplot2 ggplot aes geom_bar position_dodge geom_errorbar ggtitle coord_flip theme_bw theme element_text scale_fill_grey scale_color_manual scale_fill_manual
+#' @importFrom grDevices colorRampPalette
+#' @family visualization
+#' @examples 
 #' \donttest{
 #' data(RandomVA3)
 #' test <- RandomVA3[1:200, ]
@@ -97,7 +99,7 @@ stackplotVA <- function(x, grouping = NULL,
     group_order <- unique(grouping$broad_cause)
   } else if (!setequal(group_order, unique(grouping$broad_cause))){
     # make sure that group_order agrees with the grouping; if not, warn and replace
-    warning("User-specified order.group does not encompass what is contained in the grouping specification. Replacing with the default.")
+    warning("User-specified group_order does not encompass what is contained in the grouping specification. Replacing with the default.")
     group_order <- unique(grouping$broad_cause)
   }
   
@@ -124,7 +126,7 @@ stackplotVA <- function(x, grouping = NULL,
       } else if(n == 1){
         g <- InSilicoVA::stackplot(x[[i]], grouping = grouping,
                         type = type, 
-                        group_order = group_order, err = err,
+                        order.group = group_order, err = err,
                         CI = CI, sample_size_print = sample_size_print,
                         xlab = xlab, ylab = ylab, ylim = ylim,
                         title = title,  horiz = horiz, angle = angle,  
@@ -281,7 +283,16 @@ stackplotVA <- function(x, grouping = NULL,
   if(!is.null(ylim)) {
     g <- g + ylim(ylim)
   }
-  if(bw) g <- g + theme_bw() + scale_fill_grey(start = 0, end = 0.9)
+  if(bw){
+    g <- g + theme_bw() + scale_fill_grey(start = 0, end = 0.9)
+  }else{
+    cbp <- c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
+    maxn <- length(unique(toplot$Causes))
+    if(maxn > length(cbp)){
+      cbp <- colorRampPalette(cbp)(maxn)
+    }
+    g <- g + scale_fill_manual(values = cbp)
+  }
   return(g)
   
 }

@@ -38,3 +38,11 @@ getCSMF(fit)
 }
 
 }
+\seealso{
+Other output extraction: 
+\code{\link{getCCC}()},
+\code{\link{getCSMF_accuracy}()},
+\code{\link{getIndivProb}()},
+\code{\link{getTopCOD}()}
+}
+\concept{output extraction}

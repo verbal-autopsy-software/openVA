@@ -1,0 +1,33 @@
+citHeader("To cite the 'openVA' package in publications, please use:")
+
+year = sub('.*(2[[:digit:]]{3})-.*', '\\1', meta$Date, perl = TRUE)
+if (length(year) == 0) year = format(Sys.Date(), '%Y')
+vers = paste('R package version', meta$Version)
+auth = c("Zehang Richard Li, Tyler H. McCormick, and Samuel J. Clark")
+
+citEntry(
+  entry = 'manual',
+  title = paste('openVA:', meta$Title),
+  author = auth,
+  year = year,
+  note = vers,
+  url = strsplit(meta$URL, ',')[[1]][1],
+  textVersion = paste0(
+    paste(auth, collapse = ' and '), ' (', year, '). openVA: ', meta$Title, '. ', vers, '.',
+    ' URL https://cran.r-project.org/web/packages/openVA/index.html.'
+  )
+)
+
+citEntry(
+  entry = 'article',
+  title = 'The openVA Toolkit for Verbal Autopsies',
+  author = c('Zehang Richard Li', 'Jason Thomas', 'Eungang Choi', 'Tyler H. McCormick', 'Samuel J. Clark '),
+  journal = 'arXiv',
+  year = '2022',
+  url = 'https://arxiv.org/abs/2109.08244',
+  textVersion = paste(
+    'Zehang Richard Li, Jason Thomas, Eungang Choi, Tyler H. McCormick, and Samuel J Clark (2022).',
+    'The openVA Toolkit for Verbal Autopsies.', 'arXiv preprint',
+    'URL https://arxiv.org/abs/2109.08244.'
+  )
+)

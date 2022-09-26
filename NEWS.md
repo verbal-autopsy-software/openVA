@@ -1,4 +1,8 @@
 # openVA - changes
+Version 1.1.0 (2022-09-25)
+==========================
++ Major document improvement and internal code improvements.
++ Colorblind-friendly color palette is default now.
 
 Version 1.0.15 (2022-08-02)
 ==========================
