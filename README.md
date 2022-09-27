@@ -1,5 +1,6 @@
 # openVA
 [![R-CMD-check](https://github.com/verbal-autopsy-software/openVA/workflows/R-CMD-check/badge.svg)](https://github.com/verbal-autopsy-software/openVA/actions) [![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version/openVA)](https://cran.r-project.org/package=openVA)  [![](https://cranlogs.r-pkg.org/badges/openVA)](https://cran.r-project.org/package=openVA) [![](https://cranlogs.r-pkg.org/badges/grand-total/openVA?color=orange)](https://cran.r-project.org/package=openVA)
+[![Codecov test coverage](https://codecov.io/gh/richardli/VerbalAutopsy/branch/master/graph/badge.svg)](https://app.codecov.io/gh/richardli/VerbalAutopsy?branch=master)
 
 The openVA package implements multiple existing open-source algorithms for coding cause of death from verbal autopsies. It also provides tools for data manipulation tasks commonly used in Verbal Autopsy analysis and implements easy graphical visualization of individual and population level statistics. 
  
@@ -8,7 +9,7 @@ The VA methods implemented in the package include:
 + InterVA5 by Byass at al (2019) <doi:10.1186/s12916-019-1333-6>, implemented using the R package [InterVA5](https://cran.r-project.org/web/packages/InterVA5/index.html)
 + InSilicoVA by McCormick et al (2016) <doi:10.1080/01621459.2016.1152191>, implemented using the R package [InSilicoVA](https://cran.r-project.org/web/packages/InSilicoVA/index.html)
 + NBC by Miasnikof et al (2015) <doi:10.1186/s12916-015-0521-2>, implemented by the R package [nbc4va](https://github.com/rrwen/nbc4va) on Github.  
-+ A replication of Tariff method by James et al (2011) <doi:10.1186/1478-7954-9-31> and Serina, et al. (2015) <doi:10.1186/s12916-015-0527-9>. Please note this package was not developed by authors affiliated with the Institute for Health Metrics and Evaluation (IHME) and thus unintentional discrepancies may exist in the implementation of the Tariff method. It also does not fully replicate the full implementations of the SmartVA-Analyze application distributed by IHME.
++ A replication of Tariff method implemented using the R package [Tariff](https://cran.r-project.org/web/packages/Tariff/index.html). The Tariff method is described in James et al (2011) <doi:10.1186/1478-7954-9-31> and Serina, et al. (2015) <doi:10.1186/s12916-015-0527-9>. Please note this package was not developed by authors affiliated with the Institute for Health Metrics and Evaluation (IHME) and thus unintentional discrepancies may exist in the implementation of the Tariff method. It also does not fully replicate the full implementations of the SmartVA-Analyze application distributed by IHME.
 
 
 For more information, check out the package and team website for more details and documentations: [openVA.net](https://openva.net/).
