@@ -1,6 +1,6 @@
 # openVA
 [![R-CMD-check](https://github.com/verbal-autopsy-software/openVA/workflows/R-CMD-check/badge.svg)](https://github.com/verbal-autopsy-software/openVA/actions) [![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version/openVA)](https://cran.r-project.org/package=openVA)  [![](https://cranlogs.r-pkg.org/badges/openVA)](https://cran.r-project.org/package=openVA) [![](https://cranlogs.r-pkg.org/badges/grand-total/openVA?color=orange)](https://cran.r-project.org/package=openVA)
-[![Codecov test coverage](https://codecov.io/gh/richardli/VerbalAutopsy/branch/master/graph/badge.svg)](https://app.codecov.io/gh/richardli/VerbalAutopsy?branch=master)
+[![codecov](https://codecov.io/gh/verbal-autopsy-software/openVA/branch/master/graph/badge.svg?token=P049IXFSVH)](https://codecov.io/gh/verbal-autopsy-software/openVA)
 
 The openVA package implements multiple existing open-source algorithms for coding cause of death from verbal autopsies. It also provides tools for data manipulation tasks commonly used in Verbal Autopsy analysis and implements easy graphical visualization of individual and population level statistics. 
  
