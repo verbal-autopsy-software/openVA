@@ -101,7 +101,7 @@ http://www.interva.net/
 Miasnikof P, Giannakeas V, Gomes M, Aleksandrowicz L, Shestopaloff AY, Alam D, Tollman S, Samarikhalaj, Jha P. \emph{Naive Bayes classifiers for verbal autopsies: comparison to physician-based classification for 21,000 child and adult deaths.} \emph{BMC Medicine. 2015;13:286.}
 }
 \seealso{
-\code{\link[InSilicoVA]{insilico}}, \code{\link[InterVA4]{InterVA}}, \code{\link{interVA_train}}, \code{\link[Tariff]{tariff}}, and nbc function in the nbc4va package.
+\code{\link[InSilicoVA]{insilico}} in package \pkg{InSilicoVA}, \code{\link[InterVA4]{InterVA}} in package \pkg{InterVA4}, \code{\link{InterVA5}} in package \pkg{InterVA5}, \code{\link{interVA_train}}, \code{\link[Tariff]{tariff}} in package \pkg{Tariff}, and nbc function  in package \pkg{nbc4va}.
 }
 \keyword{InSilicoVA}
 \keyword{InterVA4}

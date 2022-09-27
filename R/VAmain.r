@@ -27,7 +27,7 @@
 #'
 #' @return a fitted object
 #' @export codeVA
-#' @seealso \code{\link[InSilicoVA]{insilico}}, \code{\link[InterVA4]{InterVA}}, \code{\link{interVA_train}}, \code{\link[Tariff]{tariff}}, and nbc function in the nbc4va package.
+#' @seealso \code{\link[InSilicoVA]{insilico}} in package \pkg{InSilicoVA}, \code{\link[InterVA4]{InterVA}} in package \pkg{InterVA4}, \code{\link{InterVA5}} in package \pkg{InterVA5}, \code{\link{interVA_train}}, \code{\link[Tariff]{tariff}} in package \pkg{Tariff}, and nbc function  in package \pkg{nbc4va}.
 #' @importFrom graphics plot
 #' @importFrom stats aggregate median quantile reorder
 #' @importFrom utils data
@@ -295,8 +295,7 @@ codeVA <- function(data,
 #' \code{\link[Tariff]{plot.tariff}}, \code{\link[InterVA4]{CSMF}}, or plot.nbc function in the nbc4va package.
 #'
 #' @export plotVA
-#' @seealso \code{\link[InSilicoVA]{plot.insilico}}, \code{\link[Tariff]{plot.tariff}}, 
-#' \code{\link[InterVA4]{CSMF}}
+#' @seealso \code{\link[InSilicoVA]{plot.insilico}} in package \pkg{InSilicoVA}, \code{\link[CSMF]{InterVA}} in package \pkg{InterVA4}, \code{\link{CSMF5}} in package \pkg{InterVA5}, \code{\link[Tariff]{plot.tariff}} in package \pkg{Tariff}.
 #' @family visualization
 #' @examples
 #' \donttest{

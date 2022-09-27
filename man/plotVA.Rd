@@ -42,8 +42,7 @@ plotVA(fit3)
 }
 }
 \seealso{
-\code{\link[InSilicoVA]{plot.insilico}}, \code{\link[Tariff]{plot.tariff}}, 
-\code{\link[InterVA4]{CSMF}}
+\code{\link[InSilicoVA]{plot.insilico}} in package \pkg{InSilicoVA}, \code{\link[CSMF]{InterVA}} in package \pkg{InterVA4}, \code{\link{CSMF5}} in package \pkg{InterVA5}, \code{\link[Tariff]{plot.tariff}} in package \pkg{Tariff}.
 
 Other visualization: 
 \code{\link{stackplotVA}()}
