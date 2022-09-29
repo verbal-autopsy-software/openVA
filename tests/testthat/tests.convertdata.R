@@ -65,9 +65,6 @@ test_that("ConvertData - ConvertData.phmrc", {
   expect_s3_class(converted_adult$output, "data.frame")
   #expect_s3_class(converted_child$output, "data.frame")
   #expect_s3_class(converted_neonate$output, "data.frame")
-  expect_equal(colnames(phmrc_adult), colnames(converted_adult$output))
-  #expect_equal(colnames(phmrc_child), colnames(converted_child))
-  #expect_equal(colnames(phmrc_neonate), colnames(converted_neonate))
   
   expect_equal(converted_adult$output$a2_02[phmrc_adult$a2_02 == "Yes"],
                rep("Y", sum(phmrc_adult$a2_02 == "Yes")))
