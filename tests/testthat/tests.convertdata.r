@@ -58,14 +58,15 @@ test_that("ConvertData - getPHMRC_url", {
 # ConvertData.phmrc()
 
 converted_adult <- ConvertData.phmrc(phmrc_adult, phmrc.type = "adult")
-#converted_child <- ConvertData.phmrc(phmrc_child, phmrc.type = "child")
+converted_child <- ConvertData.phmrc(phmrc_child, phmrc.type = "child")
 #converted_neonate <- ConvertData.phmrc(phmrc_neonate, phmrc.type = "neonate")
 
 test_that("ConvertData - ConvertData.phmrc", {
   expect_s3_class(converted_adult$output, "data.frame")
-  #expect_s3_class(converted_child$output, "data.frame")
+  expect_s3_class(converted_child$output, "data.frame")
   #expect_s3_class(converted_neonate$output, "data.frame")
   
+  # Adult
   expect_equal(converted_adult$output$a2_02[phmrc_adult$a2_02 == "Yes"],
                rep("Y", sum(phmrc_adult$a2_02 == "Yes")))
   expect_equal(converted_adult$output$a2_02[phmrc_adult$a2_02 == "No"],
@@ -75,4 +76,14 @@ test_that("ConvertData - ConvertData.phmrc", {
                                    phmrc_adult$a2_02 == "Refused to Answer"],
                rep(".", sum(phmrc_adult$a2_02 == "Don't Know" |
                              phmrc_adult$a2_02 == "Refused to Answer")))
+  # Child
+  expect_equal(converted_child$output$c5_10[phmrc_child$c5_10 == "Yes"],
+               rep("Y", sum(phmrc_child$c5_10 == "Yes")))
+  expect_equal(converted_child$output$c5_10[phmrc_child$c5_10 == "No"],
+               rep("", sum(phmrc_child$c5_10 == "No")))
+  expect_equal(
+    converted_child$output$c5_10[phmrc_child$c5_10 == "Don't Know" |
+                                   phmrc_child$c5_10 == "Refused to Answer"],
+    rep(".", sum(phmrc_child$c5_10 == "Don't Know" |
+                   phmrc_child$c5_10 == "Refused to Answer")))
 })
