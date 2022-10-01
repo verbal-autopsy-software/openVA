@@ -295,7 +295,7 @@ codeVA <- function(data,
 #' \code{\link[Tariff]{plot.tariff}}, \code{\link[InterVA4]{CSMF}}, or plot.nbc function in the nbc4va package.
 #'
 #' @export plotVA
-#' @seealso \code{\link[InSilicoVA]{plot.insilico}} in package \pkg{InSilicoVA}, \code{\link[CSMF]{InterVA}} in package \pkg{InterVA4}, \code{\link{CSMF5}} in package \pkg{InterVA5}, \code{\link[Tariff]{plot.tariff}} in package \pkg{Tariff}.
+#' @seealso \code{\link[InSilicoVA]{plot.insilico}} in package \pkg{InSilicoVA}, \code{\link[InterVA4]{CSMF}} in package \pkg{InterVA4}, \code{\link{CSMF5}} in package \pkg{InterVA5}, \code{\link[Tariff]{plot.tariff}} in package \pkg{Tariff}.
 #' @family visualization
 #' @examples
 #' \donttest{

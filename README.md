@@ -1,24 +1,18 @@
 # openVA
 [![R-CMD-check](https://github.com/verbal-autopsy-software/openVA/workflows/R-CMD-check/badge.svg)](https://github.com/verbal-autopsy-software/openVA/actions) [![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version/openVA)](https://cran.r-project.org/package=openVA)  [![](https://cranlogs.r-pkg.org/badges/openVA)](https://cran.r-project.org/package=openVA) [![](https://cranlogs.r-pkg.org/badges/grand-total/openVA?color=orange)](https://cran.r-project.org/package=openVA)
-[![codecov](https://codecov.io/gh/verbal-autopsy-software/openVA/branch/master/graph/badge.svg?token=P049IXFSVH)](https://codecov.io/gh/verbal-autopsy-software/openVA)
+[![codecov](https://codecov.io/gh/verbal-autopsy-software/openVA/branch/master/graph/badge.svg?token=P049IXFSVH)](https://app.codecov.io/gh/verbal-autopsy-software/openVA)
 
 The openVA package implements multiple existing open-source algorithms for coding cause of death from verbal autopsies. It also provides tools for data manipulation tasks commonly used in Verbal Autopsy analysis and implements easy graphical visualization of individual and population level statistics. 
  
 The VA methods implemented in the package include:
-+ InterVA4 by Byass et al (2012) <doi:10.3402/gha.v5i0.19281>, implemented using the R package [InterVA4](https://cran.r-project.org/web/packages/InterVA4/index.html)
-+ InterVA5 by Byass at al (2019) <doi:10.1186/s12916-019-1333-6>, implemented using the R package [InterVA5](https://cran.r-project.org/web/packages/InterVA5/index.html)
-+ InSilicoVA by McCormick et al (2016) <doi:10.1080/01621459.2016.1152191>, implemented using the R package [InSilicoVA](https://cran.r-project.org/web/packages/InSilicoVA/index.html)
-+ NBC by Miasnikof et al (2015) <doi:10.1186/s12916-015-0521-2>, implemented by the R package [nbc4va](https://github.com/rrwen/nbc4va) on Github.  
-+ A replication of Tariff method implemented using the R package [Tariff](https://cran.r-project.org/web/packages/Tariff/index.html). The Tariff method is described in James et al (2011) <doi:10.1186/1478-7954-9-31> and Serina, et al. (2015) <doi:10.1186/s12916-015-0527-9>. Please note this package was not developed by authors affiliated with the Institute for Health Metrics and Evaluation (IHME) and thus unintentional discrepancies may exist in the implementation of the Tariff method. It also does not fully replicate the full implementations of the SmartVA-Analyze application distributed by IHME.
++ InterVA4 by [Byass et al (2012)](https://doi.org/10.3402/gha.v5i0.19281), implemented using the R package [InterVA4](https://CRAN.R-project.org/package=InterVA4)
++ InterVA5 by [Byass at al (2019)](https://doi.org/10.1186/s12916-019-1333-6), implemented using the R package [InterVA5](https://CRAN.R-project.org/package=InterVA5)
++ InSilicoVA by [McCormick et al (2016)](https://doi.org/10.1080/01621459.2016.1152191), implemented using the R package [InSilicoVA](https://CRAN.R-project.org/package=InSilicoVA)
++ NBC by [Miasnikof et al (2015)](https://doi.org/10.1186/s12916-015-0521-2), implemented by the R package [nbc4va](https://github.com/rrwen/nbc4va) on Github.  
++ A replication of Tariff method implemented using the R package [Tariff](https://CRAN.R-project.org/package=Tariff). The Tariff method is described in [James et al (2011)](https://doi.org/10.1186/1478-7954-9-31) and [Serina, et al. (2015)](https://doi.org/10.1186/s12916-015-0527-9). Please note this package was not developed by authors affiliated with the Institute for Health Metrics and Evaluation (IHME) and thus unintentional discrepancies may exist in the implementation of the Tariff method. It also does not fully replicate the full implementations of the SmartVA-Analyze application distributed by IHME.
 
 
 For more information, check out the package and team website for more details and documentations: [openVA.net](https://openva.net/).
-
-
-
-## What's new
-- [CRAN version](https://cran.r-project.org/package=openVA/news/news.html)
-- [Current developer version](https://github.com/verbal-autopsy-software/openVA/blob/master/NEWS.md)
 
 
 ## Examples

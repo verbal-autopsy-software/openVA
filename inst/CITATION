@@ -3,7 +3,7 @@ citHeader("To cite the 'openVA' package in publications, please use:")
 year = sub('.*(2[[:digit:]]{3})-.*', '\\1', meta$Date, perl = TRUE)
 if (length(year) == 0) year = format(Sys.Date(), '%Y')
 vers = paste('R package version', meta$Version)
-auth = c("Zehang Richard Li, Tyler H. McCormick, and Samuel J. Clark")
+auth = c("Zehang Richard Li, Jason Thomas, Tyler H. McCormick, and Samuel J. Clark")
 
 citEntry(
   entry = 'manual',
