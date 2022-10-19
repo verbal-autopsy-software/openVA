@@ -6,7 +6,7 @@
 \usage{
 codeVA(
   data,
-  data.type = c("WHO2012", "WHO2016", "PHMRC", "customize")[1],
+  data.type = c("WHO2012", "WHO2016", "PHMRC", "customize")[2],
   data.train = NULL,
   causes.train = NULL,
   causes.table = NULL,
