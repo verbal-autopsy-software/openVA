@@ -5,8 +5,23 @@ if (length(year) == 0) year = format(Sys.Date(), '%Y')
 vers = paste('R package version', meta$Version)
 auth = c("Zehang Richard Li, Jason Thomas, Tyler H. McCormick, and Samuel J. Clark")
 
-citEntry(
-  entry = 'manual',
+
+bibentry(
+  bibtype = 'article',
+  title = 'The openVA Toolkit for Verbal Autopsies',
+  author = c('Zehang Richard Li', 'Jason Thomas', 'Eungang Choi', 'Tyler H. McCormick', 'Samuel J. Clark '),
+  journal = 'the R Journal',
+  year = '2023',
+  url = 'https://journal.r-project.org/articles/RJ-2023-020/',
+  textVersion = paste(
+    'Zehang Richard Li, Jason Thomas, Eungang Choi, Tyler H. McCormick, and Samuel J Clark (2023).',
+    'The openVA Toolkit for Verbal Autopsies.', 'The R Journal',
+    'URL https://journal.r-project.org/articles/RJ-2023-020/.'
+  )
+)
+
+bibentry(
+  bibtype = 'manual',
   title = paste('openVA:', meta$Title),
   author = auth,
   year = year,
@@ -15,19 +30,5 @@ citEntry(
   textVersion = paste0(
     paste(auth, collapse = ' and '), ' (', year, '). openVA: ', meta$Title, '. ', vers, '.',
     ' URL https://cran.r-project.org/web/packages/openVA/index.html.'
-  )
-)
-
-citEntry(
-  entry = 'article',
-  title = 'The openVA Toolkit for Verbal Autopsies',
-  author = c('Zehang Richard Li', 'Jason Thomas', 'Eungang Choi', 'Tyler H. McCormick', 'Samuel J. Clark '),
-  journal = 'arXiv',
-  year = '2022',
-  url = 'https://arxiv.org/abs/2109.08244',
-  textVersion = paste(
-    'Zehang Richard Li, Jason Thomas, Eungang Choi, Tyler H. McCormick, and Samuel J Clark (2022).',
-    'The openVA Toolkit for Verbal Autopsies.', 'arXiv preprint',
-    'URL https://arxiv.org/abs/2109.08244.'
   )
 )
