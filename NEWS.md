@@ -1,4 +1,8 @@
 # openVA - changes
+Version 1.1.1 (2023-03-17)
+==========================
++ Satisfy new CRAN requirement changes.
+
 Version 1.1.0 (2022-09-25)
 ==========================
 + Major document improvement and internal code improvements.

@@ -31,7 +31,7 @@ openVA_attach <- function() {
   if (length(to_load) == 0)
     return(invisible())
 
-  message(
+  packageStartupMessage(
     cli::rule(
       center = paste0("Attaching packages for openVA ", package_version("openVA")), line_col="green"
     )  
@@ -43,14 +43,14 @@ openVA_attach <- function() {
     crayon::col_align(versions, max(crayon::col_nchar(versions)))
   )
 
-  message(paste(packages, collapse = "\n"))
+  packageStartupMessage(paste(packages, collapse = "\n"))
 
   suppressPackageStartupMessages(
     lapply(to_load, library, character.only = TRUE, warn.conflicts = FALSE)
   )
 
 
-  message(
+  packageStartupMessage(
     cli::rule(
       left = paste0("Optional packages (require manual installation if not attached)"), line_col="green"
     )  
@@ -64,7 +64,7 @@ openVA_attach <- function() {
       crayon::green(cli::symbol$tick), " ", crayon::blue(format(notcore_has)), " ",
       crayon::col_align(versions, max(crayon::col_nchar(versions)))
     )
-    message(paste(packages, collapse = "\n"))
+    packageStartupMessage(paste(packages, collapse = "\n"))
   }
   
   if(length(notcore_install) > 0){
@@ -73,8 +73,8 @@ openVA_attach <- function() {
     )
     col1 <- 1:floor(length(packages)/2)
     info <- paste0(packages[col1], "     ", packages[-col1])
-    message(paste(info, collapse = "\n"))
-    message(paste0("If you need to use these methods, you may need to load or install the packages: ", paste0(notcore_install, collapse=", "), "."))
+    packageStartupMessage(paste(info, collapse = "\n"))
+    packageStartupMessage(paste0("If you need to use these methods, you may need to load or install the packages: ", paste0(notcore_install, collapse=", "), "."))
   }
 
   invisible()
