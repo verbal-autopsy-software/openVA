@@ -9,7 +9,9 @@
 #' @param thre numerical number between 0 and 1. Symptoms with missing rate higher than \code{thre} in the training data will be dropped from both training and testing data.
 #' @param type type of data conversion when calculating conditional probability (probability of each symptom given each cause of death) for InterVA and InSilicoVA models. Both ``quantile'' and ``fixed'' usually give similar results empirically. 
 #' \itemize{
-#' \item{\code{quantile}: }{the rankings of the P(S|C) are obtained by matching the same quantile distributions in the default InterVA P(S|C)}\item{\code{fixed}: }{P(S|C) are matched to the closest values in the default InterVA P(S|C) table.} \item{\code{empirical}: }{no ranking is calculated, but use the empirical conditional probabilities directly.}
+#' \item \code{quantile}: the rankings of the P(S|C) are obtained by matching the same quantile distributions in the default InterVA P(S|C)
+#' \item \code{fixed}: P(S|C) are matched to the closest values in the default InterVA P(S|C) table.
+#' \item \code{empirical}: no ranking is calculated, but use the empirical conditional probabilities directly.
 #'}
 #' @param prior The prior distribution of CSMF. ``uniform'' uses no prior information, i.e., 1/C for all C causes and ``train'' uses the CSMF in the training data as prior distribution of CSMF.
 #' @param ... not used
