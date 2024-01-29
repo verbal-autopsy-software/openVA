@@ -79,21 +79,28 @@ ConvertData <- function(input, yesLabel = NULL, noLabel = NULL, missLabel = NULL
 #' @export getPHMRC_url
 #'
 #' @examples
-#' link <- getPHMRC_url("adult")
-#' summary(link)$description
+#' getPHMRC_url("adult")
+#'  
 #' 
 getPHMRC_url <- function(type){
   
+  message(
+  	"****************************************\n
+Starting from January 2024, the PHMRC dataset requires user registration to download. As the result of the change, directly reading the CSV file within R using the link does not work any more.\n
+Please go to the following link to register or log in to your account, and click the Files tab to download the corresponding CSV files. Then you can use 'read.csv' function to load the dataset into R\n
+Download Link:\n https://ghdx.healthdata.org/record/ihme-data/population-health-metrics-research-consortium-gold-standard-verbal-autopsy-data-2005-2011
+\n****************************************\n
+  	")
+  return(NULL)
   if(type == "adult"){
-    return(url('http://ghdx.healthdata.org/sites/default/files/record-attached-files/IHME_PHMRC_VA_DATA_ADULT_Y2013M09D11_0.csv'))
+    return(('http://ghdx.healthdata.org/sites/default/files/record-attached-files/IHME_PHMRC_VA_DATA_ADULT_Y2013M09D11_0.csv'))
   }else if(type == "child"){
-    return(url('http://ghdx.healthdata.org/sites/default/files/record-attached-files/IHME_PHMRC_VA_DATA_CHILD_Y2013M09D11_0.csv'))
+    return(('http://ghdx.healthdata.org/sites/default/files/record-attached-files/IHME_PHMRC_VA_DATA_CHILD_Y2013M09D11_0.csv'))
   }else if(type == "neonate"){
-    return(url('http://ghdx.healthdata.org/sites/default/files/record-attached-files/IHME_PHMRC_VA_DATA_NEONATE_Y2013M09D11_0.csv'))
+    return(('http://ghdx.healthdata.org/sites/default/files/record-attached-files/IHME_PHMRC_VA_DATA_NEONATE_Y2013M09D11_0.csv'))
   }else{
     stop("Unknown type")
   }
-  
 }
 #' Convert standard PHMRC data into binary indicator format
 #'
@@ -111,13 +118,14 @@ getPHMRC_url <- function(type){
 #' @export ConvertData.phmrc
 #' @references James, S. L., Flaxman, A. D., Murray, C. J., & Population Health Metrics Research Consortium. (2011). \emph{Performance of the Tariff Method: validation of a simple additive algorithm for analysis of verbal autopsies. } \emph{Population Health Metrics, 9(1), 1-16.}
 #' @examples
-#' \donttest{
-#' # read the raw data files from PHMRC website
-#' # notice reading directly from internet could be time consuming
-#' # so we only read 100 rows here.
-#' # in practice, it is much easier and faster to download the file first,
-#' #	and read all at once.
-#' raw <- read.csv(getPHMRC_url("adult"), nrows = 100)
+#' \dontrun{
+#' # Starting from Jan 2024, PHMRC data requires registration at the GHDx website 
+#' # to doload. The following commands assume the user has download the file for 
+#' # PHMRC VA adult data from the website after logging in. 
+#' 
+#' # For more details on the download process, see ?getPHMRC_url.
+#' 
+#' raw <- read.csv("IHME_PHMRC_VA_DATA_ADULT_Y2013M09D11_0.csv", nrows = 100)
 #' head(raw[, 1:20])
 #' # default way of conversion
 #' clean <- ConvertData.phmrc(raw, phmrc.type = "adult")
@@ -129,7 +137,7 @@ getPHMRC_url <- function(type){
 #' 
 #' # Now using the first 100 rows of data as training dataset
 #' # And the next 100 as testing dataset
-#' test <- read.csv(getPHMRC_url("adult"), nrows = 200)
+#' test <- read.csv("IHME_PHMRC_VA_DATA_ADULT_Y2013M09D11_0.csv", nrows = 200)
 #' test <- test[-(1:100), ]
 #' 
 #' # For the default transformation it does matter

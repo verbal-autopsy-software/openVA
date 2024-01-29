@@ -1,4 +1,8 @@
 # openVA - changes
+Version 1.1.2 (2024-01-28)
+==========================
++ Update information on downloading PHMRC data with user registration on their website.
+
 Version 1.1.1 (2023-03-17)
 ==========================
 + Satisfy new CRAN requirement changes.
@@ -17,7 +21,7 @@ Version 1.0.14 (2022-03-11)
 + Minor code improvements checking the input data format.
 + Improved `getCSMF_accuracy()` function with stricter input
 + New function to compute overall chance-corrected concordance `getCCC()`
-+ Updated `getTopCOD` function with parameter to return top n causes and correspoonding probabilities (or values for how likely the cause is for InterVA)
++ Updated `getTopCOD` function with parameter to return top n causes and corresponding probabilities (or values for how likely the cause is for InterVA)
 
 Version 1.0.13 (2021-09-16)
 ==========================

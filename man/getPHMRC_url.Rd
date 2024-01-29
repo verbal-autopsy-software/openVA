@@ -16,7 +16,7 @@ URL of the corresponding dataset
 Get the URL to the PHMRC dataset
 }
 \examples{
-link <- getPHMRC_url("adult")
-summary(link)$description
+getPHMRC_url("adult")
+ 
 
 }

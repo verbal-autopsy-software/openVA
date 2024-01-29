@@ -33,13 +33,14 @@ converted dataset with only ID and binary symptoms. Notice that when applying th
 The PHMRC data and the description of the format could be found at \url{https://ghdx.healthdata.org/record/ihme-data/population-health-metrics-research-consortium-gold-standard-verbal-autopsy-data-2005-2011}. This function convert the symptoms into binary indicators of three levels: Yes, No, and Missing. The health care experience (HCE) and free-text columns, i.e., columns named "word_****", are not considered in the current version of data conversion.
 }
 \examples{
-\donttest{
-# read the raw data files from PHMRC website
-# notice reading directly from internet could be time consuming
-# so we only read 100 rows here.
-# in practice, it is much easier and faster to download the file first,
-#	and read all at once.
-raw <- read.csv(getPHMRC_url("adult"), nrows = 100)
+\dontrun{
+# Starting from Jan 2024, PHMRC data requires registration at the GHDx website 
+# to doload. The following commands assume the user has download the file for 
+# PHMRC VA adult data from the website after logging in. 
+
+# For more details on the download process, see ?getPHMRC_url.
+
+raw <- read.csv("IHME_PHMRC_VA_DATA_ADULT_Y2013M09D11_0.csv", nrows = 100)
 head(raw[, 1:20])
 # default way of conversion
 clean <- ConvertData.phmrc(raw, phmrc.type = "adult")
@@ -51,7 +52,7 @@ head(clean2$output[, 1:20])
 
 # Now using the first 100 rows of data as training dataset
 # And the next 100 as testing dataset
-test <- read.csv(getPHMRC_url("adult"), nrows = 200)
+test <- read.csv("IHME_PHMRC_VA_DATA_ADULT_Y2013M09D11_0.csv", nrows = 200)
 test <- test[-(1:100), ]
 
 # For the default transformation it does matter
