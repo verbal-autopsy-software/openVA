@@ -1,4 +1,9 @@
 # openVA - changes
+Version 1.2.0 (2025-08-14)
+==========================
++ Added support for new R package vacalibration.
+
+
 Version 1.1.2 (2024-01-28)
 ==========================
 + Update information on downloading PHMRC data with user registration on their website.

@@ -1,5 +1,5 @@
 core <- c("InSilicoVA", "InterVA4", "InterVA5", "Tariff")
-notcore <- c("nbc4va")
+notcore <- c("nbc4va", "vacalibration")
 
 core_loaded <- function() {
   search <- paste0("package:", core)

@@ -27,8 +27,8 @@ getCCC(est, truth, C = 20)
 }
 \seealso{
 Other output extraction: 
-\code{\link{getCSMF_accuracy}()},
 \code{\link{getCSMF}()},
+\code{\link{getCSMF_accuracy}()},
 \code{\link{getIndivProb}()},
 \code{\link{getTopCOD}()}
 }
