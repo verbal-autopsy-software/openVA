@@ -17,7 +17,10 @@ names(out)[6:17]
 out[,6:17] <- "n"
 names(out)[12]
 out[,12] <- "y"
-out[, "age"] <- sample(1:28, nrow(out), replace = TRUE)
+out[, "age"] <- sample(1:27, nrow(out), replace = TRUE)
+out[, "i104o"] <- "y"
+out[, "i109o"] <- "y"
+out[, "i110o"] <- "y"
 
 eava_cod_neonate <- c("NNT", "Malformation", "Intrapartum", "Preterm",
                       "Meningitis", "Diarrhea", "Pneumonia", "Sepsis",
@@ -476,6 +479,7 @@ table(results$cause)
 new_order <- sample(1:nrow(out), nrow(out))
 RandomEAVA_C <- out[new_order,]
 RandomEAVA_C$ID <- paste0("ID_", 1:nrow(out))
+RandomEAVA_C <- RandomEAVA_C[1:8362,]
 save(RandomEAVA_C, file = "/Users/thomas.3912/GitHub/openVA/data/RandomEAVA_C.rda")
 
 
