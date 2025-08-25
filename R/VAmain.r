@@ -1,17 +1,18 @@
 #' Running automated method on VA data
 #'
 #' @param data Input VA data, see \code{data.type} below for more information about the format.
-#' @param data.type There are four data input types currently supported by \code{codeVA} function as below. 
+#' @param data.type There are five data input types currently supported by \code{codeVA} function as below. 
 #'\itemize{
 #' \item \code{WHO2012}: InterVA-4 input format using WHO 2012 questionnaire. For example see \code{data(RandomVA1)}. The first column should be death ID.
 #' \item \code{WHO2016}: InterVA-5 input format using WHO 2016 questionnaire. For example see \code{data(RandomVA5)}. The first column should be death ID.
-#' \item \code{PHMRC}: PHMRC data format. The raw PHMRC long format data will be processed internally following the steps described in McComirck et al. (2016). For example see \code{\link{ConvertData.phmrc}}
+#' \item \code{PHMRC}: PHMRC data format. The raw PHMRC long format data will be processed internally following the steps described in McCormick et al. (2016). For example see \code{\link{ConvertData.phmrc}}
+#' \item \code{EAVA}: EAVA data format using WHO 2016 questionnaire, as produced by [EAVA::odk2EAVA()].
 #' \item \code{customized}: Any dichotomized dataset with ``Y`` denote ``presence'', ``'' denote ``absence'', and ``.'' denote ``missing''. The first column should be death ID.
 #' }
 #' @param data.train Training data with the same columns as \code{data}, except for an additional column specifying cause-of-death label. It is not used if \code{data.type} is ``WHO'' and \code{model} is ``InterVA'' or ``InSilicoVA''.  The first column also has to be death ID for ``WHO'' and ``customized'' types.
 #' @param causes.train the column name of the cause-of-death assignment label in training data.
 #' @param causes.table list of causes to consider in the training data. Default to be NULL, which uses all the causes present in the training data.
-#' @param model Currently supports four models: ``InSilicoVA'', ``InterVA'', ``Tariff'', and ``NBC''.
+#' @param model Currently supports five models: ``InSilicoVA'', ``InterVA'', ``Tariff'', ``NBC'', and ``EAVA''.
 #' @param Nchain Parameter specific to ``InSilicoVA'' model. Currently not used.
 #' @param Nsim Parameter specific to ``InSilicoVA'' model. Number of iterations to run the sampler.
 #' @param version Parameter specific to ``InterVA'' model. Currently supports ``4.02'', ``4.03'', and ``5''. For InterVA-4, ``4.03'' is strongly recommended as it fixes several major bugs in ``4.02'' version. ``4.02'' is only included for backward compatibility. ``5'' version implements the InterVA-5 model, which requires different data input format.
@@ -24,11 +25,12 @@
 #' \item \code{fixed}: P(S|C) are matched to the closest values in the default InterVA P(S|C) table.
 #' \item \code{empirical}: no ranking is calculated, but use the empirical conditional probabilities directly, which will force \code{updateCondProb} to be FALSE for InSilicoVA algorithm.  
 #'}
+#' @param age_group Parameter specific to ``EAVA'' model, which identifies the age group of the input VA data.  Possible values are ``neonate'' or ``child''.
 #' @param ... other arguments passed to \code{\link[InSilicoVA]{insilico}}, \code{\link[InterVA4]{InterVA}}, \code{\link{interVA_train}}, \code{\link[Tariff]{tariff}}, and nbc function in the nbc4va package. See respective package documents for details. 
 #'
 #' @return a fitted object
 #' @export codeVA
-#' @seealso \code{\link[InSilicoVA]{insilico}} in package \pkg{InSilicoVA}, \code{\link[InterVA4]{InterVA}} in package \pkg{InterVA4}, \code{\link{InterVA5}} in package \pkg{InterVA5}, \code{\link{interVA_train}}, \code{\link[Tariff]{tariff}} in package \pkg{Tariff}, and nbc function  in package \pkg{nbc4va}.
+#' @seealso \code{\link[InSilicoVA]{insilico}} in package \pkg{InSilicoVA}, \code{\link[InterVA4]{InterVA}} in package \pkg{InterVA4}, \code{\link{InterVA5}} in package \pkg{InterVA5}, \code{\link{interVA_train}}, \code{\link[Tariff]{tariff}} in package \pkg{Tariff}, nbc function  in package \pkg{nbc4va}, and \code{codEAVA} function in package \pkg{EAVA}.
 #' @importFrom graphics plot
 #' @importFrom stats aggregate median quantile reorder
 #' @importFrom utils data
@@ -41,7 +43,9 @@
 #' @references Zehang R. Li, Tyler H. McCormick, Samuel J. Clark (2014) \emph{InterVA4: An R package to analyze verbal autopsy data.} \emph{Center for Statistics and the Social Sciences Working Paper, No.146}
 #' @references http://www.interva.net/
 #' @references Miasnikof P, Giannakeas V, Gomes M, Aleksandrowicz L, Shestopaloff AY, Alam D, Tollman S, Samarikhalaj, Jha P. \emph{Naive Bayes classifiers for verbal autopsies: comparison to physician-based classification for 21,000 child and adult deaths.} \emph{BMC Medicine. 2015;13:286.} 
-#' @keywords InSilicoVA InterVA4 Tariff NBC4VA
+#' @references Henry D. Kalter, Abdoulaye-Mamadou Roubanatou, Alain Koffi, and Robert E. Black.  (2015). 
+#' \emph{Direct estimates of national neonatal and child cause-specific mortality proportions in Niger by expert algorithm and physician-coded analysis of verbal autopsy interviews.} \emph{Journal of Global Health 5(1):010415.}
+#' @keywords InSilicoVA InterVA4 Tariff NBC4VA VA-Calibration EAVA 
 
 #' @examples
 #' \donttest{
@@ -65,16 +69,17 @@
 
 
 codeVA <- function(data, 
-                  data.type = c("WHO2012", "WHO2016", "PHMRC", "customize")[2], 
+                  data.type = c("WHO2012", "WHO2016", "PHMRC", "EAVA", "customize")[2], 
                   data.train = NULL, 
                   causes.train = NULL, 
                   causes.table = NULL,
-                  model = c("InSilicoVA", "InterVA", "Tariff", "NBC")[1],
+                  model = c("InSilicoVA", "InterVA", "Tariff", "NBC", "EAVA")[1],
                   Nchain = 1, Nsim=10000, 
                   version = c("4.02", "4.03", "5")[2], 
                   HIV = "h", Malaria = "h", 
                   phmrc.type = c("adult", "child", "neonate")[1], 
                   convert.type = c("quantile", "fixed", "empirical")[1],
+                  age_group = c("neonate", "child")[1],
                   ...){
 
 
@@ -137,6 +142,9 @@ codeVA <- function(data,
     data.train <- binary$output
     data <- binary$output.test
     causes.train <- colnames(data.train)[2]
+  }
+  if(model == "EAVA" & data.type != "EAVA") {
+    stop("Error: need EAVA data.type for the EAVA model")
   }
  
  # --------------------------------------------------------------------#
@@ -279,6 +287,20 @@ codeVA <- function(data,
         fit$prob[i, -1] <- fit$prob[i, -1] / sum(fit$prob[i, -1])
       }
     }
+    
+  # --------------------------------------------------------------------#
+  #                         EAVA 
+  # --------------------------------------------------------------------#
+  }else if(model == "EAVA"){
+    if (!isTRUE(requireNamespace("EAVA", quietly = TRUE))) {
+      stop("You need to install the package 'EAVA'. In an R session, please run the command:\n install.packages('EAVA')")
+    }
+    out <- EAVA::codEAVA(df = data, age_group = age_group)
+    fit <- list("ID" = out$ID,
+                "cause" = out$cause,
+                "age_group" = age_group)
+    class(fit) <- "eava"
+    
   }else{
         stop("Error, unknown model specification")
   }
@@ -330,6 +352,8 @@ plotVA <- function(object, top = 10, title = NULL, ...){
     plot(object, top = top, title = title, ...)
   }else if(methods::is(object,  "nbc")){
     plot(object, top.plot = top, main = title, ...)
+  }else if(methods::is(object, "eava")){
+    plot(object, top = top, title = title, ...)
   }else{
     stop("Unknown object to plot")
   }

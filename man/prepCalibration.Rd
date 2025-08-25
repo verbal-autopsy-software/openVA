@@ -2,26 +2,31 @@
 % Please edit documentation in R/PrepCalibration.r
 \name{prepCalibration}
 \alias{prepCalibration}
-\title{Convert the output from codeVA to the format expected by
+\title{Convert the assigned causes to the format expected by
 vacalibration::vacalibration().}
 \usage{
 prepCalibration(fit, ...)
 }
 \arguments{
-\item{fit}{a fitted object from \code{codeVA} using either InSilicoVA or
-InterVA5}
+\item{fit}{a fitted object from \code{codeVA} using either InSilicoVA,
+InterVA5, or output from \code{EAVA::codEAVA}.  The EAVA algorithm is assumed
+if the the argument is a Data Frame (with columns "ID" and "cause").}
 
 \item{...}{more fitted objects from \code{codeVA} using either InSilicoVA or
-InterVA5}
+InterVA5, or from \code{EAVA::codEAVA}.}
 }
 \value{
-a list with one data.frame that contains variables "ID" and "cause",
-and the element's name (in the list) is the algorithm name used to assign
-causes (either "insilicova" or "interva")
+a list with each element being a Data Frames that contains variables
+"ID" and "cause", and the element's name (in the list) is the algorithm name
+used to assign causes of death (either "insilicova", "interva", or "eava")
 }
 \description{
-Convert the output from codeVA to the format expected by
-vacalibration::vacalibration().
+This function prepares the output from codeVA (using the InSilicoVA or
+InterVA5 algorithms) and/or EAVA for the vacalibration function.  The 
+output is a named list, with each element consisting of a data frame with
+columns for the death ID ("ID") and the assigned CoD ("cause").  The name
+of each element is the algorithm used to assign the CoD -- "insilicova",
+"interva", or "eava".  If the
 }
 \examples{
 \dontrun{

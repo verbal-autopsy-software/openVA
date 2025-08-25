@@ -1,15 +1,23 @@
-#' Convert the output from codeVA to the format expected by
+#' Convert the assigned causes to the format expected by
 #' vacalibration::vacalibration().
+#' 
+#' This function prepares the output from codeVA (using the InSilicoVA or
+#' InterVA5 algorithms) and/or EAVA for the vacalibration function.  The 
+#' output is a named list, with each element consisting of a data frame with
+#' columns for the death ID ("ID") and the assigned CoD ("cause").  The name
+#' of each element is the algorithm used to assign the CoD -- "insilicova",
+#' "interva", or "eava".  If the 
 #'
-#' @param fit a fitted object from \code{codeVA} using either InSilicoVA or
-#' InterVA5
+#' @param fit a fitted object from \code{codeVA} using either InSilicoVA,
+#' InterVA5, or output from \code{EAVA::codEAVA}.  The EAVA algorithm is assumed
+#' if the the argument is a Data Frame (with columns "ID" and "cause").
 #' 
 #' @param ... more fitted objects from \code{codeVA} using either InSilicoVA or
-#' InterVA5
+#' InterVA5, or from \code{EAVA::codEAVA}.
 #'
-#' @returns a list with one data.frame that contains variables "ID" and "cause",
-#' and the element's name (in the list) is the algorithm name used to assign
-#' causes (either "insilicova" or "interva")
+#' @returns a list with each element being a Data Frames that contains variables
+#' "ID" and "cause", and the element's name (in the list) is the algorithm name
+#' used to assign causes of death (either "insilicova", "interva", or "eava")
 #' 
 #' @export prepCalibration
 #'
@@ -52,6 +60,10 @@ prepCalibration <- function(fit, ...) {
     } else if (methods::is(x, "interVA5")) {
       out[[index]] <- prepCalibrationInterva5(x)[[1]]
       out_names <- c(out_names, "interva")
+    } else if (is.data.frame(x) & ncol(x) == 2 & 
+               all(tolower(names(x)) %in% c("id", "cause"))) {
+      out[[index]] <- x
+      out_names <- c(out_names, "eava")
     } else {
       out[[index]] <- NA
       out_names <- c(out_names, "ERROR")

@@ -1,5 +1,5 @@
 core <- c("InSilicoVA", "InterVA4", "InterVA5", "Tariff")
-notcore <- c("nbc4va", "vacalibration")
+notcore <- c("nbc4va", "vacalibration", "EAVA")
 
 core_loaded <- function() {
   search <- paste0("package:", core)
@@ -71,6 +71,7 @@ openVA_attach <- function() {
     packages <- paste0(
       crayon::red(cli::symbol$times), " ", crayon::blue(format(notcore_install))
     )
+    if ((length(packages) %% 2) != 0) packages <- c(packages, " ")
     col1 <- 1:floor(length(packages)/2)
     info <- paste0(packages[col1], "     ", packages[-col1])
     packageStartupMessage(paste(info, collapse = "\n"))
