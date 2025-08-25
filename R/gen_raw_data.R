@@ -17,7 +17,9 @@ dim(odk_neonate)
 
 odk_neonate$ageInDaysNew <- sample(0:27, nrow(odk_neonate), replace = TRUE)
 odk_neonate$ageInDays <- odk_neonate$ageInDaysNew
-odk_neonate$ageInYears <- odk_neonate$ageInDaysNew / 365
+odk_neonate$ageInYears <- floor(odk_neonate$ageInDaysNew / 365)
+odk_neonate$isNeonatal <- 1
+odk_neonate$isChild <- 0
 
 odk_neonate$Id10104 <- "yes"
 odk_neonate$Id10109 <- "yes"
@@ -170,7 +172,9 @@ dim(odk_child)
 
 odk_child$ageInDaysNew <- sample(28:1800, nrow(odk_child), replace = TRUE)
 odk_child$ageInDays <- odk_child$ageInDaysNew
-odk_child$ageInYears <- odk_child$ageInDaysNew / 365
+odk_child$ageInYears <- floor(odk_child$ageInDaysNew / 365)
+odk_neonate$isNeonatal <- 0
+odk_neonate$isChild <- 1
 
 #------------------------------------------------------------------------------#
 # Malformation
