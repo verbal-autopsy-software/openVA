@@ -29,20 +29,20 @@
 #' calib_insilico = vacalibration::vacalibration(va_data = insilico_prep,
 #'                                               age_group = "neonate",
 #'                                               country = "Mozambique")
-#' round(calib_insilico$pcalib_postsumm["insilicova",,], 3)
+#' summary(calib_insilico)
 #' 
 #' fit_interva <- codeVA(NeonatesVA5, model = "InterVA", version = "5", write = FALSE)
 #' interva_prep <- prepCalibration(fit_interva)
 #' calib_interva = vacalibration::vacalibration(va_data = interva_prep,
 #'                                              age_group = "neonate",
 #'                                              country = "Mozambique")
-#' round(calib_interva$pcalib_postsumm["interva",,], 3)
+#' summary(calib_interva)
 #' 
 #' two_fits <- prepCalibration(fit_insilico, fit_interva)
-#' calib_out_ensemble = vacalibration::vacalibration(va_data = two_fits,
-#'                                                   age_group = "neonate",
-#'                                                   country = "Mozambique")
-#' round(calib_out_ensemble$pcalib_postsumm["ensemble",,], 3)
+#' calib_ensemble = vacalibration::vacalibration(va_data = two_fits,
+#'                                               age_group = "neonate",
+#'                                               country = "Mozambique")
+#' summary(calib_ensemble)
 #' 
 #' } 
 prepCalibration <- function(fit, ...) {

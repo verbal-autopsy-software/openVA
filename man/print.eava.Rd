@@ -7,7 +7,13 @@
 \method{print}{eava}(x)
 }
 \arguments{
-\item{x}{\code{eava} object.}
+\item{x}{\code{eava} object.
+
+\dontrun{
+data(DataEAVA)
+eava_results <- codeVA(DataEAVA, data.type = "EAVA", model = "EAVA")
+eava_results
+}}
 }
 \description{
 Print method for "eava" class.
