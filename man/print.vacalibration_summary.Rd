@@ -14,8 +14,13 @@
 \item{rnd}{number of decimal places to round the CSMF}
 
 \item{algorithm}{a name or vector of names of algorithm(s) which
-limits the output to those specific results
-
+limits the output to those specific results}
+}
+\description{
+This function prints a summary message of the results along with
+the top cause-specific mortality fractions (CSMFs).
+}
+\examples{
 \dontrun{
 data(NeonatesVA5)
 fit_insilico <- codeVA(NeonatesVA5)
@@ -39,9 +44,5 @@ calib_ensemble = vacalibration::vacalibration(va_data = two_fits,
 summary(calib_ensemble, algorithm = "ensemble")
 summary(calib_ensemble, algorithm = c("ensemble", "insilicova"))
 
-}}
 }
-\description{
-This function prints a summary message of the results along with
-the top cause-specific mortality fractions (CSMFs).
 }

@@ -19,15 +19,16 @@
 \item{N}{ number of deaths}
 \item{age_group}{age group that the deaths belong to (either child or neonate)}
 \item{csmf.ordered}{ cause-specific mortality fractions in decreasing order }
-
+}
+\description{
+This function prints a summary message of the results along with
+the top cause-specific mortality fractions (CSMFs).
+}
+\examples{
 \dontrun{
 data(DataEAVA)
 eava_results <- codeVA(DataEAVA, data.type = "EAVA", model = "EAVA")
 eava_summary <- summary(eava_results)
 eava_summary
-}
-}
-\description{
-This function prints a summary message of the results along with
-the top cause-specific mortality fractions (CSMFs).
+} 
 }

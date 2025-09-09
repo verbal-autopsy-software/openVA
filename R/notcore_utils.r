@@ -2,6 +2,7 @@
 #'
 #' @param x \code{eava} object.
 #' 
+#' @examples
 #' \dontrun{
 #' data(DataEAVA)
 #' eava_results <- codeVA(DataEAVA, data.type = "EAVA", model = "EAVA")
@@ -45,6 +46,7 @@ csmf_eava <- function(x) {
 #' \item{age_group}{age group that the deaths belong to (either child or neonate)}
 #' \item{csmf.ordered}{ cause-specific mortality fractions in decreasing order }
 #'
+#' @examples
 #' \dontrun{
 #' data(DataEAVA)
 #' eava_results <- codeVA(DataEAVA, data.type = "EAVA", model = "EAVA")
@@ -163,6 +165,7 @@ plot.eava <- function(x, top = 10, title = "Top CSMF Distribution",
 #' @param algorithm a name or vector of names of algorithm(s) which
 #' limits the output to those specific results
 #'
+#' @examples
 #' \dontrun{
 #' data(NeonatesVA5)
 #' fit_insilico <- codeVA(NeonatesVA5, auto.length = FALSE)
@@ -275,6 +278,7 @@ summary.vacalibration <- function(x, top = 5, rnd = 4, algorithm = NULL) {
 #' @param algorithm a name or vector of names of algorithm(s) which
 #' limits the output to those specific results
 #'
+#' @examples
 #' \dontrun{
 #' data(NeonatesVA5)
 #' fit_insilico <- codeVA(NeonatesVA5)
@@ -326,6 +330,210 @@ print.vacalibration_summary <- function(x) {
   }
 }
 
+#' Plot CSMF from a vacalibration object
+#'
+#' @param x Fitted \code{"vacalibration"} objects
+#' @param type An indicator of the type of chart to plot. "errorbar" for line
+#' plots of only the error bars on single population; "bar" for bar chart with
+#' error bars on single population; "compare" for line charts on multiple
+#' calibrated algorithms.
+#' @param algorithm Name or vector of names of algorithm(s) which
+#' limits the output to those specific results
+#' @param uncalibrated Logical (TRUE/FALSE) indicator for including the
+#' uncalibrated CSMF in the plots (not valid with \code{type} is set to
+#' "compare").
+#' @param top The number of top causes (in the calibrated CSMF) to plot. If
+#' results from multiple algorithms are included in the fitted "vacalibration"
+#' object and \code{type} is set to "compare", it will plot the union of the
+#' top causes in all algorithms.
+#' @param title Title of the plot.
+#' @param xlab Labels for the causes.
+#' @param ylab Labels for the CSMF values.
+#' @param horiz Logical indicator indicating if the bars are plotted
+#' horizontally.
+#' @param angle Angle of rotation for the texts on x axis when \code{horiz} is
+#' set to FALSE
+#' @param fill The color to fill the bars when \code{type} is set to "bar".
+#' @param fill_uncalibrated The color to fill the bars for the uncalibrated
+#' CSMFs when \code{type} is set to "bar".
+#' @param border The color to color the borders of bars when \code{type} is set
+#' to "bar".
+#' @param err_width Size of the error bars.
+#' @param err_size Thickness of the error bar lines.
+#' @param point_size Size of the points.
+#' @param bw Logical indicator for setting the theme of the plots to be black
+#' and white.
+#' @param plot_it Logical (TRUE/FALSE) indicating if the first plot should
+#' be rendered.
+#' @param \dots Not used.
+#' @return A list of plots for each algorithms included in the fitted
+#' "vacalibration" object.
+#'
+#' @examples
+#' \dontrun{
+#' data(NeonatesVA5)
+#' fit_insilico <- codeVA(NeonatesVA5)
+#' insilico_prep <- prepCalibration(fit_insilico)
+#' calib_insilico = vacalibration::vacalibration(va_data = insilico_prep,
+#'                                               age_group = "neonate",
+#'                                               country = "Mozambique")
+#' 
+#' fit_interva <- codeVA(NeonatesVA5, model = "InterVA", version = "5", write = FALSE)
+#' interva_prep <- prepCalibration(fit_interva)
+#' calib_interva = vacalibration::vacalibration(va_data = interva_prep,
+#'                                              age_group = "neonate",
+#'                                              country = "Mozambique")
+#'                                              
+#' two_fits <- prepCalibration(fit_insilico, fit_interva)
+#' calib_ensemble = vacalibration::vacalibration(va_data = two_fits,
+#'                                               age_group = "neonate",
+#'                                               country = "Mozambique")
+#' plot(calib_ensemble)
+#' }
+#' @exportS3Method vacalibration::plot
+plot.vacalibration <- function(x, type = c("errorbar", "bar", "compare")[1],
+                               algorithm = NULL, uncalibrated = FALSE,
+                               top = 10, title = "Top CSMF Distribution",
+                               xlab = "Causes", ylab = "CSMF", horiz = TRUE,
+                               angle = 60, fill = "lightblue", 
+                               fill_uncalibrated = "lightpink",
+                               err_width = .4, err_size = .6, point_size = 2,
+                               border = "black", bw = TRUE, plot_it = TRUE, ...) {
+  if (!is.null(algorithm)) {
+    # summary should print message if algorithm parameter not found
+    sx <- summary(x, top = top, rnd = 6, algorithm = algorithm)
+    if ("Error" %in% names(sx)) {
+      warning("No results for requested algorihtm(s).")
+      return (NULL)
+    }
+  } else {
+    sx <- summary(x, top = top, rnd = 6)
+  }
+  algorithm <- sx$algorithms
+  if ("ensemble" %in% algorithm) {
+    # use ensemble to set the order of the CSMF
+    algorithm <- c("ensemble", algorithm[algorithm != "ensemble"])
+  }
+  
+  if (type == "compare" & length(sx$algorithms) == 1) {
+    type <- "errorbar"
+    warning("Only 1 algorithm detected, switching to errorbar plot")
+  }
+  
+  if (type == "compare" & uncalibrated) {
+    warning("The uncalibrated option is not available if type == 'compare'.")
+  }
+  
+  csmf <- sx$pcalib_postsumm
+  csmf$type = "calibrated"
+  fill_col = fill
+  if (uncalibrated & type != "compare") {
+    df_uncal <- reshape(sx$uncalibrated, varying = algorithm,
+                        direction = "long", v.names = "mean",
+                        times = algorithm, timevar = "algorithm")
+    row.names(df_uncal) = NULL
+    df_uncal$type = "uncalibrated"
+    df_uncal <- df_uncal[, names(df_uncal) != "id"]
+    df_uncal$lower <- df_uncal$upper <- NA
+  }
+  out <- list()
+  for (alg in algorithm) {
+    sub_csmf <- csmf[csmf$algorithm == alg,]
+    sub_csmf_order <- order(sub_csmf$mean, decreasing = TRUE)
+    sub_csmf <- sub_csmf[sub_csmf_order,]
+    n_top <- min(dim(sub_csmf), top)
+    sub_csmf <- sub_csmf[1:n_top, ]
+    cause_order <- sub_csmf$cause
+    sub_csmf$cause <- factor(sub_csmf$cause, levels = cause_order)
+    if (uncalibrated) {
+      sub_csmf_uncal <- df_uncal[df_uncal$algorithm == alg,]
+      sub_csmf_uncal <- sub_csmf_uncal[sub_csmf_uncal$cause %in% sub_csmf$cause,]
+      sub_csmf_uncal$cause <- factor(sub_csmf_uncal$cause, levels = cause_order)
+      sub_csmf <- rbind(sub_csmf, sub_csmf_uncal)
+      fill_col <- c(fill, fill_uncalibrated)
+      if (horiz) {
+        sub_csmf$type <- factor(sub_csmf$type, levels = c("uncalibrated", "calibrated"))
+        fill_col <- c(fill_uncalibrated, fill)
+      }
+    }
+    
+    g <- ggplot(sub_csmf, aes(x = cause, y = mean, group = type))
+    if (horiz) {
+      g <- g + scale_x_discrete(limits=rev)
+    }
+    
+    if (type == "bar") {
+      g <- g + geom_bar(stat = "identity", color = border, aes(fill = type),
+                        linewidth = .3, position = position_dodge(.9)) +
+        scale_fill_manual(values = fill_col)
+    }
+    if (type == "errorbar"){
+      g <- g + geom_point(stat = "identity", size = point_size,
+                          aes(group = type, shape = type),
+                          position = position_dodge(.9))
+    }
+    g <- g + geom_errorbar(aes(ymin = lower, ymax = upper, group = type),
+                           size = err_size,
+                           width = err_width, position = position_dodge(.9))
+    g <- g + xlab(xlab) + ylab(ylab) + ggtitle(title)
+    if (horiz) g <- g + coord_flip()
+    if (bw) g <- g + theme_bw()
+    if (!horiz) g <- g + theme(axis.text.x = element_text(angle = angle, hjust = 1))
+    
+    if (!uncalibrated) g <- g + theme(legend.position = "none")
+    out[[alg]] <- g
+  }
+  if (type == "compare") {
+    
+    list_csmf <- split(csmf, factor(csmf$algorithm))
+    list_orded_cods <- lapply(list_csmf, function(x) x$cause[order(x$mean, decreasing = TRUE)])
+    n_top <- min(dim(sub_csmf), top)
+    list_top_cod <- lapply(list_orded_cods, function(x) x[1:n_top])
+    top_causes <- unique(unlist(list_top_cod))
+    
+    sub_csmf <- csmf[csmf$algorithm == algorithm[1], ]
+    sub_csmf <- sub_csmf[sub_csmf$cause %in% top_causes, ]
+    sub_csmf_order <- order(sub_csmf$mean, decreasing = TRUE)
+    cause_order <- sub_csmf$cause[sub_csmf_order]
+    csmf$cause <- factor(csmf$cause, levels = cause_order)
+    if (horiz) {
+      csmf$algorithm <- factor(csmf$algorithm, levels = rev(algorithm))
+    } else {
+      csmf$algorithm <- factor(csmf$algorithm, levels = algorithm)
+    }
+    
+    g <- ggplot(csmf, aes(x = cause, y = mean), fill = algorithm,
+                ymax = max(upper)*1.05)
+    g <- g + geom_point(aes(color = algorithm), position = position_dodge(0.5),
+                        size = point_size)
+    g <- g + geom_errorbar(aes(ymin = lower, ymax = upper, color = algorithm),
+                           size = err_size, width = err_width,
+                           position = position_dodge(0.5))
+    g <- g + xlab(xlab) + ylab(ylab) + ggtitle(title)
+    g <- g + scale_y_continuous()
+    if (horiz) {
+      g <- g + scale_x_discrete(limits=rev) + coord_flip()
+    }
+    if (bw) g <- g + them_bw()
+    cbp <- c("#000000", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2",
+             "#D55E00", "#CC79A7")
+    maxn <- length(unique(csmf$algorithm))
+    if(maxn > length(cbp)){
+      cbp <- colorRampPalette(cbp)(maxn)
+    }
+    g <- g + scale_color_manual(values = cbp)
+    
+    if(!horiz) g <- g + theme(axis.text.x = element_text(angle = angle, hjust = 1))
+    out[[1]] <- g
+  }
+  
+  if (plot_it) {
+    out[[1]]
+  }
+  return(out)
+}
+
+# CODs for EAVA
 # neonate.cod <- c("NNT", "Malformation", "Intrapartum",
 #                  "Preterm", "Meningitis", "Diarrhea", "Pneumonia",
 #                  "Pneumonia", "Sepsis", "Other", "Unspecified")
