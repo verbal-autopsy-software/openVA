@@ -154,6 +154,51 @@ plot.eava <- function(x, top = 10, title = "Top CSMF Distribution",
   }
 }
 
+#' Print method for vacalibration model fits
+#' 
+#' This function is the print method for class \code{vacalibration}
+#'
+#' @param x \code{vacalibration} object
+#' @param ... not used
+#'
+#' @exportS3Method vacalibration::print
+#'
+#' @examples
+#' \dontrun{
+#' data(NeonatesVA5)
+#' fit_insilico <- codeVA(NeonatesVA5, auto.length = FALSE)
+#' insilico_prep <- prepCalibration(fit_insilico)
+#' calib_insilico = vacalibration::vacalibration(va_data = insilico_prep,
+#'                                               age_group = "neonate",
+#'                                               country = "Mozambique",
+#'                                               plot_it = FALSE)
+#' calib_insilico
+#' }
+print.vacalibration <- function(x, ...) {
+  cat("vacalibration fitted object:\n")
+  nIterations <- x$input$nBurn + x$input$nMCMC*x$input$nThin
+  cat(paste(nIterations, "iterations performed, with first",
+            x$input$nBurn,
+            "iterations discarded.\n", x$input$nMCMC,
+            "iterations saved after thinning\n\n"))
+  cat(paste("Results for: "))
+  
+  algorithms <- row.names(x$pcalib_postsumm)
+  ensemble_algorithms <- names(x$input$va_unlabeled)
+  n <- lapply(x$input$va_unlabeled, sum)
+  age_group <- x$input$age_group
+  
+  for (alg in algorithms) {
+    if (alg == "ensemble") {
+      cat(paste("Ensemble of:", ensemble_algorithms, "\n"))
+    } else {
+      cat(paste(alg, "(calibrated):  "))
+      cat(paste(n[[alg]], age_group, "deaths\n"))
+    }
+    cat("\n\n")
+  }
+}
+
 #' Summary of results obtained by vacalibration
 #' 
 #' This function prints a summary message of the results along with
@@ -399,6 +444,10 @@ plot.vacalibration <- function(x, type = c("errorbar", "bar", "compare")[1],
                                fill_uncalibrated = "lightpink",
                                err_width = .4, err_size = .6, point_size = 2,
                                border = "black", bw = TRUE, plot_it = TRUE, ...) {
+  if (!(type %in% c("errorbar", "bar", "compare"))) {
+    warning(paste("Plot type", type, "not recognized."))
+    return (NULL)
+  }
   if (!is.null(algorithm)) {
     # summary should print message if algorithm parameter not found
     sx <- summary(x, top = top, rnd = 6, algorithm = algorithm)
@@ -425,73 +474,95 @@ plot.vacalibration <- function(x, type = c("errorbar", "bar", "compare")[1],
   }
   
   csmf <- sx$pcalib_postsumm
-  csmf$type = "calibrated"
+  csmf$estimate = "calibrated"
   fill_col = fill
   if (uncalibrated & type != "compare") {
     df_uncal <- reshape(sx$uncalibrated, varying = algorithm,
                         direction = "long", v.names = "mean",
                         times = algorithm, timevar = "algorithm")
     row.names(df_uncal) = NULL
-    df_uncal$type = "uncalibrated"
+    df_uncal$estimate = "uncalibrated"
     df_uncal <- df_uncal[, names(df_uncal) != "id"]
     df_uncal$lower <- df_uncal$upper <- NA
   }
   out <- list()
-  for (alg in algorithm) {
-    sub_csmf <- csmf[csmf$algorithm == alg,]
-    sub_csmf_order <- order(sub_csmf$mean, decreasing = TRUE)
-    sub_csmf <- sub_csmf[sub_csmf_order,]
-    n_top <- min(dim(sub_csmf), top)
-    sub_csmf <- sub_csmf[1:n_top, ]
-    cause_order <- sub_csmf$cause
-    sub_csmf$cause <- factor(sub_csmf$cause, levels = cause_order)
-    if (uncalibrated) {
-      sub_csmf_uncal <- df_uncal[df_uncal$algorithm == alg,]
-      sub_csmf_uncal <- sub_csmf_uncal[sub_csmf_uncal$cause %in% sub_csmf$cause,]
-      sub_csmf_uncal$cause <- factor(sub_csmf_uncal$cause, levels = cause_order)
-      sub_csmf <- rbind(sub_csmf, sub_csmf_uncal)
-      fill_col <- c(fill, fill_uncalibrated)
-      if (horiz) {
-        sub_csmf$type <- factor(sub_csmf$type, levels = c("uncalibrated", "calibrated"))
-        fill_col <- c(fill_uncalibrated, fill)
+  if (type != "compare") {
+    for (alg in algorithm) {
+      sub_csmf <- csmf[csmf$algorithm == alg,]
+      sub_csmf_order <- order(sub_csmf$mean, decreasing = TRUE)
+      sub_csmf <- sub_csmf[sub_csmf_order,]
+      n_top <- min(dim(sub_csmf), top)
+      sub_csmf <- sub_csmf[1:n_top, ]
+      cause_order <- sub_csmf$cause
+      sub_csmf$cause <- factor(sub_csmf$cause, levels = cause_order)
+      if (uncalibrated) {
+        sub_csmf_uncal <- df_uncal[df_uncal$algorithm == alg,]
+        sub_csmf_uncal <- sub_csmf_uncal[sub_csmf_uncal$cause %in% sub_csmf$cause,]
+        sub_csmf_uncal$cause <- factor(sub_csmf_uncal$cause, levels = cause_order)
+        sub_csmf <- rbind(sub_csmf, sub_csmf_uncal)
+        fill_col <- c(fill, fill_uncalibrated)
+        if (horiz) {
+          sub_csmf$estimate <- factor(sub_csmf$estimate,
+                                      levels = c("uncalibrated", "calibrated"))
+          #fill_col <- c(fill, fill_uncalibrated)
+        }
       }
+      
+      g <- ggplot(sub_csmf, aes(x = cause, y = mean, group = estimate))
+      if (horiz) {
+        g <- g + scale_x_discrete(limits=rev)
+      }
+      
+      if (type == "bar") {
+        g <- g + geom_bar(stat = "identity", color = border,
+                          aes(fill = estimate),
+                          linewidth = .3, position = position_dodge(.9)) 
+        if (horiz) {
+          g <- g + 
+            scale_fill_manual(values = c("calibrated" = fill,
+                                         "uncalibrated" = fill_uncalibrated),
+                              guide = guide_legend(reverse = TRUE))
+        } else {
+          g <- g +
+            scale_fill_manual(values = c("calibrated" = fill,
+                                         "uncalibrated" = fill_uncalibrated))
+        }
+      }
+      if (type == "errorbar"){
+        g <- g + geom_point(stat = "identity", size = point_size,
+                            aes(group = estimate, shape = estimate),
+                            position = position_dodge(.9))
+        if (horiz) {
+          g <- g +
+            scale_shape_manual(values = c("calibrated" = 16,
+                                          "uncalibrated" = 17),
+                               guide = guide_legend(reverse = TRUE))
+        }
+      }
+      g <- g + geom_errorbar(aes(ymin = lower, ymax = upper, group = estimate),
+                             #size = err_size,
+                             linewidth = err_size,
+                             width = err_width, position = position_dodge(.9))
+      g <- g + xlab(xlab) + ylab(ylab) + ggtitle(title)
+      if (horiz) g <- g + coord_flip()
+      if (bw) g <- g + theme_bw()
+      if (!horiz) {
+        g <- g + theme(axis.text.x = element_text(angle = angle, hjust = 1))
+      }
+      if (!uncalibrated) g <- g + theme(legend.position = "none")
+      out[[alg]] <- g
     }
-    
-    g <- ggplot(sub_csmf, aes(x = cause, y = mean, group = type))
-    if (horiz) {
-      g <- g + scale_x_discrete(limits=rev)
-    }
-    
-    if (type == "bar") {
-      g <- g + geom_bar(stat = "identity", color = border, aes(fill = type),
-                        linewidth = .3, position = position_dodge(.9)) +
-        scale_fill_manual(values = fill_col)
-    }
-    if (type == "errorbar"){
-      g <- g + geom_point(stat = "identity", size = point_size,
-                          aes(group = type, shape = type),
-                          position = position_dodge(.9))
-    }
-    g <- g + geom_errorbar(aes(ymin = lower, ymax = upper, group = type),
-                           size = err_size,
-                           width = err_width, position = position_dodge(.9))
-    g <- g + xlab(xlab) + ylab(ylab) + ggtitle(title)
-    if (horiz) g <- g + coord_flip()
-    if (bw) g <- g + theme_bw()
-    if (!horiz) g <- g + theme(axis.text.x = element_text(angle = angle, hjust = 1))
-    
-    if (!uncalibrated) g <- g + theme(legend.position = "none")
-    out[[alg]] <- g
   }
   if (type == "compare") {
-    
     list_csmf <- split(csmf, factor(csmf$algorithm))
-    list_orded_cods <- lapply(list_csmf, function(x) x$cause[order(x$mean, decreasing = TRUE)])
+    list_orded_cods <- lapply(list_csmf, 
+                              function(x) x$cause[order(x$mean, 
+                                                        decreasing = TRUE)])
+    
+    sub_csmf <- csmf[csmf$algorithm == algorithm[1], ]
     n_top <- min(dim(sub_csmf), top)
     list_top_cod <- lapply(list_orded_cods, function(x) x[1:n_top])
     top_causes <- unique(unlist(list_top_cod))
-    
-    sub_csmf <- csmf[csmf$algorithm == algorithm[1], ]
     sub_csmf <- sub_csmf[sub_csmf$cause %in% top_causes, ]
     sub_csmf_order <- order(sub_csmf$mean, decreasing = TRUE)
     cause_order <- sub_csmf$cause[sub_csmf_order]
@@ -507,24 +578,32 @@ plot.vacalibration <- function(x, type = c("errorbar", "bar", "compare")[1],
     g <- g + geom_point(aes(color = algorithm), position = position_dodge(0.5),
                         size = point_size)
     g <- g + geom_errorbar(aes(ymin = lower, ymax = upper, color = algorithm),
-                           size = err_size, width = err_width,
+                           linewidth = err_size, width = err_width,
                            position = position_dodge(0.5))
     g <- g + xlab(xlab) + ylab(ylab) + ggtitle(title)
     g <- g + scale_y_continuous()
     if (horiz) {
       g <- g + scale_x_discrete(limits=rev) + coord_flip()
     }
-    if (bw) g <- g + them_bw()
+    if (bw) g <- g + theme_bw()
     cbp <- c("#000000", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2",
              "#D55E00", "#CC79A7")
     maxn <- length(unique(csmf$algorithm))
     if(maxn > length(cbp)){
       cbp <- colorRampPalette(cbp)(maxn)
     }
-    g <- g + scale_color_manual(values = cbp)
-    
-    if(!horiz) g <- g + theme(axis.text.x = element_text(angle = angle, hjust = 1))
-    out[[1]] <- g
+    if (horiz) {
+      cbp <- rev(cbp[1:maxn])
+      g <- g + scale_color_manual(values = cbp,
+                                  guide = guide_legend(reverse = TRUE))
+    } else {
+      g <- g + scale_color_manual(values = cbp) + 
+        theme(axis.text.x = element_text(angle = angle, hjust = 1))
+    }
+    # if(!horiz) {
+    #   g <- g + theme(axis.text.x = element_text(angle = angle, hjust = 1))
+    # }
+    out[["compare"]] <- g
   }
   
   if (plot_it) {

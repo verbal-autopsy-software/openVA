@@ -354,7 +354,7 @@ plotVA <- function(object, top = 10, title = NULL, ...){
     plot(object, top.plot = top, main = title, ...)
   }else if(methods::is(object, "eava")){
     plot(object, top = top, title = title, ...)
-  }else if(methods::is(objects, "vacalibration")){
+  }else if(methods::is(object, "vacalibration")){
     plot(object, top = top, title = title, ...)
   }else{
     stop("Unknown object to plot")
