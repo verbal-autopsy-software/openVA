@@ -1,0 +1,303 @@
+---
+title: "Expert Algorithms for Neonatal and Child Causes of Death"
+author: "openVA Team"
+date: "`r Sys.Date()`"
+output:
+  rmarkdown::html_document:
+    toc: true
+    toc_depth: 2
+    toc_float: true
+---
+
+```{r setup, eval = TRUE, include=FALSE}
+knitr::opts_chunk$set(fig.width = 7, fig.height = 7, fig.align = "center",
+                      collapse = TRUE)
+```
+
+
+# Introduction
+
+The **openVA** package provides a single interface to several algorithms that
+assign a cause of death to verbal autopsy (VA) data.  In this vignette, we
+walk through an example of using this interface -- namely, the `openVA::codeVA()`
+function -- to run the expert algorithms (EAVA) for neonatal and child
+causes of death applied to simulated data sets included in the package.
+Example code running the InSilicoVA algorithm is also included to illustrate
+some **openVA** tools for comparing results across different algorithms.
+
+# Set Up
+
+We begin by attaching both packages, with **openVA** included second so it
+will print the package versions of the optional packages.
+
+
+```{r packages, eval = TRUE}
+library(EAVA)
+library(openVA)
+```
+
+
+## Data
+
+Preparation of the raw VA input data is handled outside of **openVA**.  The **EAVA**
+package provides the `EAVA::odk2EAVA()` function for transforming VA data collected
+using the 2016 WHO VA questionnaire into the expected format.  Note that this
+differs from the format expected by the InSilicoVA and InterVA5 algorithms,
+for which the Python packages **pyCrossVA** 
+([https://github.com/verbal-autopsy-software/pyCrossVA](https://github.com/verbal-autopsy-software/pyCrossVA)) can be used to prepare input data collected using the WHO
+questionnaires.
+
+The examples presented below make use of simulated data sets constructed with the
+sole purpose of providing illustrative code. These different data sets (for
+EAVA and InSilicoVA) do overlap, but are not complete or realistic in the sense
+that they resemble actual records from a VA interview.  Thus, the following
+"results" should not be interpreted as a serious comparison of the algorithms
+themselves.
+
+
+# Assigning Causes of Death
+
+## EAVA
+
+The EAVA algorithm is selected by passing "EAVA" as an argument to both the
+`data.type` and `model` parameters of `openVA::codeVA()`.  In the following
+code chunk, we use the "DataEAVA" example data set that has already been transformed
+into the appropriate format -- the EAVA algorithm requires particular column
+names for the input data frame.  Finally, the algorithm logic is specific to
+the age group, either "neonate" or "child", as indicated by the argument passed
+to the `age_group` parameter.  If "neonate" is used, then only live births
+that resulted in a death before 28 days will be assigned a cause (as determined
+by particular variables in the input data).  Similarly, the "child" argument 
+will restrict the results to deaths occurring after 27 days but before 5
+years of age.
+
+
+```{r eava, eval = TRUE}
+data("DataEAVA")
+EAVA_neonate <- codeVA(data = DataEAVA,
+                       data.type = "EAVA", model = "EAVA",
+                       age_group = "neonate")
+
+EAVA_child <- codeVA(data = DataEAVA,
+                     data.type = "EAVA", model = "EAVA",
+                     age_group = "child")
+```
+
+
+## InSilicoVA
+
+
+```{r randomva6, eval = TRUE, echo = FALSE, include = FALSE}
+data("RandomVA6")
+```
+
+The variables used by the InSilicoVA algorithm differ from those informing the
+EAVA logic, so a companion data set, "RandomVA6", has been included in
+**openVA**.  (It was created from the same source files as the "DataEAVA" example
+data set.)  One potential implication is a difference in the deaths that are
+processed by each algorithm.  InSilicoVA only assigns causes to VA records that
+have valid responses for age and sex; whereas, if sex is missing, the EAVA
+algorithm will still assign a cause.  In the example data set we see that there
+are `r sum(RandomVA6$i019a == 'n' & RandomVA6$i019b == 'n')` records with no
+information on the sex of the decedent.  To make the results comparable across
+algorithms we impute the value "y" for variable i019a so that these records will
+be assigned a cause by InSilicoVA.
+
+
+```{r insilico_data}
+data(RandomVA6)
+table(RandomVA6$i019a,    # indicator for 'male'
+      RandomVA6$i019b)    # indicator for 'female'
+index_missing <- RandomVA6$i019a == "n" & RandomVA6$i019b == "n"
+RandomVA6[index_missing, "i019a"] <- "y"
+```
+
+Another difference between these two algorithms should also be noted.  InSilicoVA
+assigns a cause to all records (with valid information on age and sex), whereas
+EAVA will assign "Unspecified" where reported symptoms do not meet the diagnostic
+criteria for any cause in the hierarchy.  When comparing results, the user
+will need to decide if they want to restrict the analytic data set to 
+VA records with a specified EAVA cause (and pass only these records to InSilicoVA).
+
+Next, we fit InSilicoVA separately for child and neonate deaths (facilitating
+the comparison with EAVA results).  The output from InSilicoVA, which tracks the
+posterior sampling, has been omitted to keep the vignette concise.
+
+```{r insilico_code, eval = FALSE}
+is_neonate <- RandomVA6[, "i022g"] == "y"
+subpop <- rep("child", nrow(RandomVA6))
+subpop[is_neonate] <- "neonate"
+table(subpop)
+
+fit_insilico_neonate <- codeVA(data = RandomVA6[is_neonate,],
+                               data.type = "WHO2016",
+                               model = "InSilicoVA")
+
+fit_insilico_child <- codeVA(data = RandomVA6[!is_neonate,],
+                             data.type = "WHO2016",
+                             model = "InSilicoVA")
+# (output omitted)
+```
+
+```{r insilico, eval = TRUE, include = FALSE, echo = FALSE, cache = TRUE}
+is_neonate <- RandomVA6[, "i022g"] == "y"
+subpop <- rep("child", nrow(RandomVA6))
+subpop[is_neonate] <- "neonate"
+table(subpop)
+
+fit_insilico_neonate <- codeVA(data = RandomVA6[is_neonate,],
+                               data.type = "WHO2016",
+                               model = "InSilicoVA")
+
+fit_insilico_child <- codeVA(data = RandomVA6[!is_neonate,],
+                             data.type = "WHO2016",
+                             model = "InSilicoVA")
+```
+
+
+
+# Summarizing EAVA Results
+
+Output from the `codeVA()` function is summarized by presenting the cause-specific
+mortality fractions (CSMFs) as either a table or a plot.  The former
+is achieved with the `summary()` function, and we can specify the number of
+causes to include in the CSMF with the `top` parameter.  The number of deaths
+(in the age group) contributing to the distribution is also included in the
+print out.
+
+```{r summarize, eval = TRUE}
+summary(EAVA_neonate, top = 10)
+```
+
+We can create bar plot of the ordered CSMFs from the object returned by
+`codeVA()` using the `plotVA()` function.  Again, we can specify the number of
+causes to include in the summary, along with the title used for the plot.
+
+
+```{r plotva, eval = TRUE}
+plotVA(EAVA_child, title = "EAVA results for children", top = 7)
+```
+
+If you need the CSMFs for further computation or to create your own summary,
+then the `getCSMF()` function will return the CSMFs as a vector.
+
+```{r getCSMF, eval = TRUE}
+EAVA_child_csmf <- getCSMF(EAVA_child)
+EAVA_child_csmf
+```
+
+
+# Comparing CoD Assignments: EAVA & InSilicoVA
+
+## CSMFs
+
+InSilicoVA uses a different list of causes of death (CoD) than the EAVA
+algorithm when using a data type in the WHO group.  (The list of causes can be
+retrieved by loading `data(causetextV5)`, which creates a matrix named
+causetextV5 with the CoDs.)  Mappings from the WHO VA cause
+list to the list used by the EAVA algorithm are included as data sets in the
+**openVA** package.  There are separate mappings for neonatal and child CoDs,
+and the (peculiar) format facilitates the creation of a plot depicting a
+comparison of the CSMFs.  In the following code chunk, we load the mapping for
+neonatal CoDs, create a list of the `codeVA()` outputs for InSilicoVA and EAVA,
+and pass these objects to the `stackplotVA()` function.  The result is a 
+stacked bar plot with the CSMF from InSilicoVA coded in the the causes used by
+EAVA.  The fraction of deaths due to CoDs that are not included in the EAVA
+cause list, are included in the category labeled "not in neonate CoD hierarchy."
+
+
+```{r neonote_stackplot}
+data("grouping_eava_neonate")
+
+compare_neonate <- list("InSilicoVA" = fit_insilico_neonate,
+                        "EAVA" = EAVA_neonate)
+stackplotVA(compare_neonate, xlab = "", angle = 0,
+            grouping = grouping_eava_neonate)
+```
+
+
+In the next example, we compare the CSMFs for child deaths, but with a different
+arrangement of the bar plots by specifying the "dodge" option as the type of
+plot (along with setting the `horiz` parameter to `TRUE`).
+
+
+```{r child_stackplot}
+data("grouping_eava_child")
+
+compare_child <- list("InSilicoVA" = fit_insilico_child,
+                      "EAVA" = EAVA_child)
+stackplotVA(compare_child, xlab = "", angle = 0, grouping = grouping_eava_child,
+            horiz = TRUE,
+            type = "dodge")
+```
+
+
+## Individual Cause Assignment
+
+Thus far our comparison of the two algorithms has focused on the aggregate level,
+as captured by the CSMFs.  It is also possible to compare how the algorithms
+assign causes to each individual death.  As a first step, we extract
+the most likely cause that InSilicoVA assigns to each individual neonatal death using
+the `getTopCOD()` function.  This function returns a data frame with two columns --
+"ID", and "cause1" -- and we rename the latter so that we know the CoD is
+assigned by InSilicoVA.
+
+
+```{r gettopcod}
+insilico_indiv_neonate <- getTopCOD(fit_insilico_neonate)
+names(insilico_indiv_neonate) <- c("ID", "InSilicoVA")
+```
+
+The EAVA algorithm already provides the CoD assignments for each individual
+death, so we transform the output into a data frame and merge it with our
+result from the previous code chunk (i.e., `insilico_indiv_neonates`).
+
+
+```{r eava_df}
+df_eava_neonate <- data.frame("ID" = EAVA_neonate$ID, "EAVA" = EAVA_neonate$cause)
+combined_neonate <- merge(insilico_indiv_neonate, df_eava_neonate)
+```
+
+Finally, we cross tabulate the cause assignments for each neonatal death and
+create a heat map to visualize the results.  Note that we have have not mapped
+to WHO VA cause list (used by InSilicoVA) to the causes assigned by EAVA, but
+this is also possible using the data set "grouping_eava_neonate" included in the
+**openVA** package.
+
+
+```{r heatmap}
+xtab_neonate <- table(combined_neonate$InSilicoVA,
+                      combined_neonate$EAVA)
+xtab_neonate |>
+  as.data.frame() |>
+  ggplot(aes(x = Var1, y = Var2, fill = Freq)) +
+  geom_tile() + 
+  labs(title = "Individual Cause Assignments for Neonatal Deaths") +
+  xlab("InSilicoVA") + ylab("EAVA") +
+  theme(axis.text.x = element_text(angle = 45, vjust = 0.95, hjust = 1))
+```
+
+# Conclusion
+
+We conclude by summarizing the main functions and points:
+
+* `codeVA()` -- fit an algorithm to VA data
+
+  + other software is needed to prepare VA data (e.g., 
+   [pyCrossVA](https://github.com/verbal-autopsy-software/pyCrossVA) or
+   `EAVA::odk2EAVA()`)
+
+* `summary()` and `plotVA()` -- print out and plot the CSMF
+
+  + `getCSMF()` --  provides the CSMF as a vector
+
+  + `stackplotVA()` -- compares CSMFs from different algorithms
+
+* `getTopCOD()` -- returns the most likely cause assigned by InSilicoVA
+
+The **openVA** package facilitates the analysis of VA data by providing general
+functions that fit and summarize results from different algorithms.  There are 
+also tools to compare results at either the aggregate or individual level.  To
+suggest additional functionality, please submit issues to the GitHub repository:
+[https://github.com/verbal-autopsy-software/openVA/issues](https://github.com/verbal-autopsy-software/openVA/issues).
+

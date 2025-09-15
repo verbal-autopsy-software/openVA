@@ -11,7 +11,7 @@
 
 <meta name="author" content="openVA Team" />
 
-<meta name="date" content="2025-08-25" />
+<meta name="date" content="2025-09-15" />
 
 <title>Expert Algorithms for Neonatal and Child Causes of Death</title>
 
@@ -1482,7 +1482,7 @@ border-radius: 0px;
 <h1 class="title toc-ignore">Expert Algorithms for Neonatal and Child
 Causes of Death</h1>
 <h4 class="author">openVA Team</h4>
-<h4 class="date">2025-08-25</h4>
+<h4 class="date">2025-09-15</h4>
 
 </div>
 
@@ -1568,11 +1568,11 @@ source files as the “DataEAVA” example data set.) One potential
 implication is a difference in the deaths that are processed by each
 algorithm. InSilicoVA only assigns causes to VA records that have valid
 responses for age and sex; whereas, if sex is missing, the EAVA
-algorithm will still assign a cause. In the example, data set we see
-that there are 54 records with no information on the sex of the
-decedent. To make the results comparable across algorithms we impute the
-value “y” for variable i019a so that these records will be assigned a
-cause by InSilicoVA.</p>
+algorithm will still assign a cause. In the example data set we see that
+there are 54 records with no information on the sex of the decedent. To
+make the results comparable across algorithms we impute the value “y”
+for variable i019a so that these records will be assigned a cause by
+InSilicoVA.</p>
 <pre class="r"><code>data(RandomVA6)
 table(RandomVA6$i019a,    # indicator for &#39;male&#39;
       RandomVA6$i019b)    # indicator for &#39;female&#39;
@@ -1582,6 +1582,13 @@ table(RandomVA6$i019a,    # indicator for &#39;male&#39;
 ##   y 857   0
 index_missing &lt;- RandomVA6$i019a == &quot;n&quot; &amp; RandomVA6$i019b == &quot;n&quot;
 RandomVA6[index_missing, &quot;i019a&quot;] &lt;- &quot;y&quot;</code></pre>
+<p>Another difference between these two algorithms should also be noted.
+InSilicoVA assigns a cause to all records (with valid information on age
+and sex), whereas EAVA will assign “Unspecified” where reported symptoms
+do not meet the diagnostic criteria for any cause in the hierarchy. When
+comparing results, the user will need to decide if they want to restrict
+the analytic data set to VA records with a specified EAVA cause (and
+pass only these records to InSilicoVA).</p>
 <p>Next, we fit InSilicoVA separately for child and neonate deaths
 (facilitating the comparison with EAVA results). The output from
 InSilicoVA, which tracks the posterior sampling, has been omitted to
@@ -1612,7 +1619,7 @@ group) contributing to the distribution is also included in the print
 out.</p>
 <pre class="r"><code>summary(EAVA_neonate, top = 10)
 ## EAVA fitted on  792 neonate deaths.
-##  Top 10 CSMFs:
+## Top 10 CSMFs:
 ## 
 ##  cause        proportion
 ##  Preterm      0.2008    
