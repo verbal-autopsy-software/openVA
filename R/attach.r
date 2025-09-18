@@ -17,6 +17,9 @@ notcore_unloaded <- function() {
   search <- paste0("package:", notcore)
   notcore[!search %in% search()]
 }
+notcore_installed <- function() {
+  notcore[notcore %in% installed.packages()[, "Package"]]
+}
 
 
 openVA_attach <- function() {
@@ -56,6 +59,12 @@ openVA_attach <- function() {
     )  
   )
 
+  notcore_to_load <- notcore_installed()
+  if(length(notcore_to_load) > 0){
+    suppressPackageStartupMessages(
+      lapply(notcore_to_load, library, character.only = TRUE, warn.conflicts = FALSE)
+    )
+  }
   notcore_has <- notcore_loaded()
   notcore_install <- notcore_unloaded()
   if(length(notcore_has) > 0){
