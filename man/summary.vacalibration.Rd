@@ -4,10 +4,10 @@
 \alias{summary.vacalibration}
 \title{Summary of results obtained by vacalibration}
 \usage{
-\method{summary}{vacalibration}(x, top = 5, rnd = 4, algorithm = NULL)
+\method{summary}{vacalibration}(object, top = 5, rnd = 4, algorithm = NULL, ...)
 }
 \arguments{
-\item{x}{\code{vacalibration} object}
+\item{object}{\code{vacalibration} object}
 
 \item{top}{number of top CSMF to show}
 
@@ -15,6 +15,8 @@
 
 \item{algorithm}{a name or vector of names of algorithm(s) which
 limits the output to those specific results}
+
+\item{\dots}{not used}
 }
 \description{
 This function prints a summary message of the results along with

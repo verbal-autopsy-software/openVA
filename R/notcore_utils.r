@@ -1,6 +1,7 @@
 #' Print method for "eava" class.
 #'
 #' @param x \code{eava} object.
+#' @param \dots not used
 #' 
 #' @examples
 #' \dontrun{
@@ -10,12 +11,12 @@
 #' }
 #'  
 #' @exportS3Method EAVA::print
-print.eava <- function(x) {
+print.eava <- function(x, ...) {
   cat(paste("EAVA fitted on", length(x$ID), x$age_group,
             "deaths. Here are the first 5 records...\n"))
   cat("\n")
   out <- data.frame("ID" = x$ID, "cause" = x$cause)
-  print(head(out, n = 5))
+  print(utils::head(out, n = 5))
 }
 
 #' Calculate CSMF from EAVA::codEAVA output
@@ -37,9 +38,10 @@ csmf_eava <- function(x) {
 #' This function prints a summary message of the results along with
 #' the top cause-specific mortality fractions (CSMFs).
 #'
-#' @param x \code{eava} object
+#' @param object \code{eava} object
 #' @param top number of top CSMF to show
 #' @param rnd number of decimal places to round the CSMF
+#' @param \dots not used
 #' @return \item{id}{ all IDs of the deaths}
 #' \item{cause}{ assigned cause for individual of death }
 #' \item{N}{ number of deaths}
@@ -54,18 +56,18 @@ csmf_eava <- function(x) {
 #' eava_summary
 #' } 
 #' @exportS3Method EAVA::summary
-summary.eava <- function(x, top = 5, rnd = 4) {
+summary.eava <- function(object, top = 5, rnd = 4, ...) {
   
-  csmf <- csmf_eava(x)
+  csmf <- csmf_eava(object)
   csmf <- csmf[order(csmf, decreasing = TRUE)]
   n_top <- min(length(csmf), top)
   csmf.ordered <- data.frame("cause" = names(csmf)[1:n_top],
                              "proportion" = round(csmf[1:n_top], rnd))
   row.names(csmf.ordered) <- NULL
-  out <- list("id" = x$ID,
-              "cause" = x$cause,
-              "N" = length(x$ID),
-              "age_group" = x$age_group,
+  out <- list("id" = object$ID,
+              "cause" = object$cause,
+              "N" = length(object$ID),
+              "age_group" = object$age_group,
               "csmf.ordered" = csmf.ordered)
   class(out) <- "eava_summary"
   return(out)
@@ -77,9 +79,10 @@ summary.eava <- function(x, top = 5, rnd = 4) {
 #' the top cause-specific mortality fractions (CSMFs).
 #'
 #' @param x \code{eava} object
+#' @param \dots not used
 #'
 #' @exportS3Method EAVA::print
-print.eava_summary <- function(x) {
+print.eava_summary <- function(x, ...) {
   cat(paste("EAVA fitted on ", length(x$id), x$age_group, "deaths.\n"))
   top <- nrow(x$csmf.ordered)
   cat(paste("Top", top, "CSMFs:\n\n"))
@@ -91,15 +94,17 @@ print.eava_summary <- function(x) {
 #' Create CSMF plot for EAVA::codEAVA output
 #'
 #' @param x Output from EAVA::codEAVA
+#' @param title Title for CSMF plot
 #' @param top The number of top causes to include in plot. This is exceeded if
 #' there are ties.
-#' @param main Title for CSMF plot
 #' @param type An indicator of the type of chart to plot.  "pie" for pie chart;
 #' "bar" for bar chart.
 #' @param return.barplot a logical indicating if the (barplot) ggplot() object
 #' should be returned (instead of printed).  Default value is FALSE.
+#' @param \dots Not used.
 #'
 #' @returns A barplot if return.barplot is TRUE; otherwise, nothing is returned.
+#' @importFrom rlang .data
 plot.eava <- function(x, top = 10, title = "Top CSMF Distribution",
                       type = "bar", return.barplot = FALSE, ...) {
   dist.cod <- csmf_eava(x)
@@ -110,10 +115,10 @@ plot.eava <- function(x, top = 10, title = "Top CSMF Distribution",
   }
   if (type == "pie") {
     dist.cod.sort <- sort(dist.cod, decreasing=TRUE)
-    pie.color <- grey.colors(length(dist.cod.sort[dist.cod.sort >= min.prob]))
+    pie.color <- grDevices::grey.colors(length(dist.cod.sort[dist.cod.sort >= min.prob]))
     pie.color.left <- rep(pie.color[length(pie.color)], length(dist.cod.sort[dist.cod.sort < min.prob]))
     pie.color <- c(pie.color, pie.color.left)
-    pie(dist.cod.sort, main = title,
+    graphics::pie(dist.cod.sort, main = title,
         col = pie.color, labels = names(dist.cod.sort)[dist.cod.sort >= min.prob],
         ...)
   }
@@ -121,14 +126,14 @@ plot.eava <- function(x, top = 10, title = "Top CSMF Distribution",
     dist.cod.min <- dist.cod[dist.cod >= min.prob ]
     dist.cod.min <- sort(dist.cod.min, decreasing = FALSE)
     if (requireNamespace("ggplot2", quietly = TRUE)) {
-      barplot.df <- data.frame(Probability = dist.cod.min,
-                               Causes = names(dist.cod.min))
+      barplot.df <- data.frame("Probability" = dist.cod.min,
+                               "Causes" = names(dist.cod.min))
       g <- ggplot2::ggplot(barplot.df,
-                           ggplot2::aes(x = stats::reorder(Causes,
-                                                           seq(1:length(Causes))),
-                                        y = Probability,
-                                        fill = stats::reorder(Causes,
-                                                              seq(1:length(Causes))))) +
+                           ggplot2::aes(x = stats::reorder(.data$Causes,
+                                                           seq(1:length(.data$Causes))),
+                                        y = .data$Probability,
+                                        fill = stats::reorder(.data$Causes,
+                                                              seq(1:length(.data$Causes))))) +
         ggplot2::geom_bar(stat="identity") +
         ggplot2::xlab("") +
         ggplot2::ylab("") +
@@ -139,17 +144,17 @@ plot.eava <- function(x, top = 10, title = "Top CSMF Distribution",
       if (return.barplot) {
         return(g)
       } else {
-        par(las = 2)
-        par(mar = c(5,15,4,2))
+        graphics::par(las = 2)
+        graphics::par(mar = c(5,15,4,2))
         print(g)
       }
       
     } else {
-      bar.color <- grey.colors(length(dist.cod.min))
+      bar.color <- grDevices::grey.colors(length(dist.cod.min))
       bar.color <- rev(bar.color)
-      barplot(dist.cod.min, horiz = TRUE, names.arg = names(dist.cod.min),
-              main = title, col = bar.color, cex.names=0.8,
-              xlab = "Probability", ...)
+      graphics::barplot(dist.cod.min, horiz = TRUE, names.arg = names(dist.cod.min),
+                        main = title, col = bar.color, cex.names=0.8,
+                        xlab = "Probability", ...)
     }
   }
 }
@@ -204,11 +209,12 @@ print.vacalibration <- function(x, ...) {
 #' This function prints a summary message of the results along with
 #' the top cause-specific mortality fractions (CSMFs).
 #'
-#' @param x \code{vacalibration} object
+#' @param object \code{vacalibration} object
 #' @param top number of top CSMF to show
 #' @param rnd number of decimal places to round the CSMF
 #' @param algorithm a name or vector of names of algorithm(s) which
 #' limits the output to those specific results
+#' @param \dots not used
 #'
 #' @examples
 #' \dontrun{
@@ -239,9 +245,9 @@ print.vacalibration <- function(x, ...) {
 #' summary(calib_ensemble)
 #' }
 #' @exportS3Method vacalibration::summary
-summary.vacalibration <- function(x, top = 5, rnd = 4, algorithm = NULL) {
-  csmf <- x$pcalib_postsumm
-  n <- lapply(x$input$va_unlabeled, sum)
+summary.vacalibration <- function(object, top = 5, rnd = 4, algorithm = NULL, ...) {
+  csmf <- object$pcalib_postsumm
+  n <- lapply(object$input$va_unlabeled, sum)
   n <- unlist(n)
   alg_names <- row.names(csmf)
   
@@ -261,24 +267,24 @@ summary.vacalibration <- function(x, top = 5, rnd = 4, algorithm = NULL) {
   if (!is.null(algorithm)) alg_names <- algorithm[algorithm %in% alg_names]
   
   out <- NULL
-  out$nBurn <- x$input$nBurn
-  out$nIterations <- x$input$nBurn + x$input$nMCMC*x$input$nThin
-  out$nMCMC <- x$input$nMCMC
-  out$nThin <- x$input$nThin
-  out$age_group <- x$input$age_group
+  out$nBurn <- object$input$nBurn
+  out$nIterations <- object$input$nBurn + object$input$nMCMC*object$input$nThin
+  out$nMCMC <- object$input$nMCMC
+  out$nThin <- object$input$nThin
+  out$age_group <- object$input$age_group
   out$algorithms <- alg_names
   out$n <- n
   out$show_top = top
-  out$ensemble <- x$input$ensemble
+  out$ensemble <- object$input$ensemble
   out$ensemble_algorithms <- names(n)
-  uncal <- t(x$p_uncalib)
+  uncal <- t(object$p_uncalib)
   uncal <- round(uncal, rnd)
   uncalibrated <- data.frame(uncal, row.names = NULL)
   uncalibrated$cause <- row.names(uncal)
   out$uncalibrated <- uncalibrated[, c("cause", alg_names)]
   
   # assuming dimension order is (algorithm, summary statistics, cause)
-  postsumm <- aperm(x$pcalib_postsumm, c(3,2,1))
+  postsumm <- aperm(object$pcalib_postsumm, c(3,2,1))
   postsumm <- round(postsumm, rnd)
   pcalib_alg <- dimnames(postsumm)[[3]]
   pcalib <- data.frame(matrix(ncol = 5, nrow = 0))
@@ -322,6 +328,7 @@ summary.vacalibration <- function(x, top = 5, rnd = 4, algorithm = NULL) {
 #' @param rnd number of decimal places to round the CSMF
 #' @param algorithm a name or vector of names of algorithm(s) which
 #' limits the output to those specific results
+#' @param \dots not used
 #'
 #' @examples
 #' \dontrun{
@@ -349,7 +356,7 @@ summary.vacalibration <- function(x, top = 5, rnd = 4, algorithm = NULL) {
 #' 
 #' }
 #' @exportS3Method vacalibration::print
-print.vacalibration_summary <- function(x) {
+print.vacalibration_summary <- function(x, top, rnd, algorithm, ...) {
   
   if ("Error" %in% names(x)) {
     cat("No results for requested algorithm(s).\n")
@@ -435,6 +442,7 @@ print.vacalibration_summary <- function(x) {
 #'                                               country = "Mozambique")
 #' plot(calib_ensemble)
 #' }
+#' @importFrom rlang .data
 #' @exportS3Method vacalibration::plot
 plot.vacalibration <- function(x, type = c("errorbar", "bar", "compare")[1],
                                algorithm = NULL, uncalibrated = FALSE,
@@ -474,16 +482,16 @@ plot.vacalibration <- function(x, type = c("errorbar", "bar", "compare")[1],
   }
   
   csmf <- sx$pcalib_postsumm
-  csmf$estimate = "calibrated"
+  csmf$"estimate" = "calibrated"
   fill_col = fill
   if (uncalibrated & type != "compare") {
-    df_uncal <- reshape(sx$uncalibrated, varying = algorithm,
-                        direction = "long", v.names = "mean",
-                        times = algorithm, timevar = "algorithm")
+    df_uncal <- stats::reshape(sx$uncalibrated, varying = algorithm,
+                               direction = "long", v.names = "mean",
+                               times = algorithm, timevar = "algorithm")
     row.names(df_uncal) = NULL
-    df_uncal$estimate = "uncalibrated"
+    df_uncal$"estimate" = "uncalibrated"
     df_uncal <- df_uncal[, names(df_uncal) != "id"]
-    df_uncal$lower <- df_uncal$upper <- NA
+    df_uncal$"lower" <- df_uncal$"upper" <- NA
   }
   out <- list()
   if (type != "compare") {
@@ -494,11 +502,11 @@ plot.vacalibration <- function(x, type = c("errorbar", "bar", "compare")[1],
       n_top <- min(dim(sub_csmf), top)
       sub_csmf <- sub_csmf[1:n_top, ]
       cause_order <- sub_csmf$cause
-      sub_csmf$cause <- factor(sub_csmf$cause, levels = cause_order)
+      sub_csmf$"cause" <- factor(sub_csmf$cause, levels = cause_order)
       if (uncalibrated) {
         sub_csmf_uncal <- df_uncal[df_uncal$algorithm == alg,]
         sub_csmf_uncal <- sub_csmf_uncal[sub_csmf_uncal$cause %in% sub_csmf$cause,]
-        sub_csmf_uncal$cause <- factor(sub_csmf_uncal$cause, levels = cause_order)
+        sub_csmf_uncal$"cause" <- factor(sub_csmf_uncal$cause, levels = cause_order)
         sub_csmf <- rbind(sub_csmf, sub_csmf_uncal)
         fill_col <- c(fill, fill_uncalibrated)
         if (horiz) {
@@ -508,38 +516,44 @@ plot.vacalibration <- function(x, type = c("errorbar", "bar", "compare")[1],
         }
       }
       
-      g <- ggplot(sub_csmf, aes(x = cause, y = mean, group = estimate))
+      g <- ggplot(sub_csmf, aes(x = .data$cause,
+                                y = .data$mean,
+                                group = .data$estimate))
       if (horiz) {
-        g <- g + scale_x_discrete(limits=rev)
+        g <- g + ggplot2::scale_x_discrete(limits=rev)
       }
       
       if (type == "bar") {
-        g <- g + geom_bar(stat = "identity", color = border,
-                          aes(fill = estimate),
+        g <- g + geom_bar(sub_csmf,
+                          stat = "identity", color = border,
+                          aes(fill = .data$estimate),
                           linewidth = .3, position = position_dodge(.9)) 
         if (horiz) {
           g <- g + 
-            scale_fill_manual(values = c("calibrated" = fill,
-                                         "uncalibrated" = fill_uncalibrated),
-                              guide = guide_legend(reverse = TRUE))
+            scale_fill_manual(sub_csmf, values = c("calibrated" = .data$fill,
+                                         "uncalibrated" = .data$fill_uncalibrated),
+                              guide = ggplot2::guide_legend(reverse = TRUE))
         } else {
           g <- g +
-            scale_fill_manual(values = c("calibrated" = fill,
-                                         "uncalibrated" = fill_uncalibrated))
+            scale_fill_manual(values = c("calibrated" = .data$fill,
+                                         "uncalibrated" = .data$fill_uncalibrated))
         }
       }
       if (type == "errorbar"){
-        g <- g + geom_point(stat = "identity", size = point_size,
-                            aes(group = estimate, shape = estimate),
-                            position = position_dodge(.9))
+        g <- g + ggplot2::geom_point(stat = "identity", size = point_size,
+                                     aes(group = .data$estimate,
+                                         shape = .data$estimate),
+                                     position = position_dodge(.9))
         if (horiz) {
           g <- g +
-            scale_shape_manual(values = c("calibrated" = 16,
-                                          "uncalibrated" = 17),
-                               guide = guide_legend(reverse = TRUE))
+            ggplot2::scale_shape_manual(values = c("calibrated" = 16,
+                                                   "uncalibrated" = 17),
+                                        guide = ggplot2::guide_legend(reverse = TRUE))
         }
       }
-      g <- g + geom_errorbar(aes(ymin = lower, ymax = upper, group = estimate),
+      g <- g + geom_errorbar(aes(ymin = .data$lower,
+                                 ymax = .data$upper,
+                                 group = .data$estimate),
                              #size = err_size,
                              linewidth = err_size,
                              width = err_width, position = position_dodge(.9))
@@ -573,17 +587,22 @@ plot.vacalibration <- function(x, type = c("errorbar", "bar", "compare")[1],
       csmf$algorithm <- factor(csmf$algorithm, levels = algorithm)
     }
     
-    g <- ggplot(csmf, aes(x = cause, y = mean), fill = algorithm,
-                ymax = max(upper)*1.05)
-    g <- g + geom_point(aes(color = algorithm), position = position_dodge(0.5),
-                        size = point_size)
-    g <- g + geom_errorbar(aes(ymin = lower, ymax = upper, color = algorithm),
+    g <- ggplot(csmf, aes(x = .data$cause,
+                          y = .data$mean),
+                fill = .data$algorithm,
+                ymax = max(.data$upper)*1.05)
+    g <- g + ggplot2::geom_point(aes(color = .data$algorithm), 
+                                 position = position_dodge(0.5),
+                                 size = point_size)
+    g <- g + geom_errorbar(aes(ymin = .data$lower,
+                               ymax = .data$upper,
+                               color = .data$algorithm),
                            linewidth = err_size, width = err_width,
                            position = position_dodge(0.5))
     g <- g + xlab(xlab) + ylab(ylab) + ggtitle(title)
-    g <- g + scale_y_continuous()
+    g <- g + ggplot2::scale_y_continuous()
     if (horiz) {
-      g <- g + scale_x_discrete(limits=rev) + coord_flip()
+      g <- g + ggplot2::scale_x_discrete(limits=rev) + coord_flip()
     }
     if (bw) g <- g + theme_bw()
     cbp <- c("#000000", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2",
@@ -595,7 +614,7 @@ plot.vacalibration <- function(x, type = c("errorbar", "bar", "compare")[1],
     if (horiz) {
       cbp <- rev(cbp[1:maxn])
       g <- g + scale_color_manual(values = cbp,
-                                  guide = guide_legend(reverse = TRUE))
+                                  guide = ggplot2::guide_legend(reverse = TRUE))
     } else {
       g <- g + scale_color_manual(values = cbp) + 
         theme(axis.text.x = element_text(angle = angle, hjust = 1))

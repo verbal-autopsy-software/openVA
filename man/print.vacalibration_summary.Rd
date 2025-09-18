@@ -4,7 +4,7 @@
 \alias{print.vacalibration_summary}
 \title{Print method for summarizing vacalibration results}
 \usage{
-\method{print}{vacalibration_summary}(x)
+\method{print}{vacalibration_summary}(x, top, rnd, algorithm, ...)
 }
 \arguments{
 \item{x}{\code{vacalibration} object}
@@ -15,6 +15,8 @@
 
 \item{algorithm}{a name or vector of names of algorithm(s) which
 limits the output to those specific results}
+
+\item{\dots}{not used}
 }
 \description{
 This function prints a summary message of the results along with

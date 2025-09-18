@@ -19,13 +19,15 @@
 \item{top}{The number of top causes to include in plot. This is exceeded if
 there are ties.}
 
+\item{title}{Title for CSMF plot}
+
 \item{type}{An indicator of the type of chart to plot.  "pie" for pie chart;
 "bar" for bar chart.}
 
 \item{return.barplot}{a logical indicating if the (barplot) ggplot() object
 should be returned (instead of printed).  Default value is FALSE.}
 
-\item{main}{Title for CSMF plot}
+\item{\dots}{Not used.}
 }
 \value{
 A barplot if return.barplot is TRUE; otherwise, nothing is returned.

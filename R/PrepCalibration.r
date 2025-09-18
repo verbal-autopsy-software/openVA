@@ -84,7 +84,7 @@ prepCalibrationInsilico <- function(x) {
   cause <- cod_labels[cod_index]
   id <- row.names(x$indiv.prob)
   cods <- data.frame("ID" = id, "cause" = cause)
-  return ( setNames(list(cods), list("insiliocva")) )
+  return ( stats::setNames(list(cods), list("insiliocva")) )
 }
 
 prepCalibrationInterva5 <- function(x) {
@@ -92,5 +92,5 @@ prepCalibrationInterva5 <- function(x) {
   cods <- lapply(x$VA5, function(va) c("ID" = va$ID, "cause" = va$CAUSE1))
   cods <- as.data.frame(do.call(rbind, cods))
   cods$cause[cods$cause == " "] <- "Unspecified"
-  return ( setNames(list(cods), list("interva")) )
+  return ( stats::setNames(list(cods), list("interva")) )
 }

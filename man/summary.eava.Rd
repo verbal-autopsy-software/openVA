@@ -4,14 +4,16 @@
 \alias{summary.eava}
 \title{Summary of results obtained by fitting the EAVA algorithm.}
 \usage{
-\method{summary}{eava}(x, top = 5, rnd = 4)
+\method{summary}{eava}(object, top = 5, rnd = 4, ...)
 }
 \arguments{
-\item{x}{\code{eava} object}
+\item{object}{\code{eava} object}
 
 \item{top}{number of top CSMF to show}
 
 \item{rnd}{number of decimal places to round the CSMF}
+
+\item{\dots}{not used}
 }
 \value{
 \item{id}{ all IDs of the deaths}

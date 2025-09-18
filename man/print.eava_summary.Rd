@@ -4,10 +4,12 @@
 \alias{print.eava_summary}
 \title{Print method for summarizing results from EAVA algorithm.}
 \usage{
-\method{print}{eava_summary}(x)
+\method{print}{eava_summary}(x, ...)
 }
 \arguments{
 \item{x}{\code{eava} object}
+
+\item{\dots}{not used}
 }
 \description{
 This function prints a summary message of the results along with

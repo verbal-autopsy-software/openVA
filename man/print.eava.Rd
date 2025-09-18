@@ -4,10 +4,12 @@
 \alias{print.eava}
 \title{Print method for "eava" class.}
 \usage{
-\method{print}{eava}(x)
+\method{print}{eava}(x, ...)
 }
 \arguments{
 \item{x}{\code{eava} object.}
+
+\item{\dots}{not used}
 }
 \description{
 Print method for "eava" class.

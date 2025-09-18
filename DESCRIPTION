@@ -5,8 +5,9 @@ Version: 1.2.0
 Date: 2025-09-18
 Author: Zehang Richard Li, Jason Thomas, Tyler H. McCormick, Samuel J. Clark
 Maintainer: Zehang Richard Li <lizehang@gmail.com>
-Depends: R (>= 3.1)
-Imports: InterVA5 (>= 1.0.1), InSilicoVA (>= 1.1.3), InterVA4 (>= 1.7.3), Tariff (>= 1.0.1), ggplot2, crayon, cli, methods
+Depends: R (>= 3.5.0)
+Encoding: UTF-8
+Imports: InterVA5 (>= 1.0.1), InSilicoVA (>= 1.1.3), InterVA4 (>= 1.7.3), Tariff (>= 1.0.1), ggplot2, crayon, cli, methods, rlang
 Suggests: 
     covr,
     EAVA,

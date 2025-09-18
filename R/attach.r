@@ -18,7 +18,7 @@ notcore_unloaded <- function() {
   notcore[!search %in% search()]
 }
 notcore_installed <- function() {
-  notcore[notcore %in% installed.packages()[, "Package"]]
+  notcore[notcore %in% utils::installed.packages()[, "Package"]]
 }
 
 
