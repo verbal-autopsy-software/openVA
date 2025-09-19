@@ -33,12 +33,13 @@ vignette.
 
 # Getting Started
 
-We begin by attaching both packages, with **openVA** listed second so it
-will print the package versions of the optional packages.
+We begin by attaching the **openVA** package, which attaches and prints the
+versions of the core packages and, if installed, the optional packages.
+**vacalibration** is among the optional packages and must be installed 
+alongside **openVA**, e.g., `install.packages(c("openVA", "vacalibration"))`
 
 
 ```{r packages, eval = TRUE}
-library(vacalibration)
 library(openVA)
 ```
 
@@ -60,7 +61,7 @@ instrument, which we specify by passing "WHO2016" to the `data.type`
 parameter.
 
 
-```{r, echo=TRUE, results="hide", warning=FALSE, message=FALSE, cache=TRUE}
+```{r, echo=TRUE, results="hide", warning=FALSE, message=FALSE}
 fit_insilicova <- codeVA(NeonatesVA5, data.type = "WHO2016")
 fit_interva <- codeVA(NeonatesVA5, model = "InterVA", version = "5",
                       HIV = "l", Malaria = "l", write = FALSE)
@@ -83,7 +84,7 @@ prepare a list of data frames that include two columns: (1) the ID for the
 individual deaths, and (2) the CoD assigned by the algorithm.  **openVA** includes
 a helper function `prepCalibration()` that performs this step for us:
 
-```{r, results="hide", warning=FALSE, message=FALSE, cache=TRUE}
+```{r, results="hide", warning=FALSE, message=FALSE}
 insilicova_prep <- prepCalibration(fit_insilicova)
 interva_prep <- prepCalibration(fit_interva)
 ```
@@ -106,7 +107,7 @@ contain the length of this vignette, we do not include the diagnostic and summar
 plots of the results and we omit the output detailing the posterior sampling.
 
 
-```{r, results="hide", warning=FALSE, message=FALSE, cache=TRUE}
+```{r, results="hide", warning=FALSE, message=FALSE}
 calib_insilicova = vacalibration::vacalibration(va_data = insilicova_prep,
                                                 age_group = "neonate",
                                                 country = "Mozambique",

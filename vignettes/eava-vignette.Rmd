@@ -25,14 +25,15 @@ causes of death applied to simulated data sets included in the package.
 Example code running the InSilicoVA algorithm is also included to illustrate
 some **openVA** tools for comparing results across different algorithms.
 
-# Set Up
+# Getting Started
 
-We begin by attaching both packages, with **openVA** included second so it
-will print the package versions of the optional packages.
+We begin by attaching the **openVA** package, which attaches and prints the
+versions of the core packages and, if installed, the optional packages.
+**EAVA** is among the optional packages and must be installed alongside
+**openVA**, e.g., `install.packages(c("openVA", "EAVA"))`
 
 
 ```{r packages, eval = TRUE}
-library(EAVA)
 library(openVA)
 ```
 
@@ -139,7 +140,7 @@ fit_insilico_child <- codeVA(data = RandomVA6[!is_neonate,],
 # (output omitted)
 ```
 
-```{r insilico, eval = TRUE, include = FALSE, echo = FALSE, cache = TRUE}
+```{r insilico, eval = TRUE, include = FALSE, echo = FALSE}
 is_neonate <- RandomVA6[, "i022g"] == "y"
 subpop <- rep("child", nrow(RandomVA6))
 subpop[is_neonate] <- "neonate"
