@@ -1,5 +1,5 @@
 core <- c("InSilicoVA", "InterVA4", "InterVA5", "Tariff")
-notcore <- c("nbc4va")
+notcore <- c("nbc4va", "vacalibration", "EAVA")
 
 core_loaded <- function() {
   search <- paste0("package:", core)
@@ -16,6 +16,9 @@ notcore_loaded <- function() {
 notcore_unloaded <- function() {
   search <- paste0("package:", notcore)
   notcore[!search %in% search()]
+}
+notcore_installed <- function() {
+  notcore[notcore %in% utils::installed.packages()[, "Package"]]
 }
 
 
@@ -56,6 +59,12 @@ openVA_attach <- function() {
     )  
   )
 
+  notcore_to_load <- notcore_installed()
+  if(length(notcore_to_load) > 0){
+    suppressPackageStartupMessages(
+      lapply(notcore_to_load, library, character.only = TRUE, warn.conflicts = FALSE)
+    )
+  }
   notcore_has <- notcore_loaded()
   notcore_install <- notcore_unloaded()
   if(length(notcore_has) > 0){
@@ -71,6 +80,7 @@ openVA_attach <- function() {
     packages <- paste0(
       crayon::red(cli::symbol$times), " ", crayon::blue(format(notcore_install))
     )
+    if ((length(packages) %% 2) != 0) packages <- c(packages, " ")
     col1 <- 1:floor(length(packages)/2)
     info <- paste0(packages[col1], "     ", packages[-col1])
     packageStartupMessage(paste(info, collapse = "\n"))

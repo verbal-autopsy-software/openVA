@@ -90,8 +90,8 @@ getTopCOD(fit_nbc, n = 3, include.prob = TRUE)
 \seealso{
 Other output extraction: 
 \code{\link{getCCC}()},
-\code{\link{getCSMF_accuracy}()},
 \code{\link{getCSMF}()},
+\code{\link{getCSMF_accuracy}()},
 \code{\link{getIndivProb}()}
 }
 \concept{output extraction}

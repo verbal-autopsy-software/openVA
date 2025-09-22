@@ -71,7 +71,8 @@ openVA_update <- function() {
 #' }
 openVA_status <- function() {
 
-  core <- c("InSilicoVA", "InterVA4", "InterVA5", "Tariff", "nbc4va")
+  core <- c("InSilicoVA", "InterVA4", "InterVA5", "Tariff", "nbc4va",
+            "vacalibration", "EAVA")
 
   core_loaded <- function() {
     search <- paste0("package:", core)

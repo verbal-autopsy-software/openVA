@@ -1,0 +1,247 @@
+---
+title: "VA Calibration"
+author: "openVA Team"
+date: "`r Sys.Date()`"
+output:
+  rmarkdown::html_document:
+    toc: true
+    toc_depth: 2
+    toc_float: true
+---
+
+```{r setup, eval = TRUE, include=FALSE}
+knitr::opts_chunk$set(fig.width = 7, fig.height = 7, fig.align = "center",
+                      collapse = TRUE)
+```
+
+
+# Introduction
+
+The Child Health and Mortality Prevention Surveillance (CHAMPS) network collects
+valuable information for identifying causes of death across multiple sites in
+Africa and South Asia.  Verbal autopsy (VA) interviews are included in the
+constellation CHAMPS data, which
+[Pramanik et al. (2015)](https://doi.org/10.1214%2F24-AOAS2006)
+use to develop a method for calibrating computer-coded algorithms that assign
+causes of death (CoD) to VA data.  Their method is implemented in the R package
+[**vacalibration**](https://cran.r-project.org/web/packages/vacalibration/index.html)
+and an instructive introduction can be found in the package's
+[vignette](https://cran.r-project.org/web/packages/vacalibration/vignettes/intro_to_vacalibration.html).
+VA-Calibration is a natural extension of the work flow for analyzing VA data
+and thus we have integrated this package into **openVA**, as illustrated in this
+vignette.
+
+# Getting Started
+
+We begin by attaching the **openVA** package, which attaches and prints the
+versions of the core packages and, if installed, the optional packages.
+**vacalibration** is among the optional packages and must be installed 
+alongside **openVA**, e.g., `install.packages(c("openVA", "vacalibration"))`
+
+
+```{r packages, eval = TRUE}
+library(openVA)
+```
+
+In the example code to follow we use the example data set "NeonatesVA5" that 
+contains 200 (simulated) neonate VAs and is included in **openVA**.  These
+data are simulated from the 2016 WHO VA instrument, and can be loaded with:
+
+```{r}
+data(NeonatesVA5)
+dim(NeonatesVA5)
+```
+
+
+# Cause Assignment (uncalibrated)
+
+We start by assigning CoDs to the example data set using the InSilicoVA and
+InterVA5 algorithms.  The simulated data are based on the 2016 WHO VA
+instrument, which we specify by passing "WHO2016" to the `data.type`
+parameter.
+
+
+```{r, echo=TRUE, results="hide", warning=FALSE, message=FALSE}
+fit_insilicova <- codeVA(NeonatesVA5, data.type = "WHO2016")
+fit_interva <- codeVA(NeonatesVA5, model = "InterVA", version = "5",
+                      HIV = "l", Malaria = "l", write = FALSE)
+# omitting messages about the data checks, record processing, and posterior sampling...
+```
+
+*Note:* In the example code for InterVA5 (shown above), we set the `write`
+parameter to "FALSE" which will prevent the function from producing the log
+file with information about VA records excluded from the analysis (due to
+missing data) and the data consistency checks.  In real analyses it is 
+recommended to set `write` to "TRUE" (and provide the path to the `directory`
+parameter, which is where the log file will be written).
+
+
+# VA Calibration
+
+Before calibrating the results, we must prepare the fitted objects into the
+format expected by the `vacalibration()` function.  Specifically, we need to
+prepare a list of data frames that include two columns: (1) the ID for the
+individual deaths, and (2) the CoD assigned by the algorithm.  **openVA** includes
+a helper function `prepCalibration()` that performs this step for us:
+
+```{r, results="hide", warning=FALSE, message=FALSE}
+insilicova_prep <- prepCalibration(fit_insilicova)
+interva_prep <- prepCalibration(fit_interva)
+```
+
+As we will see below, the `vacalibration()` tool can combine results across
+algorithms to produce an ensemble of the cause-specific mortality fractions
+(CSMFs).  To obtain the ensemble estimate, we simply pass multiple fitted
+objects from `codeVA()` to the `prepCalibration()` function as follows:
+
+
+```{r}
+two_fits <- prepCalibration(fit_insilicova, fit_interva)
+```
+
+
+
+
+The results can now be passed to the `vacalibration()` function.  In the following
+example, we do this separately for each algorithm as well as for the combined
+list needed to produce the ensemble estimate of the calibrated CSMF.  To
+contain the length of this vignette, we do not include the diagnostic and summary
+plots of the results and we omit the output detailing the posterior sampling.
+
+
+```{r, results="hide", warning=FALSE, message=FALSE}
+calib_insilicova = vacalibration::vacalibration(va_data = insilicova_prep,
+                                                age_group = "neonate",
+                                                country = "Mozambique",
+                                                plot_it = FALSE)
+calib_interva <- vacalibration::vacalibration(va_data = interva_prep,
+                                            age_group = "neonate",
+                                            country = "Mozambique",
+                                            plot_it = FALSE)
+calib_ensemble <- vacalibration::vacalibration(va_data = two_fits,
+                                               age_group = "neonate",
+                                               country = "Mozambique",
+                                               plot_it = FALSE)
+# omitting messages about posterior sampling...
+```
+
+
+# Results
+
+## tabular summaries
+
+**openVA** implements some basic S3 methods to make your VA data analysis
+experience a bit more enjoyable.  For example, the basic print method for a
+`vacalibration` fitted object provides a quick summary of the posterior
+sampling, the algorithm(s) included in the calibration, and the input data.
+
+```{r}
+calib_insilicova
+```
+
+More useful is the well-known `summary()` method that (in the VA space) prints out
+a summary of the posterior sampling, the number of VA records processed by
+the algorithm, and the ordered CSMF (and credible intervals where applicable).
+Users have the option to specify the number of causes to include in the summary
+through the `top` parameter.
+
+```{r}
+summary(calib_insilicova, top = 5)
+```
+
+The seasoned VA analyst may notice different
+CoDs than what InSilicoVA assigns (i.e., those causes from the WHO VA cause
+list).  `vacalibration()` employs a mapping to a "broad cause of death" list
+via the `vacalibration::cause_map()` function (as described in the
+[vacalibration vignette](https://cran.r-project.org/web/packages/vacalibration/vignettes/intro_to_vacalibration.html#broad-cause-of-death)
+).
+
+It is also worth noting that `summary()` returns a list of objects that
+can be useful for further analysis; one example is ordered
+CSMF returned as a data frame (as shown below).
+
+```{r}
+summ_calib_interva <- summary(calib_interva)
+names(summ_calib_interva)
+is.data.frame(summ_calib_interva$interva)
+summ_calib_interva$interva
+```
+
+When working with a `vacalibration` fitted object involving results from
+multiple algorithms -- e.g., an ensemble calibration of the CSMF -- it is
+possible to limit the summarized results to a subset by passing the algorithm
+name or "ensemble" to the `algorithm` parameter.  (The default behavior is to
+print out summaries for all inputs, including the "ensemble" if applicable.)
+
+
+```{r}
+summary(calib_ensemble, algorithm = "ensemble")
+```
+
+
+## plots
+
+Visual displays of VA results are available in **openVA** through the `plotVA()`
+function.  There are several options to control the layout and type of plot.
+The default is a horizontal plot of error bars:
+
+```{r}
+plotVA(calib_insilicova, title = "Vignette results",
+       xlab = "CoD", ylab = "Proportions")
+```
+
+`vacalibrated` fitted objects include the uncalibrated results as well.  A
+comparison can be made by setting the `uncalibrated` parameter to "TRUE".  This
+option is illustrated below in the form of a basic bar graph with the horizontal
+option turned off -- i.e., `horiz = FALSE`:
+
+```{r}
+plotVA(calib_interva, type = "bar", uncalibrated = TRUE, horiz = FALSE)
+```
+
+When working with a `vacalibrated` object that includes results from multiple
+algorithms, like our ensemble example, it is worth noting that the `plotVA()`
+function returns a list of `ggplot` objects, one for each algorithm and for
+the ensemble if applicable.  (This is also the case if the `vacalibrated` object
+only includes calibrated restuls for a single object -- which is why the
+algorithm name or "ensemble" is printed after the call to `plotVA()` -- so it is
+possible to make further customizations to the plot.)
+
+```{r}
+ensemble_plots <- plotVA(calib_ensemble)
+names(ensemble_plots)
+ensemble_plots$ensemble
+```
+
+For our last example, we illustrate the "compare" type of plot that combine
+all of the calibrated results onto a single plot:
+
+
+```{r}
+plotVA(calib_ensemble, type = "compare", horiz = FALSE)
+```
+
+
+# Conclusion
+
+The typical analysis utilizing the computer-coded verbal autopsy method involves
+transforming (hopefully cleaned) VA data into a particular format and then employing
+an algorithm to assign causes of death and produce an estimated CSMF.  In
+this vignette we have skipped the first step, but would like to point users to
+the Python package
+[pycrossva](https://github.com/verbal-autopsy-software/pyCrossVA)
+for more information.  **vacalibration** provides a valuable extension to the
+analysis of neonate and child deaths that improves the accuracy of the population
+CSMF and can also leverage results from multiple algorithms.  The openVA Team
+has made some steps to integrate the **vacalibration** package into **openVA**,
+but we welcome further suggestions to improve the interoperability of this growing
+VA ecosystem of software.  To do so, please submit suggests (and bug reports)
+via the
+[GitHub issue tracker for the openVA package](https://github.com/verbal-autopsy-software/openVA/issues).
+
+# References
+
+Pramanik, Sandipan, Scott Zeger, Dianna Blau, and Abhirup Datta. 2025.
+"Modeling structure and country-specific heterogeneity in misclassification
+matrices of verbal autopsy-based cause of death classifiers,"
+*The Annals of Applied Statistics*: 19(2), 1214-1239.

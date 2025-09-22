@@ -146,6 +146,8 @@ stackplotVA <- function(x, grouping = NULL,
         counts[i] <- dim(x[[i]]$causes.test)[1]
       } else if(methods::is(x[[i]],  "nbc")) {
         counts[i] <- dim(x[[i]]$test)[1]
+      } else if(methods::is(x[[i]], "eava")) {
+        counts[i] <- length(x[[i]]$ID)
       }
       
       present_cod <- names(csmf[[i]])[csmf[[i]]>0]
@@ -270,12 +272,12 @@ stackplotVA <- function(x, grouping = NULL,
   }
   
   if(type == "stack") {
-    g <- g + geom_bar(stat='identity', color=border, size = .3)
+    g <- g + geom_bar(stat='identity', color=border)
   } else {
-    g <- g + geom_bar(stat='identity', color=border, size = .3, position=position_dodge(0.9))
+    g <- g + geom_bar(stat='identity', color=border, position=position_dodge(0.9))
     if(err) {
       g <- g + geom_errorbar(aes(ymin = csmf_lower, ymax = csmf_upper),
-                             size = err_size, width = err_width,  position = position_dodge(0.9))
+                             linewidth = err_size, width = err_width,  position = position_dodge(0.9))
     }
   }
   

@@ -50,6 +50,10 @@ getCSMF <- function(x, CI = 0.95, interVA.rule = TRUE){
       }
     return(nbc4va::csmf.nbc(x))
   }
+  
+  if(methods::is(x, "eava")) {
+    return(csmf_eava(x))
+  }
   stop("Input object is not a fitted model from openVA. ")
 }
 

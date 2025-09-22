@@ -30,8 +30,8 @@ probs <- getIndivProb(fit)
 \seealso{
 Other output extraction: 
 \code{\link{getCCC}()},
-\code{\link{getCSMF_accuracy}()},
 \code{\link{getCSMF}()},
+\code{\link{getCSMF_accuracy}()},
 \code{\link{getTopCOD}()}
 }
 \concept{output extraction}
