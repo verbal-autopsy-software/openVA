@@ -524,19 +524,18 @@ plot.vacalibration <- function(x, type = c("errorbar", "bar", "compare")[1],
       }
       
       if (type == "bar") {
-        g <- g + geom_bar(sub_csmf,
+        g <- g + geom_bar(aes(fill = .data$estimate),
                           stat = "identity", color = border,
-                          aes(fill = .data$estimate),
                           linewidth = .3, position = position_dodge(.9)) 
         if (horiz) {
           g <- g + 
-            scale_fill_manual(sub_csmf, values = c("calibrated" = .data$fill,
-                                         "uncalibrated" = .data$fill_uncalibrated),
+            scale_fill_manual(values = c("calibrated" = fill,
+                                         "uncalibrated" = fill_uncalibrated),
                               guide = ggplot2::guide_legend(reverse = TRUE))
         } else {
           g <- g +
-            scale_fill_manual(values = c("calibrated" = .data$fill,
-                                         "uncalibrated" = .data$fill_uncalibrated))
+            scale_fill_manual(values = c("calibrated" = fill,
+                                         "uncalibrated" = fill_uncalibrated))
         }
       }
       if (type == "errorbar"){
@@ -554,7 +553,6 @@ plot.vacalibration <- function(x, type = c("errorbar", "bar", "compare")[1],
       g <- g + geom_errorbar(aes(ymin = .data$lower,
                                  ymax = .data$upper,
                                  group = .data$estimate),
-                             #size = err_size,
                              linewidth = err_size,
                              width = err_width, position = position_dodge(.9))
       g <- g + xlab(xlab) + ylab(ylab) + ggtitle(title)
@@ -588,9 +586,9 @@ plot.vacalibration <- function(x, type = c("errorbar", "bar", "compare")[1],
     }
     
     g <- ggplot(csmf, aes(x = .data$cause,
-                          y = .data$mean),
-                fill = .data$algorithm,
-                ymax = max(.data$upper)*1.05)
+                          y = .data$mean,
+                          fill = .data$algorithm,
+                          ymax = max(.data$upper)*1.05))
     g <- g + ggplot2::geom_point(aes(color = .data$algorithm), 
                                  position = position_dodge(0.5),
                                  size = point_size)

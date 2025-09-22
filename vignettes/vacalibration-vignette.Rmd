@@ -45,7 +45,7 @@ library(openVA)
 
 In the example code to follow we use the example data set "NeonatesVA5" that 
 contains 200 (simulated) neonate VAs and is included in **openVA**.  These
-data can be loaded with:
+data are simulated from the 2016 WHO VA instrument, and can be loaded with:
 
 ```{r}
 data(NeonatesVA5)
@@ -100,6 +100,8 @@ two_fits <- prepCalibration(fit_insilicova, fit_interva)
 ```
 
 
+
+
 The results can now be passed to the `vacalibration()` function.  In the following
 example, we do this separately for each algorithm as well as for the combined
 list needed to produce the ensemble estimate of the calibrated CSMF.  To
@@ -137,7 +139,7 @@ sampling, the algorithm(s) included in the calibration, and the input data.
 calib_insilicova
 ```
 
-More useful is the well-known `summary()` that (in the VA space) prints out
+More useful is the well-known `summary()` method that (in the VA space) prints out
 a summary of the posterior sampling, the number of VA records processed by
 the algorithm, and the ordered CSMF (and credible intervals where applicable).
 Users have the option to specify the number of causes to include in the summary
@@ -146,6 +148,13 @@ through the `top` parameter.
 ```{r}
 summary(calib_insilicova, top = 5)
 ```
+
+The seasoned VA analyst may notice different
+CoDs than what InSilicoVA assigns (i.e., those causes from the WHO VA cause
+list).  `vacalibration()` employs a mapping to a "broad cause of death" list
+via the `vacalibration::cause_map()` function (as described in the
+[vacalibration vignette](https://cran.r-project.org/web/packages/vacalibration/vignettes/intro_to_vacalibration.html#broad-cause-of-death)
+).
 
 It is also worth noting that `summary()` returns a list of objects that
 can be useful for further analysis; one example is ordered

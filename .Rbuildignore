@@ -1,3 +1,5 @@
 ^\.github$
 ^CRAN-SUBMISSION$
 ^codecov\.yml$
+vignettes/eava-vignette.Rmd
+vignettes/vacalibration-vignette.Rmd

@@ -200,11 +200,15 @@ list to the list used by the EAVA algorithm are included as data sets in the
 **openVA** package.  There are separate mappings for neonatal and child CoDs,
 and the (peculiar) format facilitates the creation of a plot depicting a
 comparison of the CSMFs.  In the following code chunk, we load the mapping for
-neonatal CoDs, create a list of the `codeVA()` outputs for InSilicoVA and EAVA,
-and pass these objects to the `stackplotVA()` function.  The result is a 
-stacked bar plot with the CSMF from InSilicoVA coded in the the causes used by
-EAVA.  The fraction of deaths due to CoDs that are not included in the EAVA
-cause list, are included in the category labeled "not in neonate CoD hierarchy."
+neonatal CoDs (grouping_eava_neonate), create a list of the `codeVA()`
+outputs for InSilicoVA and EAVA, and pass these objects to the `stackplotVA()`
+function.  The result is a stacked bar plot with the CSMF from InSilicoVA coded
+in the causes used by EAVA (specified by passing the grouping_eava_neonate data
+frame to the `grouping` parameter).  We also restrict the legend to only include
+those causes appearing in the data by setting the `filter_legend` parameter to
+`TRUE`.  In the resulting plot, the fraction of deaths due to CoDs that are not
+included in the EAVA cause list, are included in the category labeled 
+"not in neonate CoD hierarchy."
 
 
 ```{r neonote_stackplot}
@@ -213,7 +217,8 @@ data("grouping_eava_neonate")
 compare_neonate <- list("InSilicoVA" = fit_insilico_neonate,
                         "EAVA" = EAVA_neonate)
 stackplotVA(compare_neonate, xlab = "", angle = 0,
-            grouping = grouping_eava_neonate)
+            grouping = grouping_eava_neonate,
+            filter_legend = TRUE)
 ```
 
 
@@ -229,7 +234,8 @@ compare_child <- list("InSilicoVA" = fit_insilico_child,
                       "EAVA" = EAVA_child)
 stackplotVA(compare_child, xlab = "", angle = 0, grouping = grouping_eava_child,
             horiz = TRUE,
-            type = "dodge")
+            type = "dodge",
+            filter_legend = TRUE)
 ```
 
 
