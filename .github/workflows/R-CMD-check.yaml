@@ -20,8 +20,10 @@ jobs:
         config:
           - {os: windows-latest, r: 'release', java: 11, os-name: windows}
           - {os: macOS-latest, r: 'release', java: 11, os-name: macos}
-          - {os: ubuntu-latest, r: 'release', java: 11,os-name: ubuntu}
-          - {os: ubuntu-latest, r: 'devel', java: 11,os-name: ubuntu}
+          - {os: ubuntu-22.04, r: 'release', java: 11,os-name: ubuntu}
+          - {os: ubuntu-22.04, r: 'devel', java: 11,os-name: ubuntu}
+          #- {os: ubuntu-latest, r: 'release', java: 11,os-name: ubuntu}
+          #- {os: ubuntu-latest, r: 'devel', java: 11,os-name: ubuntu}
           #- {os: ubuntu-latest, r: 'release', java: 11,os-name: ubuntu}
  
     env:
@@ -53,6 +55,10 @@ jobs:
 
       - uses: r-lib/actions/setup-pandoc@v2
 
+      - name: Set pak options
+        shell: bash
+        run: echo 'options(pkg.sysreqs_db_update_timeout = as.difftime(59, units = "secs"))' >> ~/.Rprofile 
+
       - name: Query dependencies
         run: |
           install.packages('remotes')
@@ -70,7 +76,6 @@ jobs:
       - name: Install system dependencies
         if: runner.os == 'Linux'
         run: |
-          sudo apt-get install -y texlive-bibtex-extra
           while read -r cmd
           do
             eval sudo $cmd
