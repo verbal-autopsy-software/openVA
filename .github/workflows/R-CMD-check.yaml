@@ -22,7 +22,7 @@ jobs:
           - {os: macOS-latest, r: 'release', java: 11, os-name: macos}
           - {os: ubuntu-latest, r: 'release', java: 11,os-name: ubuntu}
           - {os: ubuntu-latest, r: 'devel', java: 11,os-name: ubuntu}
-          - {os: ubuntu-latest, r: 'release', java: 11,os-name: ubuntu}
+          #- {os: ubuntu-latest, r: 'release', java: 11,os-name: ubuntu}
  
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
@@ -70,6 +70,7 @@ jobs:
       - name: Install system dependencies
         if: runner.os == 'Linux'
         run: |
+          sudo apt install -y citeproc
           while read -r cmd
           do
             eval sudo $cmd
