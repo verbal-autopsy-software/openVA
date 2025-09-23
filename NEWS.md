@@ -1,7 +1,7 @@
 # openVA - changes
-Version 1.2.0 (2025-08-14)
+Version 1.2.0 (2025-09-23)
 ==========================
-+ Added support for new R package vacalibration.
++ Major update: support for new R packages vacalibration and EAVA.
 
 
 Version 1.1.2 (2024-01-28)
