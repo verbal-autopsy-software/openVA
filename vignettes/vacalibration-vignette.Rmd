@@ -24,9 +24,9 @@ constellation CHAMPS data, which
 [Pramanik et al. (2015)](https://doi.org/10.1214%2F24-AOAS2006)
 use to develop a method for calibrating computer-coded algorithms that assign
 causes of death (CoD) to VA data.  Their method is implemented in the R package
-[**vacalibration**](https://cran.r-project.org/web/packages/vacalibration/index.html)
+[**vacalibration**](https://CRAN.R-project.org/package=vacalibration)
 and an instructive introduction can be found in the package's
-[vignette](https://cran.r-project.org/web/packages/vacalibration/vignettes/intro_to_vacalibration.html).
+[vignette](https://CRAN.R-project.org/package=vacalibration/vignettes/intro_to_vacalibration.html).
 VA-Calibration is a natural extension of the work flow for analyzing VA data
 and thus we have integrated this package into **openVA**, as illustrated in this
 vignette.
@@ -153,7 +153,7 @@ The seasoned VA analyst may notice different
 CoDs than what InSilicoVA assigns (i.e., those causes from the WHO VA cause
 list).  `vacalibration()` employs a mapping to a "broad cause of death" list
 via the `vacalibration::cause_map()` function (as described in the
-[vacalibration vignette](https://cran.r-project.org/web/packages/vacalibration/vignettes/intro_to_vacalibration.html#broad-cause-of-death)
+[vacalibration vignette](https://CRAN.R-project.org/package=vacalibration/vignettes/intro_to_vacalibration.html#broad-cause-of-death)
 ).
 
 It is also worth noting that `summary()` returns a list of objects that
